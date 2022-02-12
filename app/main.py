@@ -1,3 +1,4 @@
+import os
 import time
 import numpy as np
 import pandas as pd
@@ -18,7 +19,6 @@ SPEED2LATENCY = {
     "Medium": C["speed"],
     "Fast": .1
 }
-
 
 # Define sidebar
 
@@ -87,12 +87,13 @@ comparison_dfs = [run_dummy_sim(scenario) for scenario, checked in SCENARIO2CHEC
 comparison_df = pd.concat(comparison_dfs) if comparison_dfs else pd.DataFrame()
 df = run_dummy_sim("user")
 
-# Define description
+# Define layout
+
+st.image(os.path.join(os.path.dirname(__file__), "assets", "logo.png"))
 
 with st.expander("See description"):
     description()
 
-# Define layout
 st.markdown("## Stats")
 stats_dboard = st.empty()
 
@@ -138,9 +139,7 @@ for i in range(num_steps if run_simulation else 1):
         progress_text.text(f"{(frac_complete * 100):.2f}% Complete")
         prevrow = row
 
-
 # Download data
-
 
 @st.cache
 def convert_df(df):
