@@ -57,6 +57,12 @@ compare_scenario_a = st.sidebar.checkbox('Scenario A')
 compare_scenario_b = st.sidebar.checkbox('Scenario B')
 compare_scenario_b_star = st.sidebar.checkbox('Scenario B*')
 
+SCENARIO2CHECKBOX = {
+    'A': compare_scenario_a,
+    'B': compare_scenario_b,
+    'B*': compare_scenario_b_star,
+}
+
 st.sidebar.markdown("## Speed")
 
 simulation_speed = st.sidebar.selectbox("Simulation Speed", ("Medium", "Fast", "Slow"))
@@ -67,13 +73,19 @@ simulation_speed = st.sidebar.selectbox("Simulation Speed", ("Medium", "Fast", "
 
 num_steps = C['timesteps'] + 1
 
-df = pd.DataFrame({
-    'years_passed': np.linspace(0, 6, num_steps),
-    'consensus_power_in_zib': np.random.uniform(0, 100, num_steps),
-    'block_reward_in_kfil': np.random.uniform(0, 100, num_steps),
-    'marginal_reward_per_power_in_fil_per_pib': np.random.uniform(0, 100, num_steps),
-    'utility': np.random.uniform(0, 100, num_steps),
-})
+def run_dummy_sim(scenario):
+    return pd.DataFrame({
+        'years_passed': np.linspace(0, 6, num_steps),
+        'consensus_power_in_zib': np.random.uniform(0, 100, num_steps),
+        'block_reward_in_kfil': np.random.uniform(0, 100, num_steps),
+        'marginal_reward_per_power_in_fil_per_pib': np.random.uniform(0, 100, num_steps),
+        'utility': np.random.uniform(0, 100, num_steps),
+        'scenario': scenario
+    })
+
+comparison_dfs = [run_dummy_sim(scenario) for scenario, checked in SCENARIO2CHECKBOX.items() if checked]
+comparison_df = pd.concat(comparison_dfs) if comparison_dfs else pd.DataFrame()
+df = run_dummy_sim("user")
 
 # Define description
 
@@ -87,7 +99,7 @@ stats_dboard = st.empty()
 st.markdown("## Graphs")
 plot_container = st.container()
 
-# Simulate
+# Simulate user scenario
 
 prevrow = None
 
@@ -110,8 +122,8 @@ for i in range(num_steps if run_simulation else 1):
     # Update plots
     if i == 0:
         with plot_container:
-            network_power_chart = NetworkPowerAltairChart.build(row, num_steps)
-            mining_utility_chart = MiningUtilityAltairChart.build(row, num_steps)
+            network_power_chart = NetworkPowerAltairChart.build(pd.concat([comparison_df, row]), num_steps)
+            mining_utility_chart = MiningUtilityAltairChart.build(pd.concat([comparison_df, row]), num_steps)
     else:
         network_power_chart.add_rows(row)
         mining_utility_chart.add_rows(row)

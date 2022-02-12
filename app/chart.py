@@ -1,8 +1,6 @@
 from abc import ABC, abstractclassmethod
 
 import altair as alt
-import numpy as np
-import pandas as pd
 import streamlit as st
 
 
@@ -39,6 +37,7 @@ class NetworkPowerAltairChart(AltairChart):
                     scale=alt.Scale(domain=(0, 100)),
                     title="Network Power (ZiB)",
                 ),
+                color="scenario"
             )
             .properties(title="Network Power (ZiB) Over Time")
         )
@@ -66,6 +65,7 @@ class MiningUtilityAltairChart(AltairChart):
                     scale=alt.Scale(domain=(0, 100)),
                     title="Mining Utility (Reward per Power)",
                 ),
+                color="scenario"
             )
             .properties(title="Mining Utility Over Time")
         )
