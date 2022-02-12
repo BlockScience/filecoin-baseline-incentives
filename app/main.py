@@ -9,6 +9,7 @@ from chart import (
     MiningUtilityAltairChart
 )
 from description import description
+from glossary import glossary
 from stats import stat2meta
 from utils import load_constants
 
@@ -102,6 +103,12 @@ plot_container = st.container()
 
 st.markdown("## Download")
 download_container = st.container()
+
+st.markdown("## Glossary")
+glossary_container = st.container()
+with glossary_container:
+    with st.expander("See glossary"):
+        glossary()
 
 # Simulate user scenario
 
