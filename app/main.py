@@ -99,6 +99,9 @@ stats_dboard = st.empty()
 st.markdown("## Graphs")
 plot_container = st.container()
 
+st.markdown("## Download")
+download_container = st.container()
+
 # Simulate user scenario
 
 prevrow = None
@@ -134,3 +137,22 @@ for i in range(num_steps if run_simulation else 1):
         progress_bar.progress(frac_complete)
         progress_text.text(f"{(frac_complete * 100):.2f}% Complete")
         prevrow = row
+
+
+# Download data
+
+
+@st.cache
+def convert_df(df):
+    return df.to_csv().encode('utf-8')
+
+
+with download_container:
+    csv = convert_df(pd.concat([df, comparison_df]))
+    st.text("Download raw simulation results as .csv.")
+    st.download_button(
+        label="Download",
+        data=csv,
+        file_name='filecoin_basefunc_sim_results.csv',
+        mime='text/csv',
+    )
