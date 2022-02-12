@@ -1,0 +1,9 @@
+timesteps: 24  # quarters (1 quarter = 3 months)
+speed: .25  # seconds per simulation replay step
+network_power:
+  initial_power__pib: 1000
+  cross_basefunc_from_above__month: 6
+  stabilize_below_at__frac: .5
+  cross_basefunc_from_below__month: 12
+  stabilize_above__month: 18
+  stabilize_above_at__frac: .8
