@@ -102,6 +102,9 @@ stats_dboard = st.empty()
 st.markdown("## Graphs")
 plot_container = st.container()
 
+st.markdown("## Conclusions")
+conclusions_container = st.container()
+
 st.markdown("## Download")
 download_container = st.container()
 
