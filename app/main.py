@@ -13,6 +13,11 @@ from utils import load_constants
 
 
 C = CONSTANTS = load_constants()
+SPEED2LATENCY = {
+    "Slow": 1,
+    "Medium": C["speed"],
+    "Fast": .1
+}
 
 
 # Define sidebar
@@ -25,6 +30,10 @@ st.sidebar.markdown("## Progress")
 
 progress_bar = st.sidebar.progress(0)
 progress_text = st.sidebar.text("0.0% Complete")
+
+st.sidebar.markdown("## Speed")
+
+simulation_speed = st.sidebar.selectbox("Simulation Speed", ("Medium", "Fast", "Slow"))
 
 st.sidebar.markdown("## Network Power Parameters")
 
@@ -103,7 +112,7 @@ for i in range(num_steps if run_simulation else 1):
     # Finally
     if run_simulation:
         frac_complete = (i + 1) / num_steps
-        time.sleep(C["speed"])
+        time.sleep(SPEED2LATENCY[simulation_speed])
         progress_bar.progress(frac_complete)
         progress_text.text(f"{(frac_complete * 100):.2f}% Complete")
         prevrow = row
