@@ -29,15 +29,15 @@ class NetworkPowerAltairChart(AltairChart):
                 x=alt.X(
                     "years_passed",
                     scale=alt.Scale(domain=(0, (num_steps - 1) / 4)),
-                    axis=alt.Axis(tickMinStep=.25),
-                    title="Year"
+                    axis=alt.Axis(tickMinStep=0.25),
+                    title="Year",
                 ),
                 y=alt.Y(
                     "consensus_power_in_zib",
                     scale=alt.Scale(domain=(0, 100)),
                     title="Network Power (ZiB)",
                 ),
-                color="scenario"
+                color="scenario",
             )
             .properties(title="Network Power (ZiB) Over Time")
         )
@@ -57,15 +57,15 @@ class MiningUtilityAltairChart(AltairChart):
                 x=alt.X(
                     "years_passed",
                     scale=alt.Scale(domain=(0, (num_steps - 1) / 4)),
-                    axis=alt.Axis(tickMinStep=.25),
-                    title="Year"
+                    axis=alt.Axis(tickMinStep=0.25),
+                    title="Year",
                 ),
                 y=alt.Y(
                     "utility",
                     scale=alt.Scale(domain=(0, 100)),
                     title="Mining Utility (Reward per Power)",
                 ),
-                color="scenario"
+                color="scenario",
             )
             .properties(title="Mining Utility Over Time")
         )

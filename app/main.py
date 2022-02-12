@@ -4,10 +4,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-from chart import (
-    NetworkPowerAltairChart,
-    MiningUtilityAltairChart
-)
+from chart import NetworkPowerAltairChart, MiningUtilityAltairChart
 from description import description
 from glossary import glossary
 from stats import stat2meta
@@ -15,11 +12,7 @@ from utils import load_constants
 
 
 C = CONSTANTS = load_constants()
-SPEED2LATENCY = {
-    "Slow": 1,
-    "Medium": C["speed"],
-    "Fast": .1
-}
+SPEED2LATENCY = {"Slow": 1, "Medium": C["speed"], "Fast": 0.1}
 
 # Define layout
 
@@ -68,26 +61,36 @@ init_power__pib = st.sidebar.slider("Initial Power (PiB)", 0, 4000, defaults["in
 
 st.sidebar.markdown("### Chronological")
 
-cross_basefunc_from_above__month = st.sidebar.slider("1️⃣ Cross BaseFunc From Above At (Month)", 0, 24, defaults["cross_basefunc_from_above__month"], 3)
+cross_basefunc_from_above__month = st.sidebar.slider(
+    "1️⃣ Cross BaseFunc From Above At (Month)", 0, 24, defaults["cross_basefunc_from_above__month"], 3
+)
 
-stabilize_below_at__frac = st.sidebar.slider("2️⃣ Stabilize Below At (% of BaseFunc)", 0, 100, int(defaults["stabilize_below_at__frac"] * 100), 10) / 100
+stabilize_below_at__frac = (
+    st.sidebar.slider("2️⃣ Stabilize Below At (% of BaseFunc)", 0, 100, int(defaults["stabilize_below_at__frac"] * 100), 10)
+    / 100
+)
 
-cross_basefunc_from_below__month = st.sidebar.slider("3️⃣ Recross BaseFunc From Below At (Month)", 0, 24, defaults["cross_basefunc_from_below__month"], 3)
+cross_basefunc_from_below__month = st.sidebar.slider(
+    "3️⃣ Recross BaseFunc From Below At (Month)", 0, 24, defaults["cross_basefunc_from_below__month"], 3
+)
 
 stabilize_above__month = st.sidebar.slider("4️⃣ Stabilize Above At (Month)", 0, 24, defaults["stabilize_above__month"], 3)
 
-stabilize_above_at__frac = st.sidebar.slider("5️⃣ Stabilize Above At (% of BaseFunc)", 0, 100, int(defaults["stabilize_above_at__frac"] * 100), 10) / 100
+stabilize_above_at__frac = (
+    st.sidebar.slider("5️⃣ Stabilize Above At (% of BaseFunc)", 0, 100, int(defaults["stabilize_above_at__frac"] * 100), 10)
+    / 100
+)
 
 st.sidebar.markdown("## Compare Against")
 
-compare_scenario_a = st.sidebar.checkbox('Scenario A')
-compare_scenario_b = st.sidebar.checkbox('Scenario B')
-compare_scenario_b_star = st.sidebar.checkbox('Scenario B*')
+compare_scenario_a = st.sidebar.checkbox("Scenario A")
+compare_scenario_b = st.sidebar.checkbox("Scenario B")
+compare_scenario_b_star = st.sidebar.checkbox("Scenario B*")
 
 SCENARIO2CHECKBOX = {
-    'A': compare_scenario_a,
-    'B': compare_scenario_b,
-    'B*': compare_scenario_b_star,
+    "A": compare_scenario_a,
+    "B": compare_scenario_b,
+    "B*": compare_scenario_b_star,
 }
 
 st.sidebar.markdown("## Speed")
@@ -98,17 +101,21 @@ simulation_speed = st.sidebar.selectbox("Simulation Speed", ("Medium", "Fast", "
 
 # TODO: run simulation
 
-num_steps = C['timesteps'] + 1
+num_steps = C["timesteps"] + 1
+
 
 def run_dummy_sim(scenario):
-    return pd.DataFrame({
-        'years_passed': np.linspace(0, 6, num_steps),
-        'consensus_power_in_zib': np.random.uniform(0, 100, num_steps),
-        'block_reward_in_kfil': np.random.uniform(0, 100, num_steps),
-        'marginal_reward_per_power_in_fil_per_pib': np.random.uniform(0, 100, num_steps),
-        'utility': np.random.uniform(0, 100, num_steps),
-        'scenario': scenario
-    })
+    return pd.DataFrame(
+        {
+            "years_passed": np.linspace(0, 6, num_steps),
+            "consensus_power_in_zib": np.random.uniform(0, 100, num_steps),
+            "block_reward_in_kfil": np.random.uniform(0, 100, num_steps),
+            "marginal_reward_per_power_in_fil_per_pib": np.random.uniform(0, 100, num_steps),
+            "utility": np.random.uniform(0, 100, num_steps),
+            "scenario": scenario,
+        }
+    )
+
 
 comparison_dfs = [run_dummy_sim(scenario) for scenario, checked in SCENARIO2CHECKBOX.items() if checked]
 comparison_df = pd.concat(comparison_dfs) if comparison_dfs else pd.DataFrame()
@@ -152,9 +159,10 @@ for i in range(num_steps if run_simulation else 1):
 
 # Download data
 
+
 @st.cache
 def convert_df(df):
-    return df.to_csv().encode('utf-8')
+    return df.to_csv().encode("utf-8")
 
 
 with download_container:
@@ -163,6 +171,6 @@ with download_container:
     st.download_button(
         label="Download",
         data=csv,
-        file_name='filecoin_basefunc_sim_results.csv',
-        mime='text/csv',
+        file_name="filecoin_basefunc_sim_results.csv",
+        mime="text/csv",
     )
