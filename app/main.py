@@ -92,6 +92,7 @@ df = run_dummy_sim("user")
 
 st.image(os.path.join(os.path.dirname(__file__), "assets", "logo.png"))
 
+st.markdown("## Description")
 with st.expander("See description"):
     description()
 
