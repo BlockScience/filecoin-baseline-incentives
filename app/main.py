@@ -31,10 +31,6 @@ st.sidebar.markdown("## Progress")
 progress_bar = st.sidebar.progress(0)
 progress_text = st.sidebar.text("0.0% Complete")
 
-st.sidebar.markdown("## Speed")
-
-simulation_speed = st.sidebar.selectbox("Simulation Speed", ("Medium", "Fast", "Slow"))
-
 st.sidebar.markdown("## Network Power Parameters")
 
 defaults = C["network_power"]
@@ -55,7 +51,17 @@ stabilize_above__month = st.sidebar.slider("4️⃣ Stabilize Above At (Month)",
 
 stabilize_above_at__frac = st.sidebar.slider("5️⃣ Stabilize Above At (% of BaseFunc)", 0, 100, int(defaults["stabilize_above_at__frac"] * 100), 10) / 100
 
-# TODO: validation
+st.sidebar.markdown("## Compare Against")
+
+compare_scenario_a = st.sidebar.checkbox('Scenario A')
+compare_scenario_b = st.sidebar.checkbox('Scenario B')
+compare_scenario_b_star = st.sidebar.checkbox('Scenario B*')
+
+st.sidebar.markdown("## Speed")
+
+simulation_speed = st.sidebar.selectbox("Simulation Speed", ("Medium", "Fast", "Slow"))
+
+# TODO: parameter validation
 
 # TODO: run simulation
 
