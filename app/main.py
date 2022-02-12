@@ -21,6 +21,32 @@ SPEED2LATENCY = {
     "Fast": .1
 }
 
+# Define layout
+
+st.image(os.path.join(os.path.dirname(__file__), "assets", "logo.png"))
+
+st.markdown("## Description")
+with st.expander("See description"):
+    description()
+
+st.markdown("## Stats")
+stats_dboard = st.empty()
+
+st.markdown("## Graphs")
+plot_container = st.container()
+
+st.markdown("## Conclusions")
+conclusions_container = st.container()
+
+st.markdown("## Glossary")
+glossary_container = st.container()
+with glossary_container:
+    with st.expander("See glossary"):
+        glossary()
+
+st.markdown("## Download")
+download_container = st.container()
+
 # Define sidebar
 
 st.sidebar.markdown("# Simulator")
@@ -87,32 +113,6 @@ def run_dummy_sim(scenario):
 comparison_dfs = [run_dummy_sim(scenario) for scenario, checked in SCENARIO2CHECKBOX.items() if checked]
 comparison_df = pd.concat(comparison_dfs) if comparison_dfs else pd.DataFrame()
 df = run_dummy_sim("user")
-
-# Define layout
-
-st.image(os.path.join(os.path.dirname(__file__), "assets", "logo.png"))
-
-st.markdown("## Description")
-with st.expander("See description"):
-    description()
-
-st.markdown("## Stats")
-stats_dboard = st.empty()
-
-st.markdown("## Graphs")
-plot_container = st.container()
-
-st.markdown("## Conclusions")
-conclusions_container = st.container()
-
-st.markdown("## Download")
-download_container = st.container()
-
-st.markdown("## Glossary")
-glossary_container = st.container()
-with glossary_container:
-    with st.expander("See glossary"):
-        glossary()
 
 # Simulate user scenario
 
