@@ -18,7 +18,12 @@ SPEED2LATENCY = {"Slow": 1, "Medium": C["speed"], "Fast": 0.1}
 
 st.set_page_config(layout="wide")
 
-st.markdown("## Description")
+_, image_container, _ = st.columns([1,4,1])
+
+with image_container:
+    st.image(os.path.join(os.path.dirname(__file__), "assets", "logo.png"), width=800)
+
+st.markdown("# Description")
 with st.expander("See description"):
     description()
 
