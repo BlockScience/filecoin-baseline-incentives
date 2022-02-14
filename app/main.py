@@ -16,7 +16,7 @@ SPEED2LATENCY = {"Slow": 1, "Medium": C["speed"], "Fast": 0.1}
 
 # Define layout
 
-st.image(os.path.join(os.path.dirname(__file__), "assets", "logo.png"))
+st.set_page_config(layout="wide")
 
 st.markdown("## Description")
 with st.expander("See description"):
