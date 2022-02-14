@@ -27,22 +27,22 @@ st.markdown("# Description")
 with st.expander("See description"):
     description()
 
-st.markdown("## Stats")
+st.markdown("# Stats")
 stats_dboard = st.empty()
 
-st.markdown("## Graphs")
+st.markdown("# Graphs")
 plot_container = st.container()
 
-st.markdown("## Conclusions")
+st.markdown("# Conclusions")
 conclusions_container = st.container()
 
-st.markdown("## Glossary")
+st.markdown("# Glossary")
 glossary_container = st.container()
 with glossary_container:
     with st.expander("See glossary"):
         glossary()
 
-st.markdown("## Download")
+st.markdown("# Download")
 download_container = st.container()
 
 # Define sidebar
