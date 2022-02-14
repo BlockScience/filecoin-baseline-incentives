@@ -12,6 +12,9 @@ def format_int_stat(stat):
     return millify(stat)
 
 
+# TODO: add units
+
+
 stat2meta = OrderedDict(
     {
         "years_passed": {"label": "Year"},
@@ -25,5 +28,15 @@ stat2meta = OrderedDict(
             "delta_func": lambda curr, prev: curr - prev,
             "format_func": format_float_stat,
         },
+        "marginal_reward_per_power_in_fil_per_pib": {
+            "label": "Marginal Reward",
+            "delta_func": lambda curr, prev: curr - prev,
+            "format_func": format_float_stat,
+        },
+        "utility": {
+            "label": "Mining Utility",
+            "delta_func": lambda curr, prev: curr - prev,
+            "format_func": format_float_stat,
+        }
     }
 )
