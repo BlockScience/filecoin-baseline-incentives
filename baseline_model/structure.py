@@ -12,13 +12,19 @@ partial_state_update_blocks = [
         }
     },
     {
-        'policies': {
-            'evolve_state': p_evolve_network
-            
+        'label': 'Evolve Network Power',
+        'policies': {            
         }, 
         'variables': {
-            'baseline_function': s_baseline_function,
             'network_power': s_network_power
+        }   
+    },
+    {
+        'label': 'Update Capped Power',
+        'policies': {            
+        }, 
+        'variables': {
+            'cumm_capped_power': s_cumm_capped_power
         }   
     }
 ]
