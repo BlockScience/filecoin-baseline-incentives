@@ -31,7 +31,6 @@ SCENARIOS = [
 
 
 RAW_PARAMS = BaselineModelParams(timestep_in_days=DAYS_PER_TIMESTEP,
-                                 days_since_start=600,  # TODO
                                  baseline_activated=True,
                                  network_power_scenario=SCENARIOS[0],  # TODO
                                  simple_mechanism=SimpleMinting(),
@@ -41,12 +40,12 @@ RAW_PARAMS = BaselineModelParams(timestep_in_days=DAYS_PER_TIMESTEP,
 PARAMS = {k: [v] for k, v in RAW_PARAMS.items()}
 
 
-RAW_INITIAL_STATE = BaselineModelState(days_passed=0.0,
+RAW_INITIAL_STATE = BaselineModelState(days_passed=600.0, # Since launch
                                        delta_days=nan,
                                        network_power=12000,  # TODO
                                        baseline=9500,  # TODO
-                                       cumm_capped_power=3000 * 2,  # TODO
-                                       effective_network_time=1,  # TODO
+                                       cumm_capped_power=12000 / 2,  # TODO
+                                       effective_network_time=1.4,  # TODO
                                        reward=Reward()
                                        )
 

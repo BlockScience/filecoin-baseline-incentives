@@ -97,7 +97,6 @@ class BaselineMinting(SimpleMinting):
 
 class BaselineModelParams (TypedDict):
     timestep_in_days: Days
-    days_since_start: Days
     baseline_activated: bool
     network_power_scenario: GrowthScenario
     simple_mechanism: SimpleMinting

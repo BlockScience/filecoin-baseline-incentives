@@ -67,7 +67,7 @@ def s_baseline(params: BaselineModelParams,
                signal: Signal) -> VariableUpdate:
     days_passed = state['days_passed']
     DAYS_TO_YEARS = 1 / 365.25
-    baseline_years = (days_passed + params['days_since_start']) * DAYS_TO_YEARS
+    baseline_years = days_passed * DAYS_TO_YEARS
     value = params['baseline_mechanism'].baseline_function(
         baseline_years)
     return ('baseline', value)
