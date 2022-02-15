@@ -12,11 +12,12 @@ BLOCKS = [
         }
     },
     {
-        'label': 'Evolve Network Power',
+        'label': 'Evolve Network Power & Baseline Function',
         'policies': {            
         }, 
         'variables': {
-            'network_power': s_network_power
+            'network_power': s_network_power,
+            'baseline': s_baseline
         }   
     },
     {

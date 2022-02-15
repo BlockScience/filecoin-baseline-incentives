@@ -1,3 +1,4 @@
+from cmath import nan
 from math import ceil
 from baseline_model.types import BaselineMinting, BaselineModelState, BaselineModelParams, GrowthScenario, Reward, SimpleMinting
 
@@ -41,9 +42,11 @@ PARAMS = {k: [v] for k, v in RAW_PARAMS.items()}
 
 
 RAW_INITIAL_STATE = BaselineModelState(days_passed=0.0,
-                                       network_power=3000,  # TODO
+                                       delta_days=nan,
+                                       network_power=12000,  # TODO
+                                       baseline=9500,  # TODO
                                        cumm_capped_power=3000 * 2,  # TODO
-                                       effective_network_time=500, # TODO
+                                       effective_network_time=1,  # TODO
                                        reward=Reward()
                                        )
 

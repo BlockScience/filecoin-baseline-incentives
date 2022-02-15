@@ -60,6 +60,19 @@ def s_network_power(params: BaselineModelParams,
     return ('network_power', new_power)
 
 
+def s_baseline(params: BaselineModelParams,
+               _2,
+               _3,
+               state: BaselineModelState,
+               signal: Signal) -> VariableUpdate:
+    days_passed = state['days_passed']
+    DAYS_TO_YEARS = 1 / 365.25
+    baseline_years = (days_passed + params['days_since_start']) * DAYS_TO_YEARS
+    value = params['baseline_mechanism'].baseline_function(
+        baseline_years)
+    return ('baseline', value)
+
+
 def s_cumm_capped_power(params: BaselineModelParams,
                         _2,
                         _3,
@@ -68,12 +81,8 @@ def s_cumm_capped_power(params: BaselineModelParams,
     # TODO: refactor for making it cleaner
     DAYS_TO_YEARS = 1 / 365.25
     dt = params['timestep_in_days'] * DAYS_TO_YEARS
-    days_passed = state['days_passed']
-    baseline_years = (days_passed + params['days_since_start']) * DAYS_TO_YEARS
     current_power = state['network_power']
-    current_baseline = params['baseline_mechanism'].baseline_function(
-        baseline_years)
-    capped_power = min(current_power, current_baseline)
+    capped_power = min(current_power, state['baseline'])
     cumm_capped_power_differential = capped_power * dt
     new_cumm_capped_power = state['cumm_capped_power'] + \
         cumm_capped_power_differential
