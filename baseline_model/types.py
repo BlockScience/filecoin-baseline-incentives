@@ -16,10 +16,9 @@ class NetworkPowerScenario():
 
     cross_down_after_beginning: Annotated[float, 'days']
     stable_after_cross_down: Annotated[float, 'days']
-    take_off_after_cross_down: Annotated[float, 'days']
+    take_off_after_stable: Annotated[float, 'days']
     steady_after_take_off: Annotated[float, 'days']
 
-    growth_initial: Annotated[float, '%/baseline']
     growth_cross_down: Annotated[float, '%/baseline']
     growth_stable: Annotated[float, '%/baseline']
     growth_take_off: Annotated[float, '%/baseline']
@@ -31,7 +30,7 @@ class NetworkPowerScenario():
 
     @property
     def take_off_after_beginning(self):
-        return self.cross_down_after_beginning + self.take_off_after_cross_down
+        return self.stabilized_after_beginning + self.take_off_after_stable
     
     @property
     def steady_after_beginning(self):
@@ -81,10 +80,10 @@ class BaselineModelParams (TypedDict):
     days_since_start: Days
     baseline_activated: bool
     network_power_scenario: NetworkPowerScenario
+    baseline_mechanism: BaselineMinting
     
 class BaselineModelState (TypedDict):
     days_passed: Days
     network_power: QA_PiB
-    baseline_mechanism: BaselineMinting
     cumm_capped_power: FILYear
     
