@@ -1,5 +1,5 @@
 from typing import Annotated, TypedDict
-from math import exp, log
+from math import exp, log, nan
 from dataclasses import dataclass
 
 # Units
@@ -11,7 +11,7 @@ Year = Annotated[float, "year"]
 QA_PiB = Annotated[float, "PiB (QA)"]
 
 @dataclass
-class NetworkPowerScenario():
+class GrowthScenario():
     label: str
 
     cross_down_after_beginning: Annotated[float, 'days']
@@ -37,13 +37,33 @@ class NetworkPowerScenario():
         return self.take_off_after_beginning + self.steady_after_take_off
 
 
+
+@dataclass
+class Reward():
+    simple_reward: FIL = nan
+    baseline_reward: FIL = nan
+
+    @property
+    def block_reward(self):
+        return self.simple_reward + self.baseline_reward
+
+
+@dataclass
+class SimpleMinting():
+    total_issuance: FIL = 0.9e9 # TODO: check
+    decay = log(2) / 6.0 # TODO: check
+
+    def issuance(self, years_passed: Year) -> FIL:
+        issuance_fraction = (1 - exp(-1 * self.decay * years_passed))
+        return self.total_issuance * issuance_fraction
+
     
 @dataclass
-class BaselineMinting():
+class BaselineMinting(SimpleMinting):
     # Parameters
+    total_issuance: FIL = 1.1e9
+    decay: float = log(2) / 6.0 # TODO: check
     initial_baseline: FIL = 2888
-    issuance_baseline: FIL = 1.1e9
-    baseline_decay: float = log(2) / 6.0
     annual_baseline_growth: Annotated[float, "%/year"] = 1.0
     # gamma: float = 0.0 # TODO
 
@@ -63,11 +83,9 @@ class BaselineMinting():
                 * (1 + self.annual_baseline_growth)
                 ** years_passed)
 
-    def baseline_issuance(self,
-                          effective_years_passed: Year) -> FIL:
-        return self.issuance_baseline * (1 - exp(-1 *
-                                                 self.baseline_decay *
-                                                 effective_years_passed))
+    def issuance(self, effective_years_passed: Year) -> FIL:
+        issuance_fraction = (1 - exp(-1 * self.decay * effective_years_passed))
+        return self.total_issuance * issuance_fraction
 
     # def effective_time_from_share(self,
     #                               issuance_so_far: FIL) -> Year:
@@ -75,15 +93,19 @@ class BaselineMinting():
     #             * log(1 - issuance_so_far / self.issuance_baseline))
 
 
+
+
 class BaselineModelParams (TypedDict):
     timestep_in_days: Days
     days_since_start: Days
     baseline_activated: bool
-    network_power_scenario: NetworkPowerScenario
+    network_power_scenario: GrowthScenario
+    simple_mechanism: SimpleMinting
     baseline_mechanism: BaselineMinting
     
 class BaselineModelState (TypedDict):
     days_passed: Days
     network_power: QA_PiB
     cumm_capped_power: FILYear
+    reward: Reward
     

@@ -26,5 +26,14 @@ BLOCKS = [
         'variables': {
             'cumm_capped_power': s_cumm_capped_power
         }   
+    },
+    {
+        'label': 'Block Reward',
+        'policies': {    
+
+        }, 
+        'variables': {
+            'reward': s_reward
+        }   
     }
 ]

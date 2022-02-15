@@ -1,6 +1,6 @@
 from cadCAD_tools.types import Signal, VariableUpdate
 
-from baseline_model.types import BaselineModelParams, BaselineModelState, Year
+from baseline_model.types import BaselineModelParams, BaselineModelState, Reward, Year
 
 # ## Time Tracking
 
@@ -83,3 +83,35 @@ def s_cumm_capped_power(params: BaselineModelParams,
     cumm_capped_power_differential = capped_power * dt
     new_cumm_capped_power = state['cumm_capped_power'] + cumm_capped_power_differential
     return ('cumm_capped_power', new_cumm_capped_power)
+
+
+def s_reward(params: BaselineModelParams,
+                        _2,
+                        history: list[list[BaselineModelState]],
+                        state: BaselineModelState,
+                        signal: Signal) -> VariableUpdate:
+
+    # TODO: check history indices
+
+
+    # Simple Minting
+    simple_mechanism = params['simple_mechanism']
+    t_i = history[-1][-1]['days_passed']
+    t_f = state['days_passed']
+
+    simple_issuance_start = simple_mechanism.issuance(t_i)
+    simple_issuance_end = simple_mechanism.issuance(t_f)
+    simple_reward = simple_issuance_end - simple_issuance_start
+
+    # Baseline Minting
+    baseline_mechanism = params['baseline_mechanism']
+    eff_t_i = baseline_mechanism.effective_network_time(history[-1][-1]['cumm_capped_power'])
+    eff_t_f = baseline_mechanism.effective_network_time(state['cumm_capped_power'])
+
+    baseline_issuance_start = baseline_mechanism.issuance(eff_t_i)
+    baseline_issuance_end = baseline_mechanism.issuance(eff_t_f)
+    baseline_reward = baseline_issuance_end - baseline_issuance_start
+
+    # Wrap everything together
+    reward = Reward(simple_reward, baseline_reward)
+    return ('reward', reward)
