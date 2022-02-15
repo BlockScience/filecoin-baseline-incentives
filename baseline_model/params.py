@@ -1,6 +1,10 @@
+from math import ceil
 from baseline_model.types import BaselineMinting, BaselineModelState, BaselineModelParams, NetworkPowerScenario
 
+DAYS_PER_TIMESTEP = 30
 YEAR = 365.25
+SIMULATION_TIME_IN_YEARS = 6
+
 SCENARIOS = [
     NetworkPowerScenario(label='optimistic',
                          cross_down_after_beginning=1.0 * YEAR,
@@ -25,14 +29,23 @@ SCENARIOS = [
 ]
 
 
-PARAMS = BaselineModelParams(timestep_in_days=15.0,
+RAW_PARAMS = BaselineModelParams(timestep_in_days=DAYS_PER_TIMESTEP,
                              days_since_start=600,  # TODO
                              baseline_activated=True,
                              network_power_scenario=SCENARIOS[0],  # TODO
                              baseline_mechanism=BaselineMinting())
 
 
-INITIAL_STATE = BaselineModelState(days_passed=0.0,
+PARAMS = {k: [v] for k, v in RAW_PARAMS.items()}
+
+
+RAW_INITIAL_STATE = BaselineModelState(days_passed=0.0,
                                    network_power=3000,  # TODO
                                    cumm_capped_power=3000 * 2  # TODO
                                    )
+
+INITIAL_STATE = RAW_INITIAL_STATE
+
+
+TIMESTEPS = int(ceil(SIMULATION_TIME_IN_YEARS * YEAR) / DAYS_PER_TIMESTEP)
+SAMPLES = 1

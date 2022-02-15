@@ -9,7 +9,7 @@ import os
 def main() -> None:
     df = easy_run(*default_run_args)
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    df.to_pickle(f"data/simulation_output/{timestamp}.pkl.gz", compression="gzip")
+    df.to_pickle(f"data/simulations/{timestamp}.pkl.gz", compression="gzip")
 
 
 if __name__ == "__main__":

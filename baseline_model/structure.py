@@ -1,6 +1,6 @@
 from baseline_model.logic import *
 
-partial_state_update_blocks = [
+BLOCKS = [
     {
         'label': 'Time Tracking',
         'policies': {
