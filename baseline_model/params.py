@@ -43,6 +43,7 @@ PARAMS = {k: [v] for k, v in RAW_PARAMS.items()}
 RAW_INITIAL_STATE = BaselineModelState(days_passed=0.0,
                                        network_power=3000,  # TODO
                                        cumm_capped_power=3000 * 2,  # TODO
+                                       effective_network_time=500, # TODO
                                        reward=Reward()
                                        )
 

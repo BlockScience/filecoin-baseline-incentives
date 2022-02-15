@@ -60,13 +60,6 @@ def s_network_power(params: BaselineModelParams,
     return ('network_power', new_power)
 
 
-def p_baseline_function(params: BaselineModelParams,
-                        _2,
-                        _3,
-                        state: BaselineModelState) -> Signal:
-    return {}
-
-
 def s_cumm_capped_power(params: BaselineModelParams,
                         _2,
                         _3,
@@ -78,21 +71,36 @@ def s_cumm_capped_power(params: BaselineModelParams,
     days_passed = state['days_passed']
     baseline_years = (days_passed + params['days_since_start']) * DAYS_TO_YEARS
     current_power = state['network_power']
-    current_baseline = params['baseline_mechanism'].baseline_function(baseline_years)
+    current_baseline = params['baseline_mechanism'].baseline_function(
+        baseline_years)
     capped_power = min(current_power, current_baseline)
     cumm_capped_power_differential = capped_power * dt
-    new_cumm_capped_power = state['cumm_capped_power'] + cumm_capped_power_differential
+    new_cumm_capped_power = state['cumm_capped_power'] + \
+        cumm_capped_power_differential
     return ('cumm_capped_power', new_cumm_capped_power)
 
 
+def s_effective_network_time(params: BaselineModelParams,
+                             _2,
+                             history: list[list[BaselineModelState]],
+                             state: BaselineModelState,
+                             signal: Signal) -> VariableUpdate:
+    if params['baseline_activated'] is True:
+        value = params['baseline_mechanism'].effective_network_time(
+            state['cumm_capped_power'])
+    else:
+        # If deactivated, make the ENT run on the same rate of the physical time
+        value = state['effective_network_time'] + state['delta_days']
+    return ('effective_network_time', value)
+
+
 def s_reward(params: BaselineModelParams,
-                        _2,
-                        history: list[list[BaselineModelState]],
-                        state: BaselineModelState,
-                        signal: Signal) -> VariableUpdate:
+             _2,
+             history: list[list[BaselineModelState]],
+             state: BaselineModelState,
+             signal: Signal) -> VariableUpdate:
 
     # TODO: check history indices
-
 
     # Simple Minting
     simple_mechanism = params['simple_mechanism']
@@ -105,8 +113,8 @@ def s_reward(params: BaselineModelParams,
 
     # Baseline Minting
     baseline_mechanism = params['baseline_mechanism']
-    eff_t_i = baseline_mechanism.effective_network_time(history[-1][-1]['cumm_capped_power'])
-    eff_t_f = baseline_mechanism.effective_network_time(state['cumm_capped_power'])
+    eff_t_i = history[-1][-1]['effective_network_time']
+    eff_t_f = state['effective_network_time']
 
     baseline_issuance_start = baseline_mechanism.issuance(eff_t_i)
     baseline_issuance_end = baseline_mechanism.issuance(eff_t_f)

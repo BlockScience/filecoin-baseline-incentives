@@ -105,7 +105,9 @@ class BaselineModelParams (TypedDict):
     
 class BaselineModelState (TypedDict):
     days_passed: Days
+    delta_days: Days
     network_power: QA_PiB
     cumm_capped_power: FILYear
+    effective_network_time: Days
     reward: Reward
     

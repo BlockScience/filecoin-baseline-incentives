@@ -28,6 +28,15 @@ BLOCKS = [
         }   
     },
     {
+        'label': '(Baseline) Effective Network Time',
+        'policies': {    
+
+        }, 
+        'variables': {
+            'effective_network_time': s_effective_network_time
+        }   
+    },
+    {
         'label': 'Block Reward',
         'policies': {    
 
