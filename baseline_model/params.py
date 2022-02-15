@@ -12,10 +12,10 @@ SCENARIOS = [
                    stable_after_cross_down=1.0 * YEAR,
                    take_off_after_stable=1.0 * YEAR,
                    steady_after_take_off=1.0 * YEAR,
-                   growth_cross_down=1.0,
-                   growth_stable=1.0,
-                   growth_take_off=1.0,
-                   growth_steady=1.0
+                   growth_cross_down=1.05,
+                   growth_stable=1.05,
+                   growth_take_off=1.05,
+                   growth_steady=1.05
                    ),
     GrowthScenario(label='pessimistic',
                    cross_down_after_beginning=0.5 * YEAR,
@@ -32,7 +32,7 @@ SCENARIOS = [
 
 RAW_PARAMS = BaselineModelParams(timestep_in_days=DAYS_PER_TIMESTEP,
                                  baseline_activated=True,
-                                 network_power_scenario=SCENARIOS[0],  # TODO
+                                 network_power_scenario=SCENARIOS[0],
                                  simple_mechanism=SimpleMinting(),
                                  baseline_mechanism=BaselineMinting())
 

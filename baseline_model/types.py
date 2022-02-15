@@ -12,6 +12,9 @@ QA_PiB = Annotated[float, "PiB (QA)"]
 
 @dataclass
 class GrowthScenario():
+    """
+    Container for wrapping all the parameters for a growth scenario.
+    """
     label: str
 
     cross_down_after_beginning: Annotated[float, 'days']

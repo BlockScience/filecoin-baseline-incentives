@@ -4,7 +4,6 @@ from baseline_model.types import BaselineModelParams, BaselineModelState, Reward
 
 # ## Time Tracking
 
-
 def p_evolve_time(params: BaselineModelParams,
                   _2,
                   _3,
@@ -42,9 +41,9 @@ def s_network_power(params: BaselineModelParams,
     days_passed = state['days_passed']
     baseline_growth = params['baseline_mechanism'].annual_baseline_growth
     scenario = params['network_power_scenario']
-
     dt: Year = params['timestep_in_days'] / 365.25
 
+    # Logic around the GrowthScenario object.
     if days_passed >= scenario.steady_after_beginning:
         growth_rate = scenario.growth_steady * baseline_growth
     elif days_passed >= scenario.take_off_after_beginning:
@@ -108,9 +107,6 @@ def s_reward(params: BaselineModelParams,
              history: list[list[BaselineModelState]],
              state: BaselineModelState,
              signal: Signal) -> VariableUpdate:
-
-    # TODO: check history indices
-
     # Simple Minting
     simple_mechanism = params['simple_mechanism']
     t_i = history[-1][-1]['days_passed']
