@@ -51,7 +51,7 @@ def s_network_power(params: BaselineModelParams,
     elif days_passed >= scenario.stabilized_after_beginning:
         growth_rate = scenario.growth_stable * baseline_growth
     else:
-        growth_rate = scenario.growth_cross_down * baseline_growth
+        growth_rate = scenario.growth_fall * baseline_growth
 
     fractional_growth = ((1 + growth_rate) ** dt)
     new_power = network_power * fractional_growth

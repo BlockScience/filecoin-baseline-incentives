@@ -17,20 +17,20 @@ class GrowthScenario():
     """
     label: str = 'no-label'
 
-    cross_down_after_beginning: Annotated[float, 'days'] = 365.25
-    stable_after_cross_down: Annotated[float, 'days'] = 365.25
+    fall_after_beginning: Annotated[float, 'days'] = 365.25
+    stable_after_fall: Annotated[float, 'days'] = 365.25
     take_off_after_stable: Annotated[float, 'days'] = 365.25
     steady_after_take_off: Annotated[float, 'days'] = 365.25
 
     # Growth ratio as a fraction of the baseline function growth
-    growth_cross_down: Annotated[float, '%/baseline'] = 1.0
+    growth_fall: Annotated[float, '%/baseline'] = 1.0
     growth_stable: Annotated[float, '%/baseline'] = 1.0
     growth_take_off: Annotated[float, '%/baseline'] = 1.0
     growth_steady: Annotated[float, '%/baseline'] = 1.0
 
     @property
     def stabilized_after_beginning(self):
-        return self.stable_after_cross_down + self.cross_down_after_beginning
+        return self.stable_after_fall + self.fall_after_beginning
 
     @property
     def take_off_after_beginning(self):
@@ -98,13 +98,19 @@ class BaselineMinting(SimpleMinting):
 
 
 class BaselineModelParams (TypedDict):
-    timestep_in_days: Union[Days, list[Days]]
-    baseline_activated: Union[bool, list[bool]]
-    network_power_scenario: Union[GrowthScenario, list[GrowthScenario]]
-    simple_mechanism: Union[SimpleMinting, list[SimpleMinting]]
-    baseline_mechanism: Union[BaselineMinting, list[BaselineMinting]]
+    timestep_in_days: Days
+    baseline_activated: bool
+    network_power_scenario: GrowthScenario
+    simple_mechanism: SimpleMinting
+    baseline_mechanism: BaselineMinting
     
-
+class BaselineModelSweepParams (TypedDict):
+    timestep_in_days: list[Days]
+    baseline_activated: list[bool]
+    network_power_scenario: list[GrowthScenario]
+    simple_mechanism: list[SimpleMinting]
+    baseline_mechanism: list[BaselineMinting]
+    
 class BaselineModelState (TypedDict):
     days_passed: Days
     delta_days: Days
