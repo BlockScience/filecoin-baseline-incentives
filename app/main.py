@@ -1,19 +1,19 @@
+from collections import OrderedDict
 import os
 import time
-import numpy as np
 import pandas as pd
 import streamlit as st
 
 from chart import NetworkPowerAltairChart, MiningUtilityAltairChart
 from description import description
 from glossary import glossary
+from model import run_cadcad_model
 from stats import stat2meta
 from utils import load_constants
 
 
 C = CONSTANTS = load_constants()
-SPEED2LATENCY = {"Slow": 1, "Medium": C["speed"], "Fast": 0.1}
-DAYS_TO_YEARS = 1 / 365.25
+
 
 # Define layout
 
@@ -57,124 +57,88 @@ st.sidebar.markdown("## Progress")
 progress_bar = st.sidebar.progress(0)
 progress_text = st.sidebar.text("0.0% Complete")
 
-st.sidebar.markdown("## Network Power Params")
+st.sidebar.markdown("## Network Power Parameters")
 
-defaults = C["network_power"]
-
-st.sidebar.markdown("### Independent")
-
-init_power__pib = st.sidebar.slider("Initial Power (PiB)", 0, 4000, defaults["initial_power__pib"], 500)
-
-st.sidebar.markdown("### Chronological")
+defaults = C["network_power"]["pessimistic"]
 
 st.sidebar.text("""
 The network power changes course.
 
-For each, we ask:
+For each change, we ask:
 
-- When? (Year)
-- How fast? (% of BaseFunc Growth)
+- When? (Years Since Prev. Change)
+- How fast? (Frac. BaseFunc Growth)
 """)
 
-st.sidebar.markdown("#### 1️⃣ Cross BaseFunc From Above")
+st.sidebar.markdown("### 1️⃣ Cross BaseFunc From Above")
 
-fall_after_beginning = st.sidebar.slider(
-    "When?", 1., 8., defaults["fall_after_beginning"] * DAYS_TO_YEARS, .25, key='fall'
-) / DAYS_TO_YEARS
+fall_after_beginning = (
+    st.sidebar.slider(
+        "When?", 0., 8., defaults["fall_after_beginning"] / C['days_per_year'], .25, key='fall'
+    ) * C['days_per_year']
+) + C['days_after_launch']
 
 growth_fall = st.sidebar.slider(
-    "How fast?", 0, 100, defaults["growth_fall"] * 100, 1, key='fall'
+    "How fast?", -.2, 1.2, defaults["growth_fall"], .1, key='fall'
 ) / 100
 
-st.sidebar.markdown("#### 2️⃣ Stabilize Below BaseFunc")
+st.sidebar.markdown("### 2️⃣ Stabilize Below BaseFunc")
 
 stable_after_fall = st.sidebar.slider(
-    "When?", 1., 8., defaults["stable_after_fall"] * DAYS_TO_YEARS, .25, key='stable'
-) / DAYS_TO_YEARS
+    "When?", -.2, 8., defaults["stable_after_fall"] / C['days_per_year'], .25, key='stable'
+) * C['days_per_year']
 
 growth_stable = st.sidebar.slider(
-    "How fast?", 0, 100, defaults["growth_stable"] * 100, 10, key='stable'
+    "How fast?", -.2, 1.2, defaults["growth_stable"], .1, key='stable'
 ) / 100
 
-st.sidebar.markdown("#### 3️⃣ Recross BaseFunc from Below")
+st.sidebar.markdown("### 3️⃣ Recross BaseFunc from Below")
 
 take_off_after_stable = st.sidebar.slider(
-    "When?", 1., 8., defaults["take_off_after_stable"] * DAYS_TO_YEARS, .25, key='take_off'
-) / DAYS_TO_YEARS
+    "When?", 0., 8., defaults["take_off_after_stable"] / C['days_per_year'], .25, key='take_off'
+) * C['days_per_year']
 
 growth_take_off = st.sidebar.slider(
-    "How fast?", 0, 100, defaults["growth_take_off"] * 100, 10, key='take_off'
+    "How fast?", -.2, 8., defaults["growth_take_off"], .1, key='take_off'
 ) / 100
 
-st.sidebar.markdown("#### 4️⃣ Stabilize Above BaseFunc")
+st.sidebar.markdown("### 4️⃣ Stabilize Above BaseFunc")
 
 steady_after_take_off = st.sidebar.slider(
-    "When?", 1., 8., defaults["steady_after_take_off"] * DAYS_TO_YEARS, .25, key='steady'
-) / DAYS_TO_YEARS
+    "When?", 0., 8., defaults["steady_after_take_off"] / C['days_per_year'], .25, key='steady'
+) * C['days_per_year']
 
 growth_steady = st.sidebar.slider(
-    "How fast?", 0, 100, defaults["growth_steady"] * 100, 10, key='steady'
+    "How fast?", -.2, 1.2, defaults["growth_steady"], .1, key='steady'
 ) / 100
-
-# fall_after_beginning = st.sidebar.slider(
-#     "1️⃣ Cross BaseFunc From Above At (Year)", 1, 8, defaults["fall_after_beginning"], .25
-# ) / DAYS_TO_YEARS
-
-# stabilize_below_at__frac = (
-#     st.sidebar.slider("2️⃣ Stabilize Below At (% of BaseFunc)", 0, 100, int(defaults["stabilize_below_at__frac"] * 100), 10)
-#     / 100
-# )
-
-# cross_basefunc_from_below__month = st.sidebar.slider(
-#     "3️⃣ Recross BaseFunc From Below At (Month)", 0, 24, defaults["cross_basefunc_from_below__month"], 3
-# )
-
-# stabilize_above__month = st.sidebar.slider("4️⃣ Stabilize Above At (Month)", 0, 24, defaults["stabilize_above__month"], 3)
-
-# stabilize_above_at__frac = (
-#     st.sidebar.slider("5️⃣ Stabilize Above At (% of BaseFunc)", 0, 100, int(defaults["stabilize_above_at__frac"] * 100), 10)
-#     / 100
-# )
 
 st.sidebar.markdown("## Compare Against")
 
-compare_scenario_a = st.sidebar.checkbox("Scenario A")
-compare_scenario_b = st.sidebar.checkbox("Scenario B")
-compare_scenario_b_star = st.sidebar.checkbox("Scenario B*")
-
-SCENARIO2CHECKBOX = {
-    "A": compare_scenario_a,
-    "B": compare_scenario_b,
-    "B*": compare_scenario_b_star,
-}
+SCENARIO2CHECKBOX = OrderedDict({
+    "pessimistic-simple-mint": st.sidebar.checkbox("Simple Minting Only Scenario"),
+    "optimistic": st.sidebar.checkbox("Optimistic Scenario"),
+    "baseline": st.sidebar.checkbox("BaseFunc Scenario"),
+})
 
 st.sidebar.markdown("## Speed")
 
-simulation_speed = st.sidebar.selectbox("Simulation Speed", ("Medium", "Fast", "Slow"))
-
-# TODO: parameter validation
-
-# TODO: run simulation
-
-num_steps = C["timesteps"] + 1
+simulation_speed = st.sidebar.selectbox("Simulation Speed", ("Medium", "Fast", "Slow")).lower()
 
 
-def run_dummy_sim(scenario):
-    return pd.DataFrame(
-        {
-            "years_passed": np.linspace(0, 6, num_steps),
-            "consensus_power_in_zib": np.random.uniform(0, 100, num_steps),
-            "block_reward_in_kfil": np.random.uniform(0, 100, num_steps),
-            "marginal_reward_per_power_in_fil_per_pib": np.random.uniform(0, 100, num_steps),
-            "utility": np.random.uniform(0, 100, num_steps),
-            "scenario": scenario,
-        }
-    )
+df = run_cadcad_model(
+    fall_after_beginning=fall_after_beginning,
+    growth_fall=growth_fall,
+    stable_after_fall=stable_after_fall,
+    growth_stable=growth_stable,
+    take_off_after_stable=take_off_after_stable,
+    growth_take_off=growth_take_off,
+    steady_after_take_off=steady_after_take_off,
+    growth_steady=growth_steady,
+)
 
-
-comparison_dfs = [run_dummy_sim(scenario) for scenario, checked in SCENARIO2CHECKBOX.items() if checked]
-comparison_df = pd.concat(comparison_dfs) if comparison_dfs else pd.DataFrame()
-df = run_dummy_sim("user")
+comparison_df = df[df['scenario'].isin([scenario for scenario, checked in SCENARIO2CHECKBOX.items() if checked])]
+df = df[df['scenario'] == 'user']
+num_steps = len(df)
 
 # Simulate user scenario
 
@@ -193,7 +157,7 @@ for i in range(num_steps if run_simulation else 1):
             delta = meta.get("format_func", lambda x: x)(delta)
         else:
             delta = None
-        value = format_func(value_func(row[stat]))
+        value = format_func(value_func(row[stat].item()))
         with col:
             st.metric(label=meta["label"], value=value, delta=delta)
     # Update plots
@@ -207,13 +171,12 @@ for i in range(num_steps if run_simulation else 1):
     # Finally
     if run_simulation:
         frac_complete = (i + 1) / num_steps
-        time.sleep(SPEED2LATENCY[simulation_speed])
+        time.sleep(C['speed_to_latency'][simulation_speed])
         progress_bar.progress(frac_complete)
         progress_text.text(f"{(frac_complete * 100):.2f}% Complete")
         prevrow = row
 
 # Download data
-
 
 @st.cache
 def convert_df(df):
