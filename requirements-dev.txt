@@ -1,2 +1,5 @@
 black
 flake8
+plotly
+click
+cadCAD-tools
