@@ -1,4 +1,4 @@
-from typing import Annotated, TypedDict
+from typing import Annotated, TypedDict, Union
 from math import exp, log, nan
 from dataclasses import dataclass
 
@@ -15,17 +15,18 @@ class GrowthScenario():
     """
     Container for wrapping all the parameters for a growth scenario.
     """
-    label: str
+    label: str = 'no-label'
 
-    cross_down_after_beginning: Annotated[float, 'days']
-    stable_after_cross_down: Annotated[float, 'days']
-    take_off_after_stable: Annotated[float, 'days']
-    steady_after_take_off: Annotated[float, 'days']
+    cross_down_after_beginning: Annotated[float, 'days'] = 365.25
+    stable_after_cross_down: Annotated[float, 'days'] = 365.25
+    take_off_after_stable: Annotated[float, 'days'] = 365.25
+    steady_after_take_off: Annotated[float, 'days'] = 365.25
 
-    growth_cross_down: Annotated[float, '%/baseline']
-    growth_stable: Annotated[float, '%/baseline']
-    growth_take_off: Annotated[float, '%/baseline']
-    growth_steady: Annotated[float, '%/baseline']
+    # Growth ratio as a fraction of the baseline function growth
+    growth_cross_down: Annotated[float, '%/baseline'] = 1.0
+    growth_stable: Annotated[float, '%/baseline'] = 1.0
+    growth_take_off: Annotated[float, '%/baseline'] = 1.0
+    growth_steady: Annotated[float, '%/baseline'] = 1.0
 
     @property
     def stabilized_after_beginning(self):
@@ -96,15 +97,14 @@ class BaselineMinting(SimpleMinting):
     #             * log(1 - issuance_so_far / self.issuance_baseline))
 
 
-
-
 class BaselineModelParams (TypedDict):
-    timestep_in_days: Days
-    baseline_activated: bool
-    network_power_scenario: GrowthScenario
-    simple_mechanism: SimpleMinting
-    baseline_mechanism: BaselineMinting
+    timestep_in_days: Union[Days, list[Days]]
+    baseline_activated: Union[bool, list[bool]]
+    network_power_scenario: Union[GrowthScenario, list[GrowthScenario]]
+    simple_mechanism: Union[SimpleMinting, list[SimpleMinting]]
+    baseline_mechanism: Union[BaselineMinting, list[BaselineMinting]]
     
+
 class BaselineModelState (TypedDict):
     days_passed: Days
     delta_days: Days

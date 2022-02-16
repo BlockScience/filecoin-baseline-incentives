@@ -1,7 +1,7 @@
 from cmath import nan
 from math import ceil
 from baseline_model.types import BaselineMinting, BaselineModelState, BaselineModelParams, GrowthScenario, Reward, SimpleMinting
-
+from cadCAD_tools.preparation import sweep_cartesian_product
 DAYS_PER_TIMESTEP = 30
 YEAR = 365.25
 SIMULATION_TIME_IN_YEARS = 6
@@ -30,17 +30,15 @@ SCENARIOS = [
 ]
 
 
-RAW_PARAMS = BaselineModelParams(timestep_in_days=DAYS_PER_TIMESTEP,
-                                 baseline_activated=True,
-                                 network_power_scenario=SCENARIOS[0],
-                                 simple_mechanism=SimpleMinting(),
-                                 baseline_mechanism=BaselineMinting())
+RAW_PARAMS = BaselineModelParams(timestep_in_days=[DAYS_PER_TIMESTEP],
+                                 baseline_activated=[True, False],
+                                 network_power_scenario=SCENARIOS,
+                                 simple_mechanism=[SimpleMinting()],
+                                 baseline_mechanism=[BaselineMinting()])
 
+PARAMS = sweep_cartesian_product(RAW_PARAMS)
 
-PARAMS = {k: [v] for k, v in RAW_PARAMS.items()}
-
-
-RAW_INITIAL_STATE = BaselineModelState(days_passed=600.0, # Since launch
+INITIAL_STATE = BaselineModelState(days_passed=600.0, # Since launch
                                        delta_days=nan,
                                        network_power=12000,  # TODO
                                        baseline=9500,  # TODO
@@ -48,9 +46,6 @@ RAW_INITIAL_STATE = BaselineModelState(days_passed=600.0, # Since launch
                                        effective_network_time=1.4,  # TODO
                                        reward=Reward()
                                        )
-
-INITIAL_STATE = RAW_INITIAL_STATE
-
 
 TIMESTEPS = int(ceil(SIMULATION_TIME_IN_YEARS * YEAR) / DAYS_PER_TIMESTEP)
 SAMPLES = 1

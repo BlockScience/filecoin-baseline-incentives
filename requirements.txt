@@ -1,0 +1,6 @@
+cadCAD
+numpy
+pandas
+plotly
+click
+cadCAD-tools
