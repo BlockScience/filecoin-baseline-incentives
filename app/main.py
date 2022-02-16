@@ -13,6 +13,7 @@ from utils import load_constants
 
 C = CONSTANTS = load_constants()
 SPEED2LATENCY = {"Slow": 1, "Medium": C["speed"], "Fast": 0.1}
+DAYS_TO_YEARS = 1 / 365.25
 
 # Define layout
 
@@ -56,7 +57,7 @@ st.sidebar.markdown("## Progress")
 progress_bar = st.sidebar.progress(0)
 progress_text = st.sidebar.text("0.0% Complete")
 
-st.sidebar.markdown("## Network Power Parameters")
+st.sidebar.markdown("## Network Power Params")
 
 defaults = C["network_power"]
 
@@ -66,25 +67,74 @@ init_power__pib = st.sidebar.slider("Initial Power (PiB)", 0, 4000, defaults["in
 
 st.sidebar.markdown("### Chronological")
 
-cross_basefunc_from_above__month = st.sidebar.slider(
-    "1️⃣ Cross BaseFunc From Above At (Month)", 0, 24, defaults["cross_basefunc_from_above__month"], 3
-)
+st.sidebar.text("""
+The network power changes course.
 
-stabilize_below_at__frac = (
-    st.sidebar.slider("2️⃣ Stabilize Below At (% of BaseFunc)", 0, 100, int(defaults["stabilize_below_at__frac"] * 100), 10)
-    / 100
-)
+For each, we ask:
 
-cross_basefunc_from_below__month = st.sidebar.slider(
-    "3️⃣ Recross BaseFunc From Below At (Month)", 0, 24, defaults["cross_basefunc_from_below__month"], 3
-)
+- When? (Year)
+- How fast? (% of BaseFunc Growth)
+""")
 
-stabilize_above__month = st.sidebar.slider("4️⃣ Stabilize Above At (Month)", 0, 24, defaults["stabilize_above__month"], 3)
+st.sidebar.markdown("#### 1️⃣ Cross BaseFunc From Above")
 
-stabilize_above_at__frac = (
-    st.sidebar.slider("5️⃣ Stabilize Above At (% of BaseFunc)", 0, 100, int(defaults["stabilize_above_at__frac"] * 100), 10)
-    / 100
-)
+fall_after_beginning = st.sidebar.slider(
+    "When?", 1., 8., defaults["fall_after_beginning"] * DAYS_TO_YEARS, .25, key='fall'
+) / DAYS_TO_YEARS
+
+growth_fall = st.sidebar.slider(
+    "How fast?", 0, 100, defaults["growth_fall"] * 100, 1, key='fall'
+) / 100
+
+st.sidebar.markdown("#### 2️⃣ Stabilize Below BaseFunc")
+
+stable_after_fall = st.sidebar.slider(
+    "When?", 1., 8., defaults["stable_after_fall"] * DAYS_TO_YEARS, .25, key='stable'
+) / DAYS_TO_YEARS
+
+growth_stable = st.sidebar.slider(
+    "How fast?", 0, 100, defaults["growth_stable"] * 100, 10, key='stable'
+) / 100
+
+st.sidebar.markdown("#### 3️⃣ Recross BaseFunc from Below")
+
+take_off_after_stable = st.sidebar.slider(
+    "When?", 1., 8., defaults["take_off_after_stable"] * DAYS_TO_YEARS, .25, key='take_off'
+) / DAYS_TO_YEARS
+
+growth_take_off = st.sidebar.slider(
+    "How fast?", 0, 100, defaults["growth_take_off"] * 100, 10, key='take_off'
+) / 100
+
+st.sidebar.markdown("#### 4️⃣ Stabilize Above BaseFunc")
+
+steady_after_take_off = st.sidebar.slider(
+    "When?", 1., 8., defaults["steady_after_take_off"] * DAYS_TO_YEARS, .25, key='steady'
+) / DAYS_TO_YEARS
+
+growth_steady = st.sidebar.slider(
+    "How fast?", 0, 100, defaults["growth_steady"] * 100, 10, key='steady'
+) / 100
+
+# fall_after_beginning = st.sidebar.slider(
+#     "1️⃣ Cross BaseFunc From Above At (Year)", 1, 8, defaults["fall_after_beginning"], .25
+# ) / DAYS_TO_YEARS
+
+# stabilize_below_at__frac = (
+#     st.sidebar.slider("2️⃣ Stabilize Below At (% of BaseFunc)", 0, 100, int(defaults["stabilize_below_at__frac"] * 100), 10)
+#     / 100
+# )
+
+# cross_basefunc_from_below__month = st.sidebar.slider(
+#     "3️⃣ Recross BaseFunc From Below At (Month)", 0, 24, defaults["cross_basefunc_from_below__month"], 3
+# )
+
+# stabilize_above__month = st.sidebar.slider("4️⃣ Stabilize Above At (Month)", 0, 24, defaults["stabilize_above__month"], 3)
+
+# stabilize_above_at__frac = (
+#     st.sidebar.slider("5️⃣ Stabilize Above At (% of BaseFunc)", 0, 100, int(defaults["stabilize_above_at__frac"] * 100), 10)
+#     / 100
+# )
 
 st.sidebar.markdown("## Compare Against")
 
