@@ -85,7 +85,7 @@ growth_fall = st.sidebar.slider(
 st.sidebar.markdown("### 2️⃣ Stabilize Below BaseFunc")
 
 stable_after_fall = st.sidebar.slider(
-    "When?", -.2, 8., defaults["stable_after_fall"] / C['days_per_year'], .25, key='stable'
+    "When?", 0., 8., defaults["stable_after_fall"] / C['days_per_year'], .25, key='stable'
 ) * C['days_per_year']
 
 growth_stable = st.sidebar.slider(
