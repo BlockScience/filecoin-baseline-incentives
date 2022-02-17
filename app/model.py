@@ -2,6 +2,7 @@ import os
 import sys
 import numpy as np
 import pandas as pd
+import streamlit as st
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from cadCAD_tools.execution import easy_run
@@ -17,6 +18,7 @@ from utils import load_constants
 C = CONSTANTS = load_constants()
 
 
+@st.cache
 def run_cadcad_model(
     fall_after_beginning,
     growth_fall,
