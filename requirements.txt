@@ -1,4 +1,5 @@
 cadCAD
+cadCAD-tools
 millify
 numpy
 pandas
