@@ -3,6 +3,11 @@ from abc import ABC, abstractclassmethod
 import altair as alt
 import streamlit as st
 
+from utils import load_constants
+
+
+C = CONSTANTS = load_constants()
+
 
 class AltairChart(ABC):
     def __init__(self, chart, use_container_width=True):
@@ -28,18 +33,21 @@ class NetworkPowerAltairChart(AltairChart):
             .encode(
                 x=alt.X(
                     "years_passed",
-                    scale=alt.Scale(domain=(0, (num_steps - 1) / 4)),
-                    axis=alt.Axis(tickMinStep=0.25),
+                    scale=alt.Scale(domain=(
+                        C['days_after_launch'] / C['days_per_year'],
+                        (C['days_after_launch'] + num_steps * C['days_per_step']) / C['days_per_year']
+                    )),
+                    axis=alt.Axis(tickMinStep=.5),
                     title="Year",
                 ),
                 y=alt.Y(
-                    "consensus_power_in_zib",
-                    scale=alt.Scale(domain=(0, 100)),
-                    title="Network Power (ZiB)",
+                    "network_power",
+                    scale=alt.Scale(domain=(1e4, 1e6)),
+                    title="Network Power (QA PiB)",
                 ),
                 color="scenario",
             )
-            .properties(title="Network Power (ZiB) Over Time")
+            .properties(title="Network Power (QA PiB) Over Time")
         )
         return cls(chart)
 
@@ -56,14 +64,17 @@ class MiningUtilityAltairChart(AltairChart):
             .encode(
                 x=alt.X(
                     "years_passed",
-                    scale=alt.Scale(domain=(0, (num_steps - 1) / 4)),
-                    axis=alt.Axis(tickMinStep=0.25),
+                    scale=alt.Scale(domain=(
+                        C['days_after_launch'] / C['days_per_year'],
+                        (C['days_after_launch'] + num_steps * C['days_per_step']) / C['days_per_year']
+                    )),
+                    axis=alt.Axis(tickMinStep=.5),
                     title="Year",
                 ),
                 y=alt.Y(
-                    "utility",
-                    scale=alt.Scale(domain=(0, 100)),
-                    title="Mining Utility (Reward per Power)",
+                    "mining_utility",
+                    scale=alt.Scale(domain=(0, 10), clamp=True),
+                    title="Mining Utility (FIL / QA PiB)",
                 ),
                 color="scenario",
             )
