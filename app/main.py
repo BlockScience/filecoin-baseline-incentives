@@ -4,7 +4,11 @@ import time
 import pandas as pd
 import streamlit as st
 
-from chart import NetworkPowerAltairChart, MiningUtilityAltairChart
+from chart import (
+    NetworkPowerAltairChart,
+    MiningUtilityAltairChart,
+    EffectiveNetworkTimeAltairChart
+)
 from description import description
 from glossary import glossary
 from model import run_cadcad_model
@@ -165,9 +169,11 @@ for i in range(num_steps if run_simulation else 1):
         with plot_container:
             network_power_chart = NetworkPowerAltairChart.build(pd.concat([comparison_df, row]), num_steps)
             mining_utility_chart = MiningUtilityAltairChart.build(pd.concat([comparison_df, row]), num_steps)
+            effective_network_time_chart = EffectiveNetworkTimeAltairChart.build(pd.concat([comparison_df, row]), num_steps)
     else:
         network_power_chart.add_rows(row)
         mining_utility_chart.add_rows(row)
+        effective_network_time_chart.add_rows(row)
     # Finally
     if run_simulation:
         frac_complete = (i + 1) / num_steps

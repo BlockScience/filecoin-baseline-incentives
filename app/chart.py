@@ -78,6 +78,37 @@ class MiningUtilityAltairChart(AltairChart):
                 ),
                 color="scenario",
             )
-            .properties(title="Mining Utility Over Time")
+            .properties(title="Mining Utility vs. Time")
+        )
+        return cls(chart)
+
+
+class EffectiveNetworkTimeAltairChart(AltairChart):
+    def add_rows(self, row):
+        self.chart.add_rows(row)
+
+    @classmethod
+    def build(cls, df, num_steps):
+        chart = (
+            alt.Chart(df)
+            .mark_line()
+            .encode(
+                x=alt.X(
+                    "years_passed",
+                    scale=alt.Scale(domain=(
+                        C['days_after_launch'] / C['days_per_year'],
+                        (C['days_after_launch'] + num_steps * C['days_per_step']) / C['days_per_year']
+                    )),
+                    axis=alt.Axis(tickMinStep=.5),
+                    title="Year",
+                ),
+                y=alt.Y(
+                    "effective_network_time",
+                    scale=alt.Scale(domain=(0, 10), clamp=True),
+                    title="Effective Network Time (Years)",
+                ),
+                color="scenario",
+            )
+            .properties(title="Effective Network Time vs. Actual Time")
         )
         return cls(chart)
