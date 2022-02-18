@@ -80,7 +80,7 @@ fall_after_beginning = (
 
 growth_fall = st.sidebar.slider(
     "How fast?", -.2, 1.2, defaults["growth_fall"], .1, key='fall'
-) / 100
+)
 
 st.sidebar.markdown("### 2️⃣ Stabilize Below BaseFunc")
 
@@ -90,7 +90,7 @@ stable_after_fall = st.sidebar.slider(
 
 growth_stable = st.sidebar.slider(
     "How fast?", -.2, 1.2, defaults["growth_stable"], .1, key='stable'
-) / 100
+)
 
 st.sidebar.markdown("### 3️⃣ Recross BaseFunc from Below")
 
@@ -100,7 +100,7 @@ take_off_after_stable = st.sidebar.slider(
 
 growth_take_off = st.sidebar.slider(
     "How fast?", -.2, 8., defaults["growth_take_off"], .1, key='take_off'
-) / 100
+)
 
 st.sidebar.markdown("### 4️⃣ Stabilize Above BaseFunc")
 
@@ -110,7 +110,7 @@ steady_after_take_off = st.sidebar.slider(
 
 growth_steady = st.sidebar.slider(
     "How fast?", -.2, 1.2, defaults["growth_steady"], .1, key='steady'
-) / 100
+)
 
 st.sidebar.markdown("## Compare Against")
 
