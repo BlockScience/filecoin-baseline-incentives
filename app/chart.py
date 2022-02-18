@@ -112,3 +112,127 @@ class EffectiveNetworkTimeAltairChart(AltairChart):
             .properties(title="Effective Network Time vs. Actual Time")
         )
         return cls(chart)
+
+
+class SimpleRewardAltairChart(AltairChart):
+    def add_rows(self, row):
+        self.chart.add_rows(row)
+
+    @classmethod
+    def build(cls, df, num_steps):
+        chart = (
+            alt.Chart(df)
+            .mark_line()
+            .encode(
+                x=alt.X(
+                    "years_passed",
+                    scale=alt.Scale(domain=(
+                        C['days_after_launch'] / C['days_per_year'],
+                        (C['days_after_launch'] + num_steps * C['days_per_step']) / C['days_per_year']
+                    )),
+                    axis=alt.Axis(tickMinStep=.5),
+                    title="Year",
+                ),
+                y=alt.Y(
+                    "simple_reward",
+                    # scale=alt.Scale(domain=(0, 10), clamp=True),
+                    title="Simple Reward (FIL)",
+                ),
+                color="scenario",
+            )
+            .properties(title="Simple Reward vs. Time")
+        )
+        return cls(chart)
+
+
+class SimpleRewardAltairChart(AltairChart):
+    def add_rows(self, row):
+        self.chart.add_rows(row)
+
+    @classmethod
+    def build(cls, df, num_steps):
+        chart = (
+            alt.Chart(df)
+            .mark_line()
+            .encode(
+                x=alt.X(
+                    "years_passed",
+                    scale=alt.Scale(domain=(
+                        C['days_after_launch'] / C['days_per_year'],
+                        (C['days_after_launch'] + num_steps * C['days_per_step']) / C['days_per_year']
+                    )),
+                    axis=alt.Axis(tickMinStep=.5),
+                    title="Year",
+                ),
+                y=alt.Y(
+                    "simple_reward",
+                    # scale=alt.Scale(domain=(0, 10), clamp=True),
+                    title="Simple Reward (FIL)",
+                ),
+                color="scenario",
+            )
+            .properties(title="Simple Reward vs. Time")
+        )
+        return cls(chart)
+
+
+class SimpleRewardAltairChart(AltairChart):
+    def add_rows(self, row):
+        self.chart.add_rows(row)
+
+    @classmethod
+    def build(cls, df, num_steps):
+        chart = (
+            alt.Chart(df)
+            .mark_line()
+            .encode(
+                x=alt.X(
+                    "years_passed",
+                    scale=alt.Scale(domain=(
+                        C['days_after_launch'] / C['days_per_year'],
+                        (C['days_after_launch'] + num_steps * C['days_per_step']) / C['days_per_year']
+                    )),
+                    axis=alt.Axis(tickMinStep=.5),
+                    title="Year",
+                ),
+                y=alt.Y(
+                    "simple_reward",
+                    # scale=alt.Scale(domain=(0, 10), clamp=True),
+                    title="Simple Reward (FIL)",
+                ),
+                color="scenario",
+            )
+            .properties(title="Simple Reward vs. Time")
+        )
+        return cls(chart)
+
+
+class BaselineRewardAltairChart(AltairChart):
+    def add_rows(self, row):
+        self.chart.add_rows(row)
+
+    @classmethod
+    def build(cls, df, num_steps):
+        chart = (
+            alt.Chart(df)
+            .mark_line()
+            .encode(
+                x=alt.X(
+                    "years_passed",
+                    scale=alt.Scale(domain=(
+                        C['days_after_launch'] / C['days_per_year'],
+                        (C['days_after_launch'] + num_steps * C['days_per_step']) / C['days_per_year']
+                    )),
+                    axis=alt.Axis(tickMinStep=.5),
+                    title="Year",
+                ),
+                y=alt.Y(
+                    "baseline_reward",
+                    # scale=alt.Scale(domain=(0, 10), clamp=True),
+                    title="Baseline Reward (FIL)",
+                ),
+                color="scenario",
+            )
+            .properties(title="Baseline Reward vs. Time")
+        )
+        return cls(chart)

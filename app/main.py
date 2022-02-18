@@ -7,7 +7,9 @@ import streamlit as st
 from chart import (
     NetworkPowerAltairChart,
     MiningUtilityAltairChart,
-    EffectiveNetworkTimeAltairChart
+    EffectiveNetworkTimeAltairChart,
+    SimpleRewardAltairChart,
+    BaselineRewardAltairChart,
 )
 from description import description
 from glossary import glossary
@@ -170,10 +172,14 @@ for i in range(num_steps if run_simulation else 1):
             network_power_chart = NetworkPowerAltairChart.build(pd.concat([comparison_df, row]), num_steps)
             mining_utility_chart = MiningUtilityAltairChart.build(pd.concat([comparison_df, row]), num_steps)
             effective_network_time_chart = EffectiveNetworkTimeAltairChart.build(pd.concat([comparison_df, row]), num_steps)
+            simple_reward_chart = SimpleRewardAltairChart.build(pd.concat([comparison_df, row]), num_steps)
+            baseline_reward_chart = BaselineRewardAltairChart.build(pd.concat([comparison_df, row]), num_steps)
     else:
         network_power_chart.add_rows(row)
         mining_utility_chart.add_rows(row)
         effective_network_time_chart.add_rows(row)
+        simple_reward_chart.add_rows(row)
+        baseline_reward_chart.add_rows(row)
     # Finally
     if run_simulation:
         frac_complete = (i + 1) / num_steps
