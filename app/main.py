@@ -119,7 +119,7 @@ growth_steady = st.sidebar.slider(
 st.sidebar.markdown("## Compare Against")
 
 SCENARIO2CHECKBOX = OrderedDict({
-    "pessimistic-basefunc-deactivated": st.sidebar.checkbox("User + BaseFunc Deactivated Scenario"),
+    "user-baseline-deactivated": st.sidebar.checkbox("User + BaseFunc Deactivated Scenario"),
     "optimistic": st.sidebar.checkbox("Optimistic Scenario"),
     "baseline": st.sidebar.checkbox("BaseFunc Scenario"),
 })
