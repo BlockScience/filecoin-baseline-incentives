@@ -99,7 +99,7 @@ def s_effective_network_time(params: BaselineModelParams,
             state['cumm_capped_power'])
     else:
         # If deactivated, make the ENT run on the same rate of the physical time
-        value = state['effective_network_time'] + state['delta_days']
+        value = state['effective_network_time'] + state['delta_days'] / YEAR
     return ('effective_network_time', value)
 
 
