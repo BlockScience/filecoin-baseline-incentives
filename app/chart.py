@@ -47,7 +47,7 @@ class NetworkPowerAltairChart(AltairChart):
                 ),
                 color="scenario",
             )
-            .properties(title="Network Power (QA PiB) Over Time")
+            .properties(title="Network Power vs. Time")
         )
         return cls(chart)
 
