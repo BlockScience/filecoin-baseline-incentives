@@ -1,4 +1,5 @@
 from cadCAD_tools.types import Signal, VariableUpdate
+from baseline_model.params import YEAR
 
 from baseline_model.types import BaselineModelParams, BaselineModelState, Reward, Year
 
@@ -41,7 +42,7 @@ def s_network_power(params: BaselineModelParams,
     days_passed = state['days_passed']
     baseline_growth = params['baseline_mechanism'].annual_baseline_growth
     scenario = params['network_power_scenario']
-    dt: Year = params['timestep_in_days'] / 365.25
+    dt: Year = params['timestep_in_days'] / YEAR
 
     # Logic around the GrowthScenario object.
     if days_passed >= scenario.steady_after_beginning:
@@ -78,7 +79,7 @@ def s_cumm_capped_power(params: BaselineModelParams,
                         state: BaselineModelState,
                         signal: Signal) -> VariableUpdate:
     # TODO: refactor for making it cleaner
-    DAYS_TO_YEARS = 1 / 365.25
+    DAYS_TO_YEARS = 1 / YEAR
     dt = params['timestep_in_days'] * DAYS_TO_YEARS
     current_power = state['network_power']
     capped_power = min(current_power, state['baseline'])
@@ -109,8 +110,8 @@ def s_reward(params: BaselineModelParams,
              signal: Signal) -> VariableUpdate:
     # Simple Minting
     simple_mechanism = params['simple_mechanism']
-    t_i = history[-1][-1]['days_passed']
-    t_f = state['days_passed']
+    t_i = history[-1][-1]['days_passed'] / YEAR
+    t_f = state['days_passed'] / YEAR
 
     simple_issuance_start = simple_mechanism.issuance(t_i)
     simple_issuance_end = simple_mechanism.issuance(t_f)
