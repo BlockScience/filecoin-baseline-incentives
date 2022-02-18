@@ -73,7 +73,7 @@ class MiningUtilityAltairChart(AltairChart):
                 ),
                 y=alt.Y(
                     "mining_utility",
-                    scale=alt.Scale(domain=(0, 10), clamp=True),
+                    scale=alt.Scale(domain=(0, 3), clamp=True),
                     title="Mining Utility (FIL / QA PiB)",
                 ),
                 color="scenario",
