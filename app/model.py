@@ -92,7 +92,7 @@ def run_cadcad_model(
     # Return relevant scenarios
     return df[df['scenario'].isin([
         'user',
-        'pessimistic-simple-mint',
+        'pessimistic-basefunc-deactivated',
         'optimistic',
         'baseline',
     ])]
@@ -125,7 +125,7 @@ def map_args_to_scenario(row):
     if label == 'pessimistic' and baseline_activated:
         return 'user'
     elif label == 'pessimistic' and not baseline_activated:
-        return 'pessimistic-simple-mint'
+        return 'pessimistic-basefunc-deactivated'
     elif label == 'optimistic' and baseline_activated:
         return 'optimistic'
     elif label == 'baseline' and baseline_activated:
