@@ -54,8 +54,8 @@ class Reward():
 
 @dataclass
 class SimpleMinting():
-    total_issuance: FIL = 0.9e9 # TODO: check
-    decay = log(2) / 6.0 # TODO: check
+    total_issuance: FIL = 0.33e9
+    decay = log(2) / 6.0
 
     def issuance(self, years_passed: Year) -> FIL:
         issuance_fraction = (1 - exp(-1 * self.decay * years_passed))
@@ -65,8 +65,8 @@ class SimpleMinting():
 @dataclass
 class BaselineMinting(SimpleMinting):
     # Parameters
-    total_issuance: FIL = 1.1e9
-    decay: float = log(2) / 6.0 # TODO: check
+    total_issuance: FIL = 0.77e9
+    decay: float = log(2) / 6.0
     initial_baseline: FIL = 2888
     annual_baseline_growth: Annotated[float, "%/year"] = 1.0
     # gamma: float = 0.0 # TODO

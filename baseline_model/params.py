@@ -2,10 +2,25 @@ from cmath import nan
 from math import ceil
 from baseline_model.types import BaselineMinting, BaselineModelState, BaselineModelParams, BaselineModelSweepParams, GrowthScenario, Reward, SimpleMinting
 from cadCAD_tools.preparation import sweep_cartesian_product
+
 DAYS_PER_TIMESTEP = 30
 YEAR = 365.25
-DAYS_AFTER_LAUNCH = 600
 SIMULATION_TIME_IN_YEARS = 6
+
+BLOCKS_SINCE_LAUNCH = 1_563_129 # Block height used as an reference point
+DAYS_AFTER_LAUNCH = (BLOCKS_SINCE_LAUNCH * 30) / (60 * 60 * 24) # Days after launch
+YEARS_AFTER_LAUNCH = DAYS_AFTER_LAUNCH / YEAR
+
+INITIAL_NETWORK_POWER = 15574 # QA PiB
+
+# Guess-estimate
+INITIAL_BASELINE = INITIAL_NETWORK_POWER * 1.1 
+
+# Guess-estimate
+INITIAL_CUMM_CAPPED_POWER = INITIAL_NETWORK_POWER * YEARS_AFTER_LAUNCH / 2 
+
+# Guess-estimate
+INITIAL_EFFECTIVE_NETWORK_TIME = YEARS_AFTER_LAUNCH * 0.9
 
 SCENARIOS = [
     GrowthScenario(label='optimistic',
@@ -41,10 +56,10 @@ PARAMS = sweep_cartesian_product(RAW_PARAMS)
 
 INITIAL_STATE = BaselineModelState(days_passed=DAYS_AFTER_LAUNCH,
                                    delta_days=nan,
-                                   network_power=12000,  # TODO
-                                   baseline=9500,  # TODO
-                                   cumm_capped_power=12000 / 2,  # TODO
-                                   effective_network_time=1.4,  # TODO
+                                   network_power=INITIAL_NETWORK_POWER,
+                                   baseline=INITIAL_BASELINE,
+                                   cumm_capped_power=INITIAL_CUMM_CAPPED_POWER, 
+                                   effective_network_time=INITIAL_EFFECTIVE_NETWORK_TIME,
                                    reward=Reward()
                                    )
 
