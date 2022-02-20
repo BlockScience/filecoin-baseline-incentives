@@ -168,12 +168,13 @@ for i in range(num_steps if run_simulation else 1):
             st.metric(label=meta["label"], value=value, delta=delta)
     # Update plots
     if i == 0:
+        row_all_scenarios = pd.concat([comparison_df, row])
         with plot_container:
-            network_power_chart = NetworkPowerAltairChart.build(pd.concat([comparison_df, row]), num_steps)
-            mining_utility_chart = MiningUtilityAltairChart.build(pd.concat([comparison_df, row]), num_steps)
-            effective_network_time_chart = EffectiveNetworkTimeAltairChart.build(pd.concat([comparison_df, row]), num_steps)
-            simple_reward_chart = SimpleRewardAltairChart.build(pd.concat([comparison_df, row]), num_steps)
-            baseline_reward_chart = BaselineRewardAltairChart.build(pd.concat([comparison_df, row]), num_steps)
+            network_power_chart = NetworkPowerAltairChart.build(row_all_scenarios, num_steps)
+            mining_utility_chart = MiningUtilityAltairChart.build(row_all_scenarios, num_steps)
+            effective_network_time_chart = EffectiveNetworkTimeAltairChart.build(row_all_scenarios, num_steps)
+            simple_reward_chart = SimpleRewardAltairChart.build(row_all_scenarios, num_steps)
+            baseline_reward_chart = BaselineRewardAltairChart.build(row_all_scenarios, num_steps)
     else:
         network_power_chart.add_rows(row)
         mining_utility_chart.add_rows(row)
