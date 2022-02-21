@@ -105,9 +105,9 @@ st.sidebar.markdown("## Compare Against")
 
 SCENARIO2CHECKBOX = OrderedDict(
     {
-        "user-baseline-deactivated": st.sidebar.checkbox("User + BaseFunc Deactivated Scenario"),
-        "optimistic": st.sidebar.checkbox("Optimistic Scenario"),
-        "baseline": st.sidebar.checkbox("BaseFunc Scenario"),
+        "user-baseline-deactivated": st.sidebar.checkbox("User + BaseFunc Deactivated Scenario", value=True),
+        "optimistic": st.sidebar.checkbox("Optimistic Scenario", value=True),
+        "baseline": st.sidebar.checkbox("BaseFunc Scenario", value=True),
     }
 )
 
