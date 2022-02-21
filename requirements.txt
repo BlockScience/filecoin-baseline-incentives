@@ -1,6 +1,7 @@
 cadCAD
+cadCAD-tools
+millify
 numpy
 pandas
-plotly
-click
-cadCAD-tools
+ruamel.yaml
+streamlit
