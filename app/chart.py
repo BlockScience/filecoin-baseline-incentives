@@ -49,7 +49,7 @@ class NetworkPowerAltairChart(AltairChart):
                 ),
                 y=alt.Y(
                     "network_power",
-                    scale=alt.Scale(domain=(1, 1e6), type="log"),
+                    scale=alt.Scale(domain=(1e4, 2e6), type="log"),
                     title="Network Power (QA PiB)",
                 ),
                 color="scenario",
@@ -77,7 +77,7 @@ class MiningUtilityAltairChart(AltairChart):
                 ),
                 y=alt.Y(
                     "mining_utility",
-                    scale=alt.Scale(domain=(0.5, 2.0)),
+                    scale=alt.Scale(domain=(0.6, 2.5)),
                     title="Mining Utility (FIL / QA PiB)",
                 ),
                 color="scenario",
