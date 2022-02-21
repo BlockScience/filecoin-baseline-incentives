@@ -1,6 +1,6 @@
 days_per_year: 365.25
 days_per_step: 30
-days_after_launch: 600.            # how many days after launch should we start simulation?
+days_after_launch: 542.753125      # how many days after launch should we start simulation?
 network_power:
   pessimistic:
     fall_after_beginning: 182.625  # days
