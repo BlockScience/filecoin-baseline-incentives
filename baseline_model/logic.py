@@ -82,7 +82,12 @@ def s_cumm_capped_power(params: BaselineModelParams,
     DAYS_TO_YEARS = 1 / YEAR
     dt = params['timestep_in_days'] * DAYS_TO_YEARS
     current_power = state['network_power']
-    capped_power = min(current_power, state['baseline'])
+
+    if params['baseline_activated'] is True:
+        capped_power = min(current_power, state['baseline'])
+    else:
+        capped_power = state['baseline']
+
     cumm_capped_power_differential = capped_power * dt
     new_cumm_capped_power = state['cumm_capped_power'] + \
         cumm_capped_power_differential
@@ -94,12 +99,8 @@ def s_effective_network_time(params: BaselineModelParams,
                              history: list[list[BaselineModelState]],
                              state: BaselineModelState,
                              signal: Signal) -> VariableUpdate:
-    if params['baseline_activated'] is True:
-        value = params['baseline_mechanism'].effective_network_time(
-            state['cumm_capped_power'])
-    else:
-        # If deactivated, make the ENT run on the same rate of the physical time
-        value = state['effective_network_time'] + state['delta_days'] / YEAR
+    value = params['baseline_mechanism'].effective_network_time(
+        state['cumm_capped_power'])
     return ('effective_network_time', value)
 
 
