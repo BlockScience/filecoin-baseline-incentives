@@ -25,7 +25,7 @@ C = CONSTANTS = load_constants()
 
 st.set_page_config(layout="wide")
 
-_, image_container, _ = st.columns([1,4,1])
+_, image_container, _ = st.columns([1, 4, 1])
 
 with image_container:
     st.image(os.path.join(os.path.dirname(__file__), "assets", "logo.png"), width=800)
@@ -67,64 +67,62 @@ st.sidebar.markdown("## Network Power Parameters")
 
 defaults = C["network_power"]["pessimistic"]
 
-st.sidebar.text("""
+st.sidebar.text(
+    """
 The network power changes course.
 
 For each change, we ask:
 
 - When? (Years Since Prev. Change)
 - How fast? (Frac. BaseFunc Growth)
-""")
+"""
+)
 
 st.sidebar.markdown("### 1️⃣ Cross BaseFunc From Above")
 
 fall_after_beginning = (
-    st.sidebar.slider(
-        "When?", 0., 8., defaults["fall_after_beginning"] / C['days_per_year'], .25, key='fall'
-    ) * C['days_per_year']
-) + C['days_after_launch']
+    st.sidebar.slider("When?", 0.0, 8.0, defaults["fall_after_beginning"] / C["days_per_year"], 0.25, key="fall")
+    * C["days_per_year"]
+) + C["days_after_launch"]
 
-growth_fall = st.sidebar.slider(
-    "How fast?", -.2, 1.2, defaults["growth_fall"], .1, key='fall'
-)
+growth_fall = st.sidebar.slider("How fast?", -0.2, 1.2, defaults["growth_fall"], 0.1, key="fall")
 
 st.sidebar.markdown("### 2️⃣ Stabilize Below BaseFunc")
 
-stable_after_fall = st.sidebar.slider(
-    "When?", 0., 8., defaults["stable_after_fall"] / C['days_per_year'], .25, key='stable'
-) * C['days_per_year']
-
-growth_stable = st.sidebar.slider(
-    "How fast?", -.2, 1.2, defaults["growth_stable"], .1, key='stable'
+stable_after_fall = (
+    st.sidebar.slider("When?", 0.0, 8.0, defaults["stable_after_fall"] / C["days_per_year"], 0.25, key="stable")
+    * C["days_per_year"]
 )
+
+growth_stable = st.sidebar.slider("How fast?", -0.2, 1.2, defaults["growth_stable"], 0.1, key="stable")
 
 st.sidebar.markdown("### 3️⃣ Recross BaseFunc from Below")
 
-take_off_after_stable = st.sidebar.slider(
-    "When?", 0., 8., defaults["take_off_after_stable"] / C['days_per_year'], .25, key='take_off'
-) * C['days_per_year']
-
-growth_take_off = st.sidebar.slider(
-    "How fast?", -.2, 8., defaults["growth_take_off"], .1, key='take_off'
+take_off_after_stable = (
+    st.sidebar.slider("When?", 0.0, 8.0, defaults["take_off_after_stable"] / C["days_per_year"], 0.25, key="take_off")
+    * C["days_per_year"]
 )
+
+growth_take_off = st.sidebar.slider("How fast?", -0.2, 8.0, defaults["growth_take_off"], 0.1, key="take_off")
 
 st.sidebar.markdown("### 4️⃣ Stabilize Above BaseFunc")
 
-steady_after_take_off = st.sidebar.slider(
-    "When?", 0., 8., defaults["steady_after_take_off"] / C['days_per_year'], .25, key='steady'
-) * C['days_per_year']
-
-growth_steady = st.sidebar.slider(
-    "How fast?", -.2, 1.2, defaults["growth_steady"], .1, key='steady'
+steady_after_take_off = (
+    st.sidebar.slider("When?", 0.0, 8.0, defaults["steady_after_take_off"] / C["days_per_year"], 0.25, key="steady")
+    * C["days_per_year"]
 )
+
+growth_steady = st.sidebar.slider("How fast?", -0.2, 1.2, defaults["growth_steady"], 0.1, key="steady")
 
 st.sidebar.markdown("## Compare Against")
 
-SCENARIO2CHECKBOX = OrderedDict({
-    "user-baseline-deactivated": st.sidebar.checkbox("User + BaseFunc Deactivated Scenario"),
-    "optimistic": st.sidebar.checkbox("Optimistic Scenario"),
-    "baseline": st.sidebar.checkbox("BaseFunc Scenario"),
-})
+SCENARIO2CHECKBOX = OrderedDict(
+    {
+        "user-baseline-deactivated": st.sidebar.checkbox("User + BaseFunc Deactivated Scenario"),
+        "optimistic": st.sidebar.checkbox("Optimistic Scenario"),
+        "baseline": st.sidebar.checkbox("BaseFunc Scenario"),
+    }
+)
 
 st.sidebar.markdown("## Speed")
 
@@ -142,8 +140,8 @@ df = run_cadcad_model(
     growth_steady=growth_steady,
 )
 
-comparison_df = df[df['scenario'].isin([scenario for scenario, checked in SCENARIO2CHECKBOX.items() if checked])]
-df = df[df['scenario'] == 'user']
+comparison_df = df[df["scenario"].isin([scenario for scenario, checked in SCENARIO2CHECKBOX.items() if checked])]
+df = df[df["scenario"] == "user"]
 num_steps = len(df)
 
 # Simulate user scenario
@@ -184,12 +182,13 @@ for i in range(num_steps if run_simulation else 1):
     # Finally
     if run_simulation:
         frac_complete = (i + 1) / num_steps
-        time.sleep(C['speed_to_latency'][simulation_speed])
+        time.sleep(C["speed_to_latency"][simulation_speed])
         progress_bar.progress(frac_complete)
         progress_text.text(f"{(frac_complete * 100):.2f}% Complete")
         prevrow = row
 
 # Download data
+
 
 @st.cache
 def convert_df(df):

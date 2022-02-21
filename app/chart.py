@@ -11,7 +11,7 @@ C = CONSTANTS = load_constants()
 
 class AltairChart(ABC):
 
-    X_AXIS = alt.Axis(tickMinStep=.5)
+    X_AXIS = alt.Axis(tickMinStep=0.5)
 
     def __init__(self, chart, use_container_width=True):
         self.chart = st.altair_chart(chart, use_container_width=use_container_width)
@@ -26,8 +26,8 @@ class AltairChart(ABC):
     @staticmethod
     def compose_x_domain(num_steps):
         return (
-            C['days_after_launch'] / C['days_per_year'],
-            (C['days_after_launch'] + num_steps * C['days_per_step']) / C['days_per_year']
+            C["days_after_launch"] / C["days_per_year"],
+            (C["days_after_launch"] + num_steps * C["days_per_step"]) / C["days_per_year"],
         )
 
 

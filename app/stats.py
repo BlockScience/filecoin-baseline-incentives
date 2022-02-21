@@ -20,10 +20,7 @@ def format_bignum_int_stat(stat):
 
 stat2meta = OrderedDict(
     {
-        "years_passed": {
-            "label": "Year",
-            "format_func": format_float_stat
-        },
+        "years_passed": {"label": "Year", "format_func": format_float_stat},
         "network_power": {
             "label": "Network Power (QA PiB)",
             "delta_func": lambda curr, prev: curr - prev,
@@ -43,6 +40,6 @@ stat2meta = OrderedDict(
             "label": "Mining Utility",
             "delta_func": lambda curr, prev: curr - prev,
             "format_func": format_float_stat,
-        }
+        },
     }
 )
