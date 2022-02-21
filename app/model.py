@@ -1,15 +1,13 @@
 import os
 import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 import numpy as np
 import pandas as pd
 import streamlit as st
 
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-
 from cadCAD_tools.execution import easy_run
 from cadCAD_tools.preparation import sweep_cartesian_product
-
-from baseline_model.types import GrowthScenario
 from baseline_model.params import INITIAL_STATE, TIMESTEPS, SAMPLES, DAYS_PER_TIMESTEP
 from baseline_model.structure import BLOCKS
 from baseline_model.types import BaselineMinting, BaselineModelSweepParams, GrowthScenario, SimpleMinting

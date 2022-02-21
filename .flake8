@@ -1,0 +1,3 @@
+[flake8]
+per-file-ignores =
+  app/model.py:E402
