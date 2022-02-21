@@ -1,6 +1,6 @@
 from abc import ABC, abstractclassmethod
 
-import altair as alt
+import plotly.express as px
 import streamlit as st
 
 from utils import load_constants
@@ -9,15 +9,10 @@ from utils import load_constants
 C = CONSTANTS = load_constants()
 
 
-class AltairChart(ABC):
-
-    X_AXIS = alt.Axis(tickMinStep=0.5)
+class PlotlyChart(ABC):
 
     def __init__(self, chart, use_container_width=True):
-        self.chart = st.altair_chart(chart, use_container_width=use_container_width)
-
-    def add_rows(self, row):
-        self.chart.add_rows(row)
+        self.chart = st.plotly_chart(chart, use_container_width=use_container_width)
 
     @abstractclassmethod
     def build(cls):
@@ -31,141 +26,102 @@ class AltairChart(ABC):
         )
 
 
-class NetworkPowerAltairChart(AltairChart):
-    def add_rows(self, row):
-        self.chart.add_rows(row)
+class NetworkPowerPlotlyChart(PlotlyChart):
 
     @classmethod
     def build(cls, df, num_steps):
-        chart = (
-            alt.Chart(df)
-            .mark_line(clip=True)
-            .encode(
-                x=alt.X(
-                    "years_passed",
-                    scale=alt.Scale(domain=cls.compose_x_domain(num_steps)),
-                    axis=cls.X_AXIS,
-                    title="Year",
-                ),
-                y=alt.Y(
-                    "network_power",
-                    scale=alt.Scale(domain=(1e4, 2e6), type="log"),
-                    title="Network Power (QA PiB)",
-                ),
-                color="scenario",
-            )
-            .properties(title="Network Power vs. Time")
+        chart = px.line(
+            df,
+            x="years_passed",
+            y="network_power",
+            color="scenario",
+            title="Network Power vs. Time",
+            labels={
+                "years_passed": "Year",
+                "network_power": "Network Power (QA PiB)",
+            },
+            range_x=cls.compose_x_domain(num_steps),
+            range_y=(1e4, 2e6),
+            log_y=True
         )
         return cls(chart)
 
 
-class MiningUtilityAltairChart(AltairChart):
-    def add_rows(self, row):
-        self.chart.add_rows(row)
+class MiningUtilityPlotlyChart(PlotlyChart):
 
     @classmethod
     def build(cls, df, num_steps):
-        chart = (
-            alt.Chart(df)
-            .mark_line(clip=True)
-            .encode(
-                x=alt.X(
-                    "years_passed",
-                    scale=alt.Scale(domain=cls.compose_x_domain(num_steps)),
-                    axis=cls.X_AXIS,
-                    title="Year",
-                ),
-                y=alt.Y(
-                    "mining_utility",
-                    scale=alt.Scale(domain=(0.4, 2.5)),
-                    title="Mining Utility (FIL / QA PiB)",
-                ),
-                color="scenario",
-            )
-            .properties(title="Mining Utility vs. Time")
+        chart = px.line(
+            df,
+            x="years_passed",
+            y="mining_utility",
+            color="scenario",
+            title="Mining Utility vs. Time",
+            labels={
+                "years_passed": "Year",
+                "mining_utility": "Mining Utility (FIL / QA PiB)",
+            },
+            range_x=cls.compose_x_domain(num_steps),
+            range_y=(0.4, 2.5),
         )
         return cls(chart)
 
 
-class EffectiveNetworkTimeAltairChart(AltairChart):
-    def add_rows(self, row):
-        self.chart.add_rows(row)
+class EffectiveNetworkTimePlotlyChart(PlotlyChart):
 
     @classmethod
     def build(cls, df, num_steps):
-        chart = (
-            alt.Chart(df)
-            .mark_line(clip=True)
-            .encode(
-                x=alt.X(
-                    "years_passed",
-                    scale=alt.Scale(domain=cls.compose_x_domain(num_steps)),
-                    axis=cls.X_AXIS,
-                    title="Year",
-                ),
-                y=alt.Y(
-                    "effective_network_time",
-                    scale=alt.Scale(domain=(1.5, 8)),
-                    title="Effective Network Time (Years)",
-                ),
-                color="scenario",
-            )
-            .properties(title="Effective Network Time vs. Time")
+        chart = px.line(
+            df,
+            x="years_passed",
+            y="effective_network_time",
+            color="scenario",
+            title="Effective Network Time vs. Time",
+            labels={
+                "years_passed": "Year",
+                "effective_network_time": "Effective Network Time (Years)",
+            },
+            range_x=cls.compose_x_domain(num_steps),
+            range_y=(1.5, 8),
         )
         return cls(chart)
 
 
-class SimpleRewardAltairChart(AltairChart):
-    def add_rows(self, row):
-        self.chart.add_rows(row)
+class SimpleRewardPlotlyChart(PlotlyChart):
 
     @classmethod
     def build(cls, df, num_steps):
-        chart = (
-            alt.Chart(df)
-            .mark_line(clip=True)
-            .encode(
-                x=alt.X(
-                    "years_passed",
-                    scale=alt.Scale(domain=cls.compose_x_domain(num_steps)),
-                    axis=cls.X_AXIS,
-                    title="Year",
-                ),
-                y=alt.Y(
-                    "simple_reward",
-                    scale=alt.Scale(domain=(0, 4e6)),
-                    title="Simple Reward (FIL)",
-                ),
-                color="scenario",
-            )
-            .properties(title="Simple Reward vs. Time")
+        chart = px.line(
+            df,
+            x="years_passed",
+            y="simple_reward",
+            color="scenario",
+            title="Simple Reward vs. Time",
+            labels={
+                "years_passed": "Year",
+                "simple_reward": "Simple Reward (FIL)",
+            },
+            range_x=cls.compose_x_domain(num_steps),
+            range_y=(0, 4e6),
         )
         return cls(chart)
 
 
-class BaselineRewardAltairChart(AltairChart):
-    def add_rows(self, row):
-        self.chart.add_rows(row)
+class BaselineRewardPlotlyChart(PlotlyChart):
 
     @classmethod
     def build(cls, df, num_steps):
-        chart = (
-            alt.Chart(df)
-            .mark_line(clip=True)
-            .encode(
-                x=alt.X(
-                    "years_passed",
-                    scale=alt.Scale(domain=cls.compose_x_domain(num_steps)),
-                    axis=cls.X_AXIS,
-                    title="Year",
-                ),
-                y=alt.Y(
-                    "baseline_reward",
-                    scale=alt.Scale(domain=(0, 1e7)),
-                    title="Baseline Reward (FIL)",
-                ),
-                color="scenario",
-            )
-            .properties(title="Baseline Reward vs. Time")
+        chart = px.line(
+            df,
+            x="years_passed",
+            y="baseline_reward",
+            color="scenario",
+            title="Baseline Reward vs. Time",
+            labels={
+                "years_passed": "Year",
+                "baseline_reward": "Baseline Reward (FIL)",
+            },
+            range_x=cls.compose_x_domain(num_steps),
+            range_y=(0, 1e7),
         )
         return cls(chart)

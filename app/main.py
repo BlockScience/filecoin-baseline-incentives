@@ -1,20 +1,17 @@
 from collections import OrderedDict
 import os
-import time
-import pandas as pd
 import streamlit as st
 
 from chart import (
-    NetworkPowerAltairChart,
-    MiningUtilityAltairChart,
-    EffectiveNetworkTimeAltairChart,
-    SimpleRewardAltairChart,
-    BaselineRewardAltairChart,
+    NetworkPowerPlotlyChart,
+    MiningUtilityPlotlyChart,
+    EffectiveNetworkTimePlotlyChart,
+    SimpleRewardPlotlyChart,
+    BaselineRewardPlotlyChart,
 )
 from description import description
 from glossary import glossary
 from model import run_cadcad_model
-from stats import stat2meta
 from utils import load_constants
 
 
@@ -34,9 +31,6 @@ st.markdown("# Description")
 with st.expander("See description"):
     description()
 
-st.markdown("# Stats")
-stats_dboard = st.empty()
-
 st.markdown("# Graphs")
 plot_container = st.container()
 
@@ -55,13 +49,6 @@ download_container = st.container()
 # Define sidebar
 
 st.sidebar.markdown("# Simulator")
-
-run_simulation = st.sidebar.button("Run")
-
-st.sidebar.markdown("## Progress")
-
-progress_bar = st.sidebar.progress(0)
-progress_text = st.sidebar.text("0.0% Complete")
 
 st.sidebar.markdown("## Network Power Parameters")
 
@@ -124,10 +111,7 @@ SCENARIO2CHECKBOX = OrderedDict(
     }
 )
 
-st.sidebar.markdown("## Speed")
-
-simulation_speed = st.sidebar.selectbox("Simulation Speed", ("Medium", "Fast", "Slow")).lower()
-
+# Run model
 
 df = run_cadcad_model(
     fall_after_beginning=fall_after_beginning,
@@ -139,56 +123,19 @@ df = run_cadcad_model(
     steady_after_take_off=steady_after_take_off,
     growth_steady=growth_steady,
 )
+df = df[df["scenario"].isin(["user"] + [scenario for scenario, checked in SCENARIO2CHECKBOX.items() if checked])]
 
-comparison_df = df[df["scenario"].isin([scenario for scenario, checked in SCENARIO2CHECKBOX.items() if checked])]
-df = df[df["scenario"] == "user"]
-num_steps = len(df)
+# Plot results
 
-# Simulate user scenario
-
-prevrow = None
-
-for i in range(num_steps if run_simulation else 1):
-    row = df.iloc[[i]]
-    # Update stats
-    cols = stats_dboard.columns(len(stat2meta))
-    for ((stat, meta), col) in zip(stat2meta.items(), cols):
-        delta_func = meta.get("delta_func")
-        value_func = meta.get("value_func", lambda x: x)
-        format_func = meta.get("format_func", lambda x: x)
-        if prevrow is not None and delta_func is not None:
-            delta = delta_func(row[stat].item(), prevrow[stat].item())
-            delta = meta.get("format_func", lambda x: x)(delta)
-        else:
-            delta = None
-        value = format_func(value_func(row[stat].item()))
-        with col:
-            st.metric(label=meta["label"], value=value, delta=delta)
-    # Update plots
-    if i == 0:
-        row_all_scenarios = pd.concat([comparison_df, row])
-        with plot_container:
-            network_power_chart = NetworkPowerAltairChart.build(row_all_scenarios, num_steps)
-            mining_utility_chart = MiningUtilityAltairChart.build(row_all_scenarios, num_steps)
-            effective_network_time_chart = EffectiveNetworkTimeAltairChart.build(row_all_scenarios, num_steps)
-            simple_reward_chart = SimpleRewardAltairChart.build(row_all_scenarios, num_steps)
-            baseline_reward_chart = BaselineRewardAltairChart.build(row_all_scenarios, num_steps)
-    else:
-        network_power_chart.add_rows(row)
-        mining_utility_chart.add_rows(row)
-        effective_network_time_chart.add_rows(row)
-        simple_reward_chart.add_rows(row)
-        baseline_reward_chart.add_rows(row)
-    # Finally
-    if run_simulation:
-        frac_complete = (i + 1) / num_steps
-        time.sleep(C["speed_to_latency"][simulation_speed])
-        progress_bar.progress(frac_complete)
-        progress_text.text(f"{(frac_complete * 100):.2f}% Complete")
-        prevrow = row
+with plot_container:
+    num_steps, = set(df['scenario'].value_counts())
+    network_power_chart = NetworkPowerPlotlyChart.build(df, num_steps)
+    mining_utility_chart = MiningUtilityPlotlyChart.build(df, num_steps)
+    effective_network_time_chart = EffectiveNetworkTimePlotlyChart.build(df, num_steps)
+    simple_reward_chart = SimpleRewardPlotlyChart.build(df, num_steps)
+    baseline_reward_chart = BaselineRewardPlotlyChart.build(df, num_steps)
 
 # Download data
-
 
 @st.cache
 def convert_df(df):
@@ -196,7 +143,7 @@ def convert_df(df):
 
 
 with download_container:
-    csv = convert_df(pd.concat([df, comparison_df]))
+    csv = convert_df(df)
     st.text("Download raw simulation results as .csv.")
     st.download_button(
         label="Download",
