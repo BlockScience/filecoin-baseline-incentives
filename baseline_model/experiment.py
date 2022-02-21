@@ -1,9 +1,11 @@
+from typing import Iterator
 from cadCAD_tools.execution import easy_run
 from cadCAD_tools.preparation import sweep_cartesian_product
-from baseline_model.types import GrowthScenario
+from baseline_model.types import BaselineMinting, GrowthScenario
 import pandas as pd
+import numpy as np
 
-from baseline_model.params import RAW_PARAMS
+from baseline_model.params import RAW_PARAMS, YEAR
 
 
 def standard_run() -> pd.DataFrame:
@@ -21,6 +23,18 @@ def standard_run() -> pd.DataFrame:
     set_2_initial_state = INITIAL_STATE
     set_2_initial_state['network_power'] = set_2_initial_state['baseline']
 
+    # Integral of the baseline function
+    N_t = 5000
+    interval = INITIAL_STATE['days_passed']
+    dt = interval / N_t
+    x_t = (np.linspace(0, interval, N_t) / YEAR)
+    f = BaselineMinting().baseline_function
+    g = lambda x: x * dt
+    dy = map(g, map(f, x_t))
+    baseline_function_integral = sum(dy)
+    set_2_initial_state['cumm_capped_power'] = baseline_function_integral
+
+    # Set Params
     set_2_params = RAW_PARAMS.copy()
     set_2_params['baseline_activated'] = [True]
     set_2_params['network_power_scenario'] = [GrowthScenario('baseline')]
