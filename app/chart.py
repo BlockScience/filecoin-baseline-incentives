@@ -10,7 +10,6 @@ C = CONSTANTS = load_constants()
 
 
 class PlotlyChart(ABC):
-
     def __init__(self, chart, use_container_width=True):
         self.chart = st.plotly_chart(chart, use_container_width=use_container_width)
 
@@ -27,7 +26,6 @@ class PlotlyChart(ABC):
 
 
 class NetworkPowerPlotlyChart(PlotlyChart):
-
     @classmethod
     def build(cls, df, num_steps):
         chart = px.line(
@@ -42,13 +40,12 @@ class NetworkPowerPlotlyChart(PlotlyChart):
             },
             range_x=cls.compose_x_domain(num_steps),
             range_y=(1e4, 2e6),
-            log_y=True
+            log_y=True,
         )
         return cls(chart)
 
 
 class MiningUtilityPlotlyChart(PlotlyChart):
-
     @classmethod
     def build(cls, df, num_steps):
         chart = px.line(
@@ -68,7 +65,6 @@ class MiningUtilityPlotlyChart(PlotlyChart):
 
 
 class EffectiveNetworkTimePlotlyChart(PlotlyChart):
-
     @classmethod
     def build(cls, df, num_steps):
         chart = px.line(
@@ -88,7 +84,6 @@ class EffectiveNetworkTimePlotlyChart(PlotlyChart):
 
 
 class SimpleRewardPlotlyChart(PlotlyChart):
-
     @classmethod
     def build(cls, df, num_steps):
         chart = px.line(
@@ -108,7 +103,6 @@ class SimpleRewardPlotlyChart(PlotlyChart):
 
 
 class BaselineRewardPlotlyChart(PlotlyChart):
-
     @classmethod
     def build(cls, df, num_steps):
         chart = px.line(

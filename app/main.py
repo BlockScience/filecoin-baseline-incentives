@@ -128,7 +128,7 @@ df = df[df["scenario"].isin(["user"] + [scenario for scenario, checked in SCENAR
 # Plot results
 
 with plot_container:
-    num_steps, = set(df['scenario'].value_counts())
+    (num_steps,) = set(df["scenario"].value_counts())
     network_power_chart = NetworkPowerPlotlyChart.build(df, num_steps)
     mining_utility_chart = MiningUtilityPlotlyChart.build(df, num_steps)
     effective_network_time_chart = EffectiveNetworkTimePlotlyChart.build(df, num_steps)
@@ -136,6 +136,7 @@ with plot_container:
     baseline_reward_chart = BaselineRewardPlotlyChart.build(df, num_steps)
 
 # Download data
+
 
 @st.cache
 def convert_df(df):

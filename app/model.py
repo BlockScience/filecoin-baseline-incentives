@@ -1,5 +1,6 @@
 import os
 import sys
+
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import numpy as np
@@ -53,7 +54,7 @@ def run_cadcad_model(
             growth_stable=growth_stable,
             growth_take_off=growth_take_off,
             growth_steady=growth_steady,
-        )
+        ),
     ]
     RAW_PARAMS = BaselineModelSweepParams(
         timestep_in_days=[DAYS_PER_TIMESTEP],
