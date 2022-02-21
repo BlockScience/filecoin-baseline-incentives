@@ -33,19 +33,8 @@ def run_cadcad_model(
     # Run pessimistic, optimistic scenarios
     SCENARIOS = [
         GrowthScenario(
-            label="pessimistic",
-            fall_after_beginning=fall_after_beginning,
-            stable_after_fall=stable_after_fall,
-            take_off_after_stable=take_off_after_stable,
-            steady_after_take_off=steady_after_take_off,
-            growth_fall=growth_fall,
-            growth_stable=growth_stable,
-            growth_take_off=growth_take_off,
-            growth_steady=growth_steady,
-        ),
-        GrowthScenario(
             label="optimistic",
-            fall_after_beginning=NPO["fall_after_beginning"],
+            fall_after_beginning=NPO["fall_after_beginning"] + C["days_after_launch"],
             stable_after_fall=NPO["stable_after_fall"],
             take_off_after_stable=NPO["take_off_after_stable"],
             steady_after_take_off=NPO["steady_after_take_off"],
@@ -54,6 +43,17 @@ def run_cadcad_model(
             growth_take_off=NPO["growth_take_off"],
             growth_steady=NPO["growth_steady"],
         ),
+        GrowthScenario(
+            label="pessimistic",
+            fall_after_beginning=fall_after_beginning + C["days_after_launch"],
+            stable_after_fall=stable_after_fall,
+            take_off_after_stable=take_off_after_stable,
+            steady_after_take_off=steady_after_take_off,
+            growth_fall=growth_fall,
+            growth_stable=growth_stable,
+            growth_take_off=growth_take_off,
+            growth_steady=growth_steady,
+        )
     ]
     RAW_PARAMS = BaselineModelSweepParams(
         timestep_in_days=[DAYS_PER_TIMESTEP],
@@ -92,7 +92,7 @@ def run_cadcad_model(
                 "baseline",
             ]
         )
-    ]
+    ].query("timestep > 0")
 
 
 def post_process_results(results):

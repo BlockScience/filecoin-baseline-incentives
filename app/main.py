@@ -83,7 +83,7 @@ st.sidebar.markdown("### 1️⃣ Cross BaseFunc From Above")
 fall_after_beginning = (
     st.sidebar.slider("When?", 0.0, 8.0, defaults["fall_after_beginning"] / C["days_per_year"], 0.25, key="fall")
     * C["days_per_year"]
-) + C["days_after_launch"]
+)
 
 growth_fall = st.sidebar.slider("How fast?", -0.2, 1.2, defaults["growth_fall"], 0.1, key="fall")
 
