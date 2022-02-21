@@ -119,3 +119,22 @@ class BaselineRewardPlotlyChart(PlotlyChart):
             range_y=(0, 1e7),
         )
         return cls(chart)
+
+
+class MarginalRewardPlotlyChart(PlotlyChart):
+    @classmethod
+    def build(cls, df, num_steps):
+        chart = px.line(
+            df,
+            x="years_passed",
+            y="marginal_reward",
+            color="scenario",
+            title="Marginal Reward vs. Time",
+            labels={
+                "years_passed": "Year",
+                "marginal_reward": "Marginal Reward (FIL / QA PiB)",
+            },
+            range_x=cls.compose_x_domain(num_steps),
+            range_y=(0, 1e3),
+        )
+        return cls(chart)

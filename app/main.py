@@ -8,6 +8,7 @@ from chart import (
     EffectiveNetworkTimePlotlyChart,
     SimpleRewardPlotlyChart,
     BaselineRewardPlotlyChart,
+    MarginalRewardPlotlyChart,
 )
 from description import description
 from glossary import glossary
@@ -134,6 +135,7 @@ with plot_container:
     effective_network_time_chart = EffectiveNetworkTimePlotlyChart.build(df, num_steps)
     simple_reward_chart = SimpleRewardPlotlyChart.build(df, num_steps)
     baseline_reward_chart = BaselineRewardPlotlyChart.build(df, num_steps)
+    marginal_reward_chart = MarginalRewardPlotlyChart.build(df, num_steps)
 
 # Download data
 
