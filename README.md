@@ -14,8 +14,8 @@ and use them as arguments to the `cadCAD_tools.execution.easy_run` method. Refer
     1. Fork the repo
     2. Go to https://share.streamlit.io/ and log in
     3. Create an app for the repo pointing to `app/main.py`
-    4. Wait a bit.
-    5. Done!
+    4. **Make sure to use Python 3.9 on the Advanced Settings!**
+    5. Wait a bit and done!
 ## File structure
 
 - `app/`: The `streamlit` app
