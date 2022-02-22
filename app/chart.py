@@ -97,7 +97,7 @@ class SimpleRewardPlotlyChart(PlotlyChart):
                 "simple_reward": "Simple Reward (FIL)",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(0, 4e6),
+            range_y=(1e6, 3e6),
         )
         return cls(chart)
 
@@ -116,7 +116,7 @@ class BaselineRewardPlotlyChart(PlotlyChart):
                 "baseline_reward": "Baseline Reward (FIL)",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(0, 1e7),
+            range_y=(1e6, 7e6),
         )
         return cls(chart)
 
@@ -136,5 +136,6 @@ class MarginalRewardPlotlyChart(PlotlyChart):
             },
             range_x=cls.compose_x_domain(num_steps),
             range_y=(0, 1e3),
+            #log_y=True
         )
         return cls(chart)
