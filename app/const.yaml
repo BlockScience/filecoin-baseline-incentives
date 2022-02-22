@@ -8,7 +8,7 @@ network_power:
     stable_after_fall: 182.625     # days
     growth_stable: 1.0             # rate
     take_off_after_stable: 1095.75 # days
-    growth_take_off: 4.0           # rate
+    growth_take_off: 6.0           # rate
     steady_after_take_off: 182.625 # days
     growth_steady: 1.0             # rate
   optimistic:
