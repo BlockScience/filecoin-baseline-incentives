@@ -2,21 +2,28 @@ import streamlit as st
 
 
 def glossary():
-    st.markdown("### Scenario A")
+    st.markdown("### Quality Adjusted Network Power (QA PiB)")
     st.write(
         """
     Foo bar baz.
     """
     )
 
-    st.markdown("### Scenario B")
+    st.markdown("### Effective Network Time")
     st.write(
         """
     Foo bar baz.
     """
     )
 
-    st.markdown("### Scenario B*")
+    st.markdown("### Marginal Reward")
+    st.write(
+        """
+    Foo bar baz.
+    """
+    )
+
+    st.markdown("### Marginal Reward")
     st.write(
         """
     Foo bar baz.
