@@ -26,9 +26,17 @@ On the left sidebar, you will find several options for controlling how the `user
 
 The `user` scenarios have their default settings assigned to an hypothetical situation, where the network doesn't grow initially, starts to grow at the same rate of the baseline function after some time, and it has sudden acceleration some years from now, only to get steady again.
 
+In order to directly compare the effect of having Baseline Minting turned on or off, we have an second `user` defined scenario which is `user-baseline-deactivated`, which is analogous to deploying an fictious FIP on the beginning of the simulation which says "Baseline Minting now behaves just like Simple Minting".
+
+*Technical specifics: this is done by iteratively increasing the cummulative capped power by the baseline function rather than the network power.*
+
 #### Optimistic
 
+The `optimistic` scenario is an scenario where the Network Power always grows as 5% as larger than the Baseline Function. 
+
 #### Baseline
+
+The `baseline` scenario is an scenario where the Network Power is always equal to the Baseline Function.
 
 ## References
 
@@ -41,10 +49,12 @@ The `user` scenarios have their default settings assigned to an hypothetical sit
 
 This calculator has been developed as part of the collaboration between BlockScience and Filecoin. We acknowledge the work of the following collaborators for making it come to life:
 
-- Will Wolf (BlockScience, ML engineer that put all this together)
+- Will Wolf (BlockScience, ML engineer)
 - Danilo Lessa Bernardineli (BlockScience, Subject Matter Expert)
 - Burrrata (BlockScience, Community Lead)
 - Jamsheed Shorish (BlockScience, Scientist)
 - ZX Zhang (Protocol Labs, Research Lead at CryptoEconLab)
+- (Insert your name and role here)
+
     """
     )
