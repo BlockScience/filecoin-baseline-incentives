@@ -1,5 +1,5 @@
 # filecoin-baseline-incentives
-Interactive Calculator for the economic incentives around the Filecoin Baseline Minting
+Interactive Calculator for the economic incentives around the Filecoin Baseline Minting based on cadCAD + Streamlit.
 
 ## How to run it
 
@@ -9,8 +9,18 @@ system parameters & initial state.
     - To perform a multiple run, pass `python -m baseline_model -e`
 - Option 2 (cadCAD-tools easy run method): Import the objects at `baseline_model/__init__.py`
 and use them as arguments to the `cadCAD_tools.execution.easy_run` method. Refer to `baseline_model/__main__.py` to an example.
+- Option 3 (Streamlit, local)
+- Option 4 (Streamlit, cloud)
+    1. Fork the repo
+    2. Go to https://share.streamlit.io/ and log in
+    3. Create an app for the repo pointing to `app/main.py`
+    4. Wait a bit.
+    5. Done!
 ## File structure
 
-- baseline_model/: the `cadCAD` model as encapsulated by a Python Module
-- data/: Simulation / Post-processed datasets
-- notebooks/: 
+- `app/`: The `streamlit` app
+- `baseline_model/`: the `cadCAD` model as encapsulated by a Python Module
+- `data/`: Simulation / Post-processed datasets
+- `notebooks/`: 
+- `scripts/`: 
+- `tests/`: 
