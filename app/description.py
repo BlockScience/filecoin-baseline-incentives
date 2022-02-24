@@ -4,15 +4,6 @@ import streamlit as st
 def description():
     st.write(
     """
-# Filecoin Baseline Minting Educational Calculator
-
-> :warning: :warning: This is a working draft! There are several missing bits and paragraphs through the document :warning: :warning:
-
-Welcome to the Filecoin Baseline Minting Educational Calculator! This app allows you to **interactively understand how Baseline Minting works** in terms of mining incentives and what happens **when the Baseline Function is crossed up or down**.
-
-You have full control over how the raw-bytes Network Power looks like on the future! That's the `user`, and by tweaking the `When?` and `How fast?` fields for each stage, you can see **how it behaves and compares to an `optimistic` scenario, and against itself when Baseline Minting is turned off**.
-
-
 As we're going to see, having **Baseline Minting enhances the long-term sustainability** and of network power by saving part of the block rewardwhen it's below the Baseline Function. Those savings accomplishes two functions:
 - **Enhances security** by avoid distributing an disproportionate share of the rewards if an significant share of the network went down temporarily.
 - **Improves sustanability** by distributing those savings to future miners when the network recovers and have it's power close to the baseline again

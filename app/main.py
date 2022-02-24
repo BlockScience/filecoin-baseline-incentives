@@ -21,22 +21,31 @@ C = CONSTANTS = load_constants()
 
 # Define layout
 
-st.set_page_config(layout="wide")
+st.set_page_config(page_title="Filecoin Baseline Minting Educational Calculator",
+                   page_icon=os.path.join(os.path.dirname(
+                       __file__), "assets", "icon.png"),
+                   layout="wide",
+                   output_format="png")
 
 _, image_container, _ = st.columns([1, 4, 1])
 
 with image_container:
-    st.image(os.path.join(os.path.dirname(__file__), "assets", "logo.png"), width=800)
+    st.image(os.path.join(os.path.dirname(__file__),
+             "assets", "logo.png"), width=800)
 
-st.markdown("# Description")
+st.markdown("# Filecoin Baseline Minting Educational Calculator")
+
+st.markdown("""
+This app allows you to **interactively understand how Baseline Minting works** in terms of mining incentives and what happens **when the Baseline Function is crossed up or down**.
+
+You have full control over how the raw-bytes Network Power looks like on the future! That's the `user`, and by tweaking the `When?` and `How fast?` fields for each stage, you can see **how it behaves and compares to an `optimistic` scenario, and against itself when Baseline Minting is turned off**.
+""")
+
 with st.expander("See description"):
     description()
 
 st.markdown("# Graphs")
 plot_container = st.container()
-
-st.markdown("# Conclusions")
-conclusions_container = st.container()
 
 st.markdown("# Glossary")
 glossary_container = st.container()
@@ -49,58 +58,67 @@ download_container = st.container()
 
 # Define sidebar
 
-st.sidebar.markdown("# Simulator")
-
-st.sidebar.markdown("## Network Power Parameters")
+st.sidebar.markdown("# `user` scenario Parameters")
 
 defaults = C["network_power"]["pessimistic"]
 
-st.sidebar.text(
+st.sidebar.markdown(
     """
-The network power changes course.
+The trajectory is described as being:
+1. First, the rb-NP is set as an fixed initial value.
+2. For an given duration, the rb-NP is going grow as an fraction of the Baseline Function growth. Those are the parameters for the (Cross BaseFunc from Above) stage.
+3. Repeat 2. for the remaining phases.
 
 For each change, we ask:
 
-- When? (Years Since Prev. Change)
-- How fast? (Frac. BaseFunc Growth)
+- When? (Years Since Previous Change)
+- How fast? (as an fraction of the Baseline Function Growth)
 """
 )
 
 st.sidebar.markdown("### 1️⃣ Cross BaseFunc From Above")
 
 fall_after_beginning = (
-    st.sidebar.slider("When?", 0.0, 8.0, defaults["fall_after_beginning"] / C["days_per_year"], 0.25, key="fall")
+    st.sidebar.slider(
+        "When?", 0.0, 8.0, defaults["fall_after_beginning"] / C["days_per_year"], 0.25, key="fall")
     * C["days_per_year"]
 )
 
-growth_fall = st.sidebar.slider("How fast?", -0.2, 1.2, defaults["growth_fall"], 0.1, key="fall")
+growth_fall = st.sidebar.slider(
+    "How fast?", -0.2, 1.2, defaults["growth_fall"], 0.1, key="fall")
 
 st.sidebar.markdown("### 2️⃣ Stabilize Below BaseFunc")
 
 stable_after_fall = (
-    st.sidebar.slider("When?", 0.0, 8.0, defaults["stable_after_fall"] / C["days_per_year"], 0.25, key="stable")
+    st.sidebar.slider(
+        "When?", 0.0, 8.0, defaults["stable_after_fall"] / C["days_per_year"], 0.25, key="stable")
     * C["days_per_year"]
 )
 
-growth_stable = st.sidebar.slider("How fast?", -0.2, 1.2, defaults["growth_stable"], 0.1, key="stable")
+growth_stable = st.sidebar.slider(
+    "How fast?", -0.2, 1.2, defaults["growth_stable"], 0.1, key="stable")
 
 st.sidebar.markdown("### 3️⃣ Recross BaseFunc from Below")
 
 take_off_after_stable = (
-    st.sidebar.slider("When?", 0.0, 8.0, defaults["take_off_after_stable"] / C["days_per_year"], 0.25, key="take_off")
+    st.sidebar.slider(
+        "When?", 0.0, 8.0, defaults["take_off_after_stable"] / C["days_per_year"], 0.25, key="take_off")
     * C["days_per_year"]
 )
 
-growth_take_off = st.sidebar.slider("How fast?", -0.2, 8.0, defaults["growth_take_off"], 0.1, key="take_off")
+growth_take_off = st.sidebar.slider(
+    "How fast?", -0.2, 8.0, defaults["growth_take_off"], 0.1, key="take_off")
 
 st.sidebar.markdown("### 4️⃣ Stabilize Above BaseFunc")
 
 steady_after_take_off = (
-    st.sidebar.slider("When?", 0.0, 8.0, defaults["steady_after_take_off"] / C["days_per_year"], 0.25, key="steady")
+    st.sidebar.slider(
+        "When?", 0.0, 8.0, defaults["steady_after_take_off"] / C["days_per_year"], 0.25, key="steady")
     * C["days_per_year"]
 )
 
-growth_steady = st.sidebar.slider("How fast?", -0.2, 1.2, defaults["growth_steady"], 0.1, key="steady")
+growth_steady = st.sidebar.slider(
+    "How fast?", -0.2, 1.2, defaults["growth_steady"], 0.1, key="steady")
 
 st.sidebar.markdown("## Compare Against")
 
@@ -124,7 +142,8 @@ df = run_cadcad_model(
     steady_after_take_off=steady_after_take_off,
     growth_steady=growth_steady,
 )
-df = df[df["scenario"].isin(["user"] + [scenario for scenario, checked in SCENARIO2CHECKBOX.items() if checked])]
+df = df[df["scenario"].isin(
+    ["user"] + [scenario for scenario, checked in SCENARIO2CHECKBOX.items() if checked])]
 
 # Plot results
 
@@ -132,7 +151,8 @@ with plot_container:
     (num_steps,) = set(df["scenario"].value_counts())
     network_power_chart = NetworkPowerPlotlyChart.build(df, num_steps)
     mining_utility_chart = MiningUtilityPlotlyChart.build(df, num_steps)
-    effective_network_time_chart = EffectiveNetworkTimePlotlyChart.build(df, num_steps)
+    effective_network_time_chart = EffectiveNetworkTimePlotlyChart.build(
+        df, num_steps)
     simple_reward_chart = SimpleRewardPlotlyChart.build(df, num_steps)
     baseline_reward_chart = BaselineRewardPlotlyChart.build(df, num_steps)
     marginal_reward_chart = MarginalRewardPlotlyChart.build(df, num_steps)
