@@ -36,7 +36,7 @@ class NetworkPowerPlotlyChart(PlotlyChart):
             title="Network Power vs. Time",
             labels={
                 "years_passed": "Year",
-                "network_power": "Network Power (QA PiB)",
+                "network_power": "Raw Bytes Network Power (RB PiB)",
             },
             range_x=cls.compose_x_domain(num_steps),
             range_y=(1e4, 2e6),
@@ -56,7 +56,7 @@ class MiningUtilityPlotlyChart(PlotlyChart):
             title="Mining Utility vs. Time",
             labels={
                 "years_passed": "Year",
-                "mining_utility": "Mining Utility (FIL / QA PiB)",
+                "mining_utility": "Mining Utility (% of baseline scenario)",
             },
             range_x=cls.compose_x_domain(num_steps),
             range_y=(0.4, 2.5),
@@ -94,7 +94,7 @@ class SimpleRewardPlotlyChart(PlotlyChart):
             title="Simple Reward vs. Time",
             labels={
                 "years_passed": "Year",
-                "simple_reward": "Simple Reward (FIL)",
+                "simple_reward": "Simple Reward (FIL / month)",
             },
             range_x=cls.compose_x_domain(num_steps),
             range_y=(1e6, 3e6),
@@ -113,7 +113,7 @@ class BaselineRewardPlotlyChart(PlotlyChart):
             title="Baseline Reward vs. Time",
             labels={
                 "years_passed": "Year",
-                "baseline_reward": "Baseline Reward (FIL)",
+                "baseline_reward": "Baseline Reward (FIL / month)",
             },
             range_x=cls.compose_x_domain(num_steps),
             range_y=(1e6, 7e6),
@@ -132,7 +132,7 @@ class MarginalRewardPlotlyChart(PlotlyChart):
             title="Marginal Reward vs. Time",
             labels={
                 "years_passed": "Year",
-                "marginal_reward": "Marginal Reward (FIL / QA PiB)",
+                "marginal_reward": "Marginal Reward (FIL / (month * RB PiB))",
             },
             range_x=cls.compose_x_domain(num_steps),
             range_y=(0, 1e3),
