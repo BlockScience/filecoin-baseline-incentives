@@ -24,8 +24,7 @@ C = CONSTANTS = load_constants()
 st.set_page_config(page_title="Filecoin Baseline Minting Educational Calculator",
                    page_icon=os.path.join(os.path.dirname(
                        __file__), "assets", "icon.png"),
-                   layout="wide",
-                   output_format="png")
+                   layout="wide")
 
 _, image_container, _ = st.columns([1, 4, 1])
 
