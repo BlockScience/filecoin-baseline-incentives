@@ -29,9 +29,9 @@ st.set_page_config(page_title="Filecoin Baseline Minting Educational Calculator"
 st.markdown("# Filecoin Baseline Minting Educational Calculator")
 
 st.markdown("""
-This app allows you to **interactively understand how Baseline Minting works** in terms of mining incentives and what happens **when the Baseline Function is crossed up or down**.
+This app allows you to **interactively understand Baseline Minting** through the lens of both mining incentives and **crossing the Baseline Function up or down**.
 
-You have full control over how the raw-bytes Network Power looks like on the future! That's the `user`, and by tweaking the `How long? (in years since last change)` and `rb-NP growth (as a fraction of the baseline growth)` fields for each stage, you can see **how it behaves and compares to an `optimistic` scenario, and against itself when Baseline Minting is turned off**.
+You have full control over the raw-bytes Network Power trajectory! That's the `user`, and by tweaking the `How long? (in years since last change)` and `rb-NP growth (as a fraction of the baseline growth)` fields for each stage, you can **observe its behavior, and compare to it to that of other baseline scenarios.**
 """)
 
 with st.expander("See description"):
