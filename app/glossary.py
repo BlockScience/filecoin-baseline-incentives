@@ -44,4 +44,4 @@ Normalized Marginal Reward Per Power: $\pi(t) = \frac{\omega_s(t)}{\omega_b(t)}$
 
 [2]:
     """
-)
+    )

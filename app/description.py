@@ -3,7 +3,7 @@ import streamlit as st
 
 def description():
     st.write(
-    """
+        """
 **Baseline Minting enhances the long-term sustainability** of the network power by witholding part of the block reward when it's below the Baseline Function. These savings:
 
 - **Enhance security** by witholding rewards if a significant share of the network temporarily goes down.
@@ -54,4 +54,4 @@ This calculator has been developed as part of the ongoing collaboration between 
 - Jamsheed Shorish (BlockScience, Scientist)
 - ZX Zhang (Protocol Labs, Research Lead at CryptoEconLab)
     """
-)
+    )
