@@ -4,7 +4,7 @@ import streamlit as st
 def description():
     st.write(
         """
-**Baseline Minting enhances the long-term sustainability** of the network power by witholding part of the block reward when it's below the Baseline Function. These savings:
+**Baseline Minting enhances the long-term sustainability** of the Network Power by witholding part of the block reward when it's below the Baseline Function. These savings:
 
 - **Enhance security** by witholding rewards if a significant share of the network temporarily goes down.
 - **Improve sustainability** by distributing these rewards to future miners when the network recovers.
@@ -15,17 +15,17 @@ In order to visualize this behavior, we simulate the baseline reward under diffe
 
 This app displays four scenarios: two for the user (`user` and `user-baseline-deactivated`) and two fixed (`optimistic` and `baseline`).
 
-The left sidebar has several options for controlling how the `user` scenarios for the Filecoin Network Power should grow with time.
+The left sidebar has several options for controlling how the `user` scenarios for the Filecoin Network Power grow with time.
 
 ## Scenarios
 
 #### User
 
-The default settings for the `user` scenarios encapsulate the following behavior: the network doesn't grow initially, later grows at the same rate as the baseline function, suddenly accelerates several years thereafter, then stabilizes eventually.
+The default settings for the `user` scenarios encapsulate the following behavior: the network doesn't grow initially, later grows at the same rate as the Baseline Function, suddenly accelerates several years thereafter, then stabilizes eventually.
 
 In order to directly compare the effect of turning Baseline Minting on or off, we show a second `user` scenario—`user-baseline-deactivated`—analogous to deploying a fictious FIP in which "Baseline Minting behaves like Simple Minting".
 
-*Technical specifics: this is done by iteratively increasing the cumulative capped power of the Baseline Function rather than the network power.*
+*Technical specifics: this is done by iteratively increasing the cumulative capped power of the Baseline Function rather than the Network Power.*
 
 #### Optimistic
 
