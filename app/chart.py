@@ -136,6 +136,6 @@ class MarginalRewardPlotlyChart(PlotlyChart):
             },
             range_x=cls.compose_x_domain(num_steps),
             range_y=(0, 1e3),
-            #log_y=True
+            # log_y=True
         )
         return cls(chart)

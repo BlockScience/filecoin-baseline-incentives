@@ -21,18 +21,21 @@ C = CONSTANTS = load_constants()
 
 # Define layout
 
-st.set_page_config(page_title="Filecoin Baseline Minting Educational Calculator",
-                   page_icon=os.path.join(os.path.dirname(
-                       __file__), "assets", "icon.png"),
-                   layout="wide")
+st.set_page_config(
+    page_title="Filecoin Baseline Minting Educational Calculator",
+    page_icon=os.path.join(os.path.dirname(__file__), "assets", "icon.png"),
+    layout="wide",
+)
 
 st.markdown("# Filecoin Baseline Minting Educational Calculator")
 
-st.markdown("""
-This app allows you to **interactively understand how Baseline Minting works** in terms of mining incentives and what happens **when the Baseline Function is crossed up or down**.
+st.markdown(
+    """
+This app allows you to **interactively understand Baseline Minting** through the lens of both mining incentives and **crossing the Baseline Function up or down**.
 
-You have full control over how the raw-bytes Network Power looks like on the future! That's the `user`, and by tweaking the `How long? (in years since last change)` and `rb-NP growth (as a fraction of the baseline growth)` fields for each stage, you can see **how it behaves and compares to an `optimistic` scenario, and against itself when Baseline Minting is turned off**.
-""")
+You have full control over the raw-bytes Network Power trajectory! That's the `user`, and by tweaking the `How long? (in years since last change)` and `rb-NP growth (as a fraction of the baseline growth)` fields for each stage, you can **observe its behavior, and compare to it to that of other baseline scenarios.**
+"""
+)
 
 with st.expander("See description"):
     description()
@@ -55,8 +58,7 @@ download_container = st.container()
 _, image_container, _ = st.sidebar.columns([1, 2, 1])
 
 with image_container:
-    st.image(os.path.join(os.path.dirname(__file__),
-             "assets", "icon.png"))
+    st.image(os.path.join(os.path.dirname(__file__), "assets", "icon.png"))
 
 st.sidebar.markdown("# Parameters for the `user` scenario")
 
@@ -75,45 +77,73 @@ st.sidebar.markdown("### 1️⃣ Cross Baseline Function From Above")
 
 fall_after_beginning = (
     st.sidebar.slider(
-        "How long? (in years since last change)", 0.0, 8.0, defaults["fall_after_beginning"] / C["days_per_year"], 0.25, key="fall")
+        "How long? (in years since last change)",
+        0.0,
+        8.0,
+        defaults["fall_after_beginning"] / C["days_per_year"],
+        0.25,
+        key="fall",
+    )
     * C["days_per_year"]
 )
 
 growth_fall = st.sidebar.slider(
-    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 1.2, defaults["growth_fall"], 0.1, key="fall")
+    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 1.2, defaults["growth_fall"], 0.1, key="fall"
+)
 
 st.sidebar.markdown("### 2️⃣ Stabilize Below Baseline Function")
 
 stable_after_fall = (
     st.sidebar.slider(
-        "How long? (in years since last change)", 0.0, 8.0, defaults["stable_after_fall"] / C["days_per_year"], 0.25, key="stable")
+        "How long? (in years since last change)",
+        0.0,
+        8.0,
+        defaults["stable_after_fall"] / C["days_per_year"],
+        0.25,
+        key="stable",
+    )
     * C["days_per_year"]
 )
 
 growth_stable = st.sidebar.slider(
-    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 1.2, defaults["growth_stable"], 0.1, key="stable")
+    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 1.2, defaults["growth_stable"], 0.1, key="stable"
+)
 
 st.sidebar.markdown("### 3️⃣ Recross Baseline Function from Below")
 
 take_off_after_stable = (
     st.sidebar.slider(
-        "How long? (in years since last change)", 0.0, 8.0, defaults["take_off_after_stable"] / C["days_per_year"], 0.25, key="take_off")
+        "How long? (in years since last change)",
+        0.0,
+        8.0,
+        defaults["take_off_after_stable"] / C["days_per_year"],
+        0.25,
+        key="take_off",
+    )
     * C["days_per_year"]
 )
 
 growth_take_off = st.sidebar.slider(
-    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 8.0, defaults["growth_take_off"], 0.1, key="take_off")
+    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 8.0, defaults["growth_take_off"], 0.1, key="take_off"
+)
 
 st.sidebar.markdown("### 4️⃣ Stabilize Above Baseline Function")
 
 steady_after_take_off = (
     st.sidebar.slider(
-        "How long? (in years since last change)", 0.0, 8.0, defaults["steady_after_take_off"] / C["days_per_year"], 0.25, key="steady")
+        "How long? (in years since last change)",
+        0.0,
+        8.0,
+        defaults["steady_after_take_off"] / C["days_per_year"],
+        0.25,
+        key="steady",
+    )
     * C["days_per_year"]
 )
 
 growth_steady = st.sidebar.slider(
-    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 1.2, defaults["growth_steady"], 0.1, key="steady")
+    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 1.2, defaults["growth_steady"], 0.1, key="steady"
+)
 
 st.sidebar.markdown("## Compare Against")
 
@@ -137,8 +167,7 @@ df = run_cadcad_model(
     steady_after_take_off=steady_after_take_off,
     growth_steady=growth_steady,
 )
-df = df[df["scenario"].isin(
-    ["user"] + [scenario for scenario, checked in SCENARIO2CHECKBOX.items() if checked])]
+df = df[df["scenario"].isin(["user"] + [scenario for scenario, checked in SCENARIO2CHECKBOX.items() if checked])]
 
 # Plot results
 
@@ -146,8 +175,7 @@ with plot_container:
     (num_steps,) = set(df["scenario"].value_counts())
     network_power_chart = NetworkPowerPlotlyChart.build(df, num_steps)
     mining_utility_chart = MiningUtilityPlotlyChart.build(df, num_steps)
-    effective_network_time_chart = EffectiveNetworkTimePlotlyChart.build(
-        df, num_steps)
+    effective_network_time_chart = EffectiveNetworkTimePlotlyChart.build(df, num_steps)
     simple_reward_chart = SimpleRewardPlotlyChart.build(df, num_steps)
     baseline_reward_chart = BaselineRewardPlotlyChart.build(df, num_steps)
     marginal_reward_chart = MarginalRewardPlotlyChart.build(df, num_steps)
