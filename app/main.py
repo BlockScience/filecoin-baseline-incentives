@@ -67,9 +67,9 @@ defaults = C["network_power"]["pessimistic"]
 st.sidebar.markdown(
     """
 The trajectory is described as being:
-1. First, the rb-NP is set as an fixed initial value.
-2. For an given duration, the rb-NP is going grow as an fraction of the Baseline Function growth. Those are the parameters for the (Cross BaseFunc from Above) stage.
-3. Repeat 2. for the remaining phases.
+1. First, the rb-NP is set to a fixed initial value.
+2. For a given duration, the rb-NP grows as a fraction of the Baseline Function growth. Those are the parameters for the (Cross BaseFunc from Above) stage.
+3. Repeat `2.` for the remaining phases.
 """
 )
 
