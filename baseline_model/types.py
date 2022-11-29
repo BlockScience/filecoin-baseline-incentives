@@ -41,6 +41,33 @@ class GrowthScenario():
         return self.take_off_after_beginning + self.steady_after_take_off
 
 
+@dataclass
+class Sectors():
+    power_expiry_schedule: dict[Days, QA_PiB]
+    reward_unlock_schedule: dict[Days, FIL]
+    collateral_unlock_schedule: dict[Days, FIL]
+
+    def pledge_collateral(self, 
+                            qap_to_onboard, 
+                            circulating_supply, 
+                            day_block_reward,
+                            TLS=0.3):
+
+        storage_pledge = 20 * day_block_reward
+        consensus_pledge = TLS * circulating_supply * qap_to_onboard / self.NetworkPower
+        return  storage_pledge + consensus_pledge
+
+    @property
+    def NetworkPower(self):
+        return sum(self.power_expiry_schedule.values())
+
+    @property
+    def Collaterals(self):
+        return sum(self.collateral_unlock_schedule.values())
+
+    @property
+    def LockedRewards(self):
+        return sum(self.reward_unlock_schedule.values())
 
 @dataclass
 class Reward():

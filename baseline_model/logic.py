@@ -32,6 +32,17 @@ def s_delta_days(_1,
 # ## Network
 
 
+def s_sectors(params: BaselineModelParams,
+             _2,
+             history: list[list[BaselineModelState]],
+             state: BaselineModelState,
+             signal: Signal) -> VariableUpdate:
+
+
+    new_power = state['network_power'] - history[-1][-1]['network_power']
+
+    return ('sectors', sectors)
+
 def s_network_power(params: BaselineModelParams,
                     _2,
                     _3,

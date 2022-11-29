@@ -12,6 +12,15 @@ BLOCKS = [
         }
     },
     {
+        'label': 'Sector Onboarding & Expiry',
+        'policies': {    
+
+        }, 
+        'variables': {
+            'sectors': s_sectors
+        }   
+    },
+    {
         'label': 'Evolve Network Power & Baseline Function',
         'policies': {            
         }, 
