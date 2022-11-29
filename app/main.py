@@ -75,45 +75,45 @@ st.sidebar.markdown("### 1️⃣ Cross Baseline Function From Above")
 
 fall_after_beginning = (
     st.sidebar.slider(
-        "How long? (in years since last change)", 0.0, 8.0, defaults["fall_after_beginning"] / C["days_per_year"], 0.25, key="fall")
+        "How long? (in years since last change)", 0.0, 8.0, defaults["fall_after_beginning"] / C["days_per_year"], 0.25, key="fall_interval")
     * C["days_per_year"]
 )
 
 growth_fall = st.sidebar.slider(
-    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 1.2, defaults["growth_fall"], 0.1, key="fall")
+    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 1.2, defaults["growth_fall"], 0.1, key="fall_fraction")
 
 st.sidebar.markdown("### 2️⃣ Stabilize Below Baseline Function")
 
 stable_after_fall = (
     st.sidebar.slider(
-        "How long? (in years since last change)", 0.0, 8.0, defaults["stable_after_fall"] / C["days_per_year"], 0.25, key="stable")
+        "How long? (in years since last change)", 0.0, 8.0, defaults["stable_after_fall"] / C["days_per_year"], 0.25, key="stable_interval")
     * C["days_per_year"]
 )
 
 growth_stable = st.sidebar.slider(
-    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 1.2, defaults["growth_stable"], 0.1, key="stable")
+    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 1.2, defaults["growth_stable"], 0.1, key="stable_fraction")
 
 st.sidebar.markdown("### 3️⃣ Recross Baseline Function from Below")
 
 take_off_after_stable = (
     st.sidebar.slider(
-        "How long? (in years since last change)", 0.0, 8.0, defaults["take_off_after_stable"] / C["days_per_year"], 0.25, key="take_off")
+        "How long? (in years since last change)", 0.0, 8.0, defaults["take_off_after_stable"] / C["days_per_year"], 0.25, key="take_off_interval")
     * C["days_per_year"]
 )
 
 growth_take_off = st.sidebar.slider(
-    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 8.0, defaults["growth_take_off"], 0.1, key="take_off")
+    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 8.0, defaults["growth_take_off"], 0.1, key="take_off_fraction")
 
 st.sidebar.markdown("### 4️⃣ Stabilize Above Baseline Function")
 
 steady_after_take_off = (
     st.sidebar.slider(
-        "How long? (in years since last change)", 0.0, 8.0, defaults["steady_after_take_off"] / C["days_per_year"], 0.25, key="steady")
+        "How long? (in years since last change)", 0.0, 8.0, defaults["steady_after_take_off"] / C["days_per_year"], 0.25, key="steady_interval")
     * C["days_per_year"]
 )
 
 growth_steady = st.sidebar.slider(
-    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 1.2, defaults["growth_steady"], 0.1, key="steady")
+    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 1.2, defaults["growth_steady"], 0.1, key="steady_fraction")
 
 st.sidebar.markdown("## Compare Against")
 
