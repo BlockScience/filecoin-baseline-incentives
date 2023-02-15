@@ -1,11 +1,21 @@
 from consensus_pledge_model.logic import *
 
+BLOCKS = [{}] # HACK
+
 # TODO: Upgrade to the Consensus Pledge Model
 
+def generic_policy(_1, _2, _3, _4):
+    return {}
 
-BLOCKS = [
+
+def generate_generic_suf(variable):
+    return lambda _1, _2, _3, state, _5: (variable, state[variable])
+
+
+CONSENSUS_PLEDGE_DEMO_BLOCKS = [
     {
         'label': 'Time Tracking',
+        'ignore': True,
         'policies': {
             'evolve_time': p_evolve_time
         },
@@ -15,38 +25,121 @@ BLOCKS = [
         }
     },
     {
-        'label': 'Evolve Network Power & Baseline Function',
-        'policies': {            
-        }, 
+        'label': 'Compute Collateral to be paid on this Round',
+        'ignore': True,
+        'policies': {
+        },
         'variables': {
-            'network_power': s_network_power,
-            'baseline': s_baseline
-        }   
+            'onboarding_consensus_pledge': None,
+            'onboarding_storage_pledge': None
+        }
     },
-    {
-        'label': 'Update Capped Power',
-        'policies': {            
-        }, 
+        {
+        'label': 'Onboard Sectors',
+        'desc': 'Adds a new `AggregateSector` to the list',
+        'ignore': True,
+        'policies': {
+        },
+        'variables': {
+            'aggregate_sectors': None
+        }
+    },
+        {
+        'label': 'Renew Sectors',
+        'desc': 'Updates the Remaining Days to the Default Lifetime',
+        'ignore': True,
+        'policies': {
+        },
+        'variables': {
+            'aggregate_sectors': None
+        }
+    },
+        {
+        'label': 'Expire Sectors',
+        'desc': 'remove sectors with remaining days = 0 & free their tokens',
+        'ignore': True,
+        'policies': {
+        },
+        'variables': {
+            'aggregate_sectors': None
+        }
+    },
+        {
+        'label': 'Compute Network Power',
+        'desc': 'Update NP based on the aggregate sectors',
+        'ignore': True,
+        'policies': {
+        },
+        'variables': {
+            'power_rb': None,
+            'power_qa': None
+        }
+    },
+        {
+        'label': 'Cummulative Capped Power',
+        'desc': '',
+        'ignore': True,
+        'policies': {
+        },
         'variables': {
             'cumm_capped_power': s_cumm_capped_power
-        }   
+        }
     },
-    {
-        'label': '(Baseline) Effective Network Time',
-        'policies': {    
-
-        }, 
+        {
+        'label': 'Effective Network Time',
+        'desc': '',
+        'ignore': True,
+        'policies': {
+        },
         'variables': {
-            'effective_network_time': s_effective_network_time
-        }   
+            'effective_days_passed': s_effective_network_time
+        }
     },
-    {
-        'label': 'Block Reward',
-        'policies': {    
-
-        }, 
+        {
+        'label': 'Compute Rewards',
+        'desc': '',
+        'ignore': True,
+        'policies': {
+        },
         'variables': {
             'reward': s_reward
-        }   
-    }
+        }
+    },
+        {
+        'label': 'Lock / Unlock Rewards',
+        'desc': '',
+        'ignore': True,
+        'policies': {
+        },
+        'variables': {
+            'aggregate_sectors': None
+        }
+    },
+        {
+        'label': 'Distribute Unlocked Rewards & Compute Token Distribution',
+        'desc': 'Unlocked Reward = Immediate Rewards + Vested Rewards',
+        'ignore': True,
+        'policies': {
+            'vest_fil': None,
+            'burn_fil': None
+        },
+        'variables': {
+            'token_distribution': None
+        }
+    },
 ]
+
+
+# CONSENSUS_PLEDGE_DEMO_BLOCKS = [block
+#                                 for block
+#                                 in CONSENSUS_PLEDGE_DEMO_BLOCKS
+#                                 if block.get('ignore', False) == True]
+
+
+for block in CONSENSUS_PLEDGE_DEMO_BLOCKS:
+    policies = block['policies']
+    variables = block['variables']
+    block['policies'] = {key: generic_policy if policy is None else policy 
+                         for key, policy in policies.items()}
+    block['variables'] = {key: generate_generic_suf(key) if variable is None else variable 
+                          for key, variable in variables.items()}

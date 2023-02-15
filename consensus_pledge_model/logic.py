@@ -83,7 +83,7 @@ def s_cumm_capped_power(params: BaselineModelParams,
     # TODO: refactor for making it cleaner
     DAYS_TO_YEARS = 1 / YEAR
     dt = params['timestep_in_days'] * DAYS_TO_YEARS
-    current_power = state['network_power']
+    current_power = state['power_rb']
 
     if params['baseline_activated'] is True:
         capped_power = min(current_power, state['baseline'])
@@ -122,8 +122,8 @@ def s_reward(params: BaselineModelParams,
 
     # Baseline Minting
     baseline_mechanism = params['baseline_mechanism']
-    eff_t_i = history[-1][-1]['effective_network_time']
-    eff_t_f = state['effective_network_time']
+    eff_t_i = history[-1][-1]['effective_days_passed'] / 365.25 # HACK
+    eff_t_f = state['effective_days_passed'] / 365.25 # HACK
 
     baseline_issuance_start = baseline_mechanism.issuance(eff_t_i)
     baseline_issuance_end = baseline_mechanism.issuance(eff_t_f)

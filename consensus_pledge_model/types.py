@@ -13,6 +13,7 @@ Year = Annotated[float, "year"]
 PiB = Annotated[float, "PiB (QA)"]
 QA_PiB = Annotated[float, "PiB (QA)"]
 PiB_per_Day = Annotated[float, "PiB per Day"]
+FIL_per_QA_PiB = Annotated[float, "PiB per Day"]
 
 @dataclass
 class GrowthScenario():
@@ -192,17 +193,25 @@ class ConsensusPledgeDemoState(TypedDict):
     cumm_capped_power: FILYear
     effective_days_passed: Days
     reward: Reward
+    onboarding_consensus_pledge: FIL_per_QA_PiB
+    onboarding_storage_pledge: FIL_per_QA_PiB
 
 
 class ConsensusPledgeParams(TypedDict):
+    timestep_in_days: Days
     VestingSchedule: dict[Days, FIL]
     # Collateral Params
     target_locked_supply: float
     storage_pledge_factor: Days
+    # Minting Params
+    simple_mechanism: object # TODO: re-evaluate it
+    baseline_mechanism: object # TODO: re-evaluate it
+    baseline_activated: bool
     # Reward Schedule Params
     linear_duration: Days
     immediate_release_fraction: float
-    # Behavioral Params      
+    # Behavioral Params   
+    new_sector_lifetime: Days
     onboarding_rate: PiB_per_Day
     onboarding_quality_factor: float
     renewal_probability: float
