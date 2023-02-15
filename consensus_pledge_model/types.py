@@ -7,10 +7,12 @@ from dataclasses import dataclass
 # Units
 Days = Annotated[float, 'days']
 FIL = Annotated[float, "FIL"]
-FILYear = Annotated[float, "FIL * Year"]
+FILYear = Annotated[float, "FIL * Year"] # TODO: check if this is right
 PerYear = Annotated[float, "1/year"]
 Year = Annotated[float, "year"]
+PiB = Annotated[float, "PiB (QA)"]
 QA_PiB = Annotated[float, "PiB (QA)"]
+PiB_per_Day = Annotated[float, "PiB per Day"]
 
 @dataclass
 class GrowthScenario():
@@ -113,6 +115,7 @@ class BaselineModelSweepParams (TypedDict):
     simple_mechanism: list[SimpleMinting]
     baseline_mechanism: list[BaselineMinting]
     
+# TODO: deactivate
 class BaselineModelState (TypedDict):
     days_passed: Days
     delta_days: Days
@@ -121,4 +124,88 @@ class BaselineModelState (TypedDict):
     cumm_capped_power: FILYear
     effective_network_time: Year
     reward: Reward
+    
+@dataclass
+class AggregateSector():
+    rb_power: PiB
+    qa_power: QA_PiB
+    remaining_days: Days
+    storage_pledge: FIL
+    consensus_pledge: FIL
+    # Key indicates Simulation Day on which Value is going to the Circ. Supply
+    reward_schedule: dict[Days, FIL]
+    
+    @property
+    def collateral(self) -> FIL:
+        return self.storage_pledge + self.consensus_pledge
+
+    @property
+    def locked_rewards(self) -> FIL:
+        return sum(self.reward_schedule.values())
+
+    @property
+    def locked(self) -> FIL:
+        return self.collateral + self.locked_rewards
+
+
+@dataclass
+class TokenDistribution():
+    minted: float
+    vested: float
+    collateral: float
+    locked_rewards: float
+    burnt: float
+
+    def update_distribution(self, 
+                            new_rewards: float,
+                            new_vested: float,
+                            aggregate_sectors: list[AggregateSector],
+                            marginal_burn: float = 0.0) -> None:
+        self.minted += new_rewards
+        self.vested += new_vested
+        self.collateral = sum(el.collateral for el in aggregate_sectors)
+        self.locked_rewards = sum(el.locked_rewards for el in aggregate_sectors)
+        self.burnt += marginal_burn
+
+
+    @property
+    def locked(self) -> FIL:
+        return self.locked_rewards + self.collateral
+
+    @property
+    def available(self) -> FIL:
+        return self.minted + self.vested - self.burnt
+
+    @property
+    def circulating(self) -> FIL:
+        return self.available - self.locked
+
+
+class ConsensusPledgeDemoState(TypedDict):
+    days_passed: Days
+    delta_days: Days
+    aggregate_sectors: list[AggregateSector]
+    token_distribution: TokenDistribution
+    power_qa: QA_PiB
+    power_rb: PiB
+    baseline: PiB
+    cumm_capped_power: FILYear
+    effective_days_passed: Days
+    reward: Reward
+
+
+class ConsensusPledgeParams(TypedDict):
+    VestingSchedule: dict[Days, FIL]
+    # Collateral Params
+    target_locked_supply: float
+    storage_pledge_factor: Days
+    # Reward Schedule Params
+    linear_duration: Days
+    immediate_release_fraction: float
+    # Behavioral Params      
+    onboarding_rate: PiB_per_Day
+    onboarding_quality_factor: float
+    renewal_probability: float
+
+
     
