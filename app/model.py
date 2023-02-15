@@ -9,9 +9,9 @@ import streamlit as st
 
 from cadCAD_tools.execution import easy_run
 from cadCAD_tools.preparation import sweep_cartesian_product
-from baseline_model.params import INITIAL_STATE, TIMESTEPS, SAMPLES, DAYS_PER_TIMESTEP
-from baseline_model.structure import BLOCKS
-from baseline_model.types import BaselineMinting, BaselineModelSweepParams, GrowthScenario, SimpleMinting
+from consensus_pledge_model.params import INITIAL_STATE, TIMESTEPS, SAMPLES, DAYS_PER_TIMESTEP
+from consensus_pledge_model.structure import BLOCKS
+from consensus_pledge_model.types import BaselineMinting, BaselineModelSweepParams, GrowthScenario, SimpleMinting
 from utils import load_constants
 
 

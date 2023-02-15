@@ -1,13 +1,13 @@
 from cadCAD_tools.execution import easy_run
 from cadCAD_tools.preparation import sweep_cartesian_product
-from baseline_model.types import GrowthScenario
+from consensus_pledge_model.types import GrowthScenario
 import pandas as pd
 
-from baseline_model.params import RAW_PARAMS
+from consensus_pledge_model.params import RAW_PARAMS
 
 
 def standard_run() -> pd.DataFrame:
-    from baseline_model import INITIAL_STATE, PARAMS, BLOCKS, TIMESTEPS, SAMPLES
+    from consensus_pledge_model import INITIAL_STATE, PARAMS, BLOCKS, TIMESTEPS, SAMPLES
 
     # Simulations
     # Set 1 of simulations: alternate growth scenarios

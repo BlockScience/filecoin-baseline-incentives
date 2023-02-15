@@ -1,5 +1,5 @@
-from baseline_model.logic import s_network_power
-from baseline_model.types import BaselineMinting, NetworkPowerScenario
+from consensus_pledge_model.logic import s_network_power
+from consensus_pledge_model.types import BaselineMinting, NetworkPowerScenario
 from pytest import approx
 
 

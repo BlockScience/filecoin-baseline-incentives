@@ -1,6 +1,6 @@
 from cmath import nan
 from math import ceil
-from baseline_model.types import BaselineMinting, BaselineModelState, BaselineModelParams, BaselineModelSweepParams, GrowthScenario, Reward, SimpleMinting
+from consensus_pledge_model.types import BaselineMinting, BaselineModelState, BaselineModelParams, BaselineModelSweepParams, GrowthScenario, Reward, SimpleMinting
 from cadCAD_tools.preparation import sweep_cartesian_product
 
 DAYS_PER_TIMESTEP = 30

@@ -1,7 +1,7 @@
 from cadCAD_tools.types import Signal, VariableUpdate
-from baseline_model.params import YEAR
+from consensus_pledge_model.params import YEAR
 
-from baseline_model.types import BaselineModelParams, BaselineModelState, Reward, Year
+from consensus_pledge_model.types import BaselineModelParams, BaselineModelState, Reward, Year
 
 # ## Time Tracking
 

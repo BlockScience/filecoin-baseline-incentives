@@ -1,5 +1,5 @@
-from baseline_model import default_run_args
-from baseline_model.experiment import standard_run
+from consensus_pledge_model import default_run_args
+from consensus_pledge_model.experiment import standard_run
 from cadCAD_tools.execution import easy_run
 from datetime import datetime
 import click

@@ -1,4 +1,4 @@
-from baseline_model.logic import *
+from consensus_pledge_model.logic import *
 
 BLOCKS = [
     {
