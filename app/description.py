@@ -1,5 +1,6 @@
 import streamlit as st
 
+# TODO: Re-factor this document to reflect that'we re doing an Consesus Pledge Model
 
 def description():
     st.write(

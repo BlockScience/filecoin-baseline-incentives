@@ -1,5 +1,8 @@
 from consensus_pledge_model.logic import *
 
+# TODO: Upgrade to the Consensus Pledge Model
+
+
 BLOCKS = [
     {
         'label': 'Time Tracking',

@@ -3,6 +3,8 @@ from math import ceil
 from consensus_pledge_model.types import BaselineMinting, BaselineModelState, BaselineModelParams, BaselineModelSweepParams, GrowthScenario, Reward, SimpleMinting
 from cadCAD_tools.preparation import sweep_cartesian_product
 
+# TODO: Upgrade to the Consensus Pledge Model
+
 DAYS_PER_TIMESTEP = 30
 YEAR = 365.25
 SIMULATION_TIME_IN_YEARS = 6

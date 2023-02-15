@@ -3,6 +3,8 @@ from consensus_pledge_model.params import YEAR
 
 from consensus_pledge_model.types import BaselineModelParams, BaselineModelState, Reward, Year
 
+# TODO: Upgrade to the Consensus Pledge Model
+
 # ## Time Tracking
 
 def p_evolve_time(params: BaselineModelParams,

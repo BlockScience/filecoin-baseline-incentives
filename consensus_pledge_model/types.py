@@ -2,6 +2,8 @@ from typing import Annotated, TypedDict, Union
 from math import exp, log, nan
 from dataclasses import dataclass
 
+# TODO: Upgrade to the Consensus Pledge Model
+
 # Units
 Days = Annotated[float, 'days']
 FIL = Annotated[float, "FIL"]

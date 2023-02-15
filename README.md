@@ -1,4 +1,7 @@
 # filecoin-baseline-incentives
+
+> TODO: Re-factor this document to reflect that'we re doing an Consesus Pledge Model
+
 Interactive Calculator for the economic incentives around the Filecoin Baseline Minting based on cadCAD + Streamlit.
 
 ## How to run it
