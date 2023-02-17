@@ -12,10 +12,13 @@ def generate_generic_suf(variable):
     return lambda _1, _2, _3, state, _5: (variable, state[variable])
 
 
+
+
+
 CONSENSUS_PLEDGE_DEMO_BLOCKS = [
     {
         'label': 'Time Tracking',
-        'ignore': True,
+        'ignore': True, 
         'policies': {
             'evolve_time': p_evolve_time
         },
@@ -30,8 +33,8 @@ CONSENSUS_PLEDGE_DEMO_BLOCKS = [
         'policies': {
         },
         'variables': {
-            'onboarding_consensus_pledge': None,
-            'onboarding_storage_pledge': None
+            'onboarding_consensus_pledge': s_onboarding_consensus_pledge,
+            'onboarding_storage_pledge': s_onboarding_storage_pledge
         }
     },
         {
@@ -41,7 +44,7 @@ CONSENSUS_PLEDGE_DEMO_BLOCKS = [
         'policies': {
         },
         'variables': {
-            'aggregate_sectors': None
+            'aggregate_sectors': s_sectors_onboard
         }
     },
         {
@@ -51,28 +54,17 @@ CONSENSUS_PLEDGE_DEMO_BLOCKS = [
         'policies': {
         },
         'variables': {
-            'aggregate_sectors': None
+            'aggregate_sectors': s_sectors_renew
         }
     },
         {
         'label': 'Expire Sectors',
-        'desc': 'remove sectors with remaining days = 0 & free their tokens',
+        'desc': 'Evolve Sectors Lifetime & Expire them',
         'ignore': True,
         'policies': {
         },
         'variables': {
-            'aggregate_sectors': None
-        }
-    },
-        {
-        'label': 'Compute Network Power',
-        'desc': 'Update NP based on the aggregate sectors',
-        'ignore': True,
-        'policies': {
-        },
-        'variables': {
-            'power_rb': None,
-            'power_qa': None
+            'aggregate_sectors': s_sectors_expire
         }
     },
         {
@@ -112,7 +104,7 @@ CONSENSUS_PLEDGE_DEMO_BLOCKS = [
         'policies': {
         },
         'variables': {
-            'aggregate_sectors': None
+            'aggregate_sectors': s_sectors_rewards
         }
     },
         {
@@ -120,11 +112,11 @@ CONSENSUS_PLEDGE_DEMO_BLOCKS = [
         'desc': 'Unlocked Reward = Immediate Rewards + Vested Rewards',
         'ignore': True,
         'policies': {
-            'vest_fil': None,
-            'burn_fil': None
+            'vest_fil': p_vest_fil,
+            'burn_fil': p_burn_fil
         },
         'variables': {
-            'token_distribution': None
+            'token_distribution': s_token_distribution
         }
     },
 ]

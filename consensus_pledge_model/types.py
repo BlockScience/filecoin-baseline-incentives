@@ -182,10 +182,18 @@ class TokenDistribution():
         return self.available - self.locked
 
 
+@dataclass
+class AggregateSectorList():
+    aggregate_sectors: list[AggregateSector]
+
+    @property
+    def power_qa(self) -> QA_PiB:
+        return sum(agg_sector.power_qa for agg_sector in self.aggregate_sectors)
+
 class ConsensusPledgeDemoState(TypedDict):
     days_passed: Days
     delta_days: Days
-    aggregate_sectors: list[AggregateSector]
+    aggregate_sectors: AggregateSectorList
     token_distribution: TokenDistribution
     power_qa: QA_PiB
     power_rb: PiB

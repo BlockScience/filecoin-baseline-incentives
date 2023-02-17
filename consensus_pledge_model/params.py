@@ -6,6 +6,7 @@ from cadCAD_tools.preparation import sweep_cartesian_product
 from consensus_pledge_model.types import ConsensusPledgeDemoState, ConsensusPledgeParams
 from consensus_pledge_model.types import QA_PiB, PiB_per_Day, PiB, Days, FIL, FIL_per_QA_PiB
 from consensus_pledge_model.types import AggregateSector, TokenDistribution
+from consensus_pledge_model.types import AggregateSectorList
 
 # TODO: Upgrade to the Consensus Pledge Model
 # TODO: pinpoint the sources for the numerical constants
@@ -74,7 +75,7 @@ TIMESTEPS = int(ceil(SIMULATION_TIME_IN_YEARS * YEAR) / DAYS_PER_TIMESTEP)
 SAMPLES = 1
 
 # TODO: move from `hack` definitions towards `guess` or `estimate` ones.
-INITIAL_AGGREGATE_SECTORS: list[AggregateSector] = [] # Source: hack
+INITIAL_AGGREGATE_SECTORS = AggregateSectorList([]) # Source: hack
 INITIAL_TOKEN_DISTRIBUTION: TokenDistribution = TokenDistribution(
     minted=0.0,
     vested=0.0,
