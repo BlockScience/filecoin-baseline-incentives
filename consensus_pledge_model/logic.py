@@ -268,8 +268,10 @@ def s_sectors_rewards(_1,
 
     # Homework for @jackhack00: Implement this SUF
     """
-    Parts for what this SUF represents for each AggregateScector Schedule:
+    Parts for what this SUF represents for each AggregateSector Schedule:
     Part 1 - Unlock Current Rewards. eg. {0: 5, 1: 10, 2: 20} -> {1: 10, 2: 20}
+    NOTE: Unlocking only adds them back to circulating. Can remove item at index 0, since
+    we must update at every timestep anyways, and new rewards are only added from the timestep forward
     Part 2 - Shift Reward Schedule. eg. {1: 10, 2: 20} -> {0: 10, 1: 20}
     Part 3 - Lock New Rewards. eg. {0: 10, 1: 20} -> {0: 15, 1: 25, 2: 5}
 
@@ -289,7 +291,36 @@ def s_sectors_rewards(_1,
     reward_schedule_final = {0: 20 + 5, 1: 30 + 5, 2: 40 + 5, 3: 50}
     
     """
-    return ('aggregate_sectors', None)  # TODO
+    #retrieve total rewards
+    total_reward = Reward("block_reward")
+    linear_duration = ConsensusPledgeParams("linear_duration")
+    current_sector_list = state["aggregate_sectors"]
+    total_qa = AggregateSectorList.power_qa()
+    sector_qa = AggregateSector("qa_power")
+    reward_schedule = AggregateSector{reward_schedule}
+    
+    for agg_sector in current_sector_list:
+        #get share of total reward
+        share_qa = sector_qa / total_qa 
+        share_reward = share_qa * total_reward
+        daily_reward = share_reward / linear_duration
+        #create new reward schedule dict to be merged
+        today_reward_schedule = {k:daily_reward for k in range(linear_duration)}
+        #pop 0 day from old reward schedule
+        reward_schedule.pop(0)
+        #create new list of dict items to iterate over
+        newlist = list(reward_schedule.items())
+        #create new dict from list with 1 subtracted from keys to reorder to day0 
+        reward_schedule = {k-1 : v for k,v in newlist}
+
+        #create new dict, and adds the values from shifted reward schedule and 
+        #newly created reward schedule
+        updated_reward_schedule = {x: reward_schedule.get(x, 0) + today_reward_schedule.get(x, 0)
+        for x in set(reward_schedule).union(today_reward_schedule)}
+        reward_schedule = updated_reward_schedule
+
+
+    return ('aggregate_sectors', reward_schedule)  # TODO
 
 
 def p_vest_fil(_1,
