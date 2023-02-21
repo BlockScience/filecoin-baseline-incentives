@@ -2,7 +2,7 @@ from cadCAD_tools.types import Signal, VariableUpdate
 from consensus_pledge_model.params import YEAR
 from collections import defaultdict
 
-from consensus_pledge_model.types import * 
+from consensus_pledge_model.types import *
 # TODO: Upgrade to the Consensus Pledge Model
 
 # ## Time Tracking
@@ -188,16 +188,16 @@ def s_sectors_renew(params,
         # Retrieve renew values
         sector_power_rb_renew = aggregate_sector.power_rb * renew_share
         sector_power_qa_renew = aggregate_sector.power_qa * renew_share
-        sector_storage_pledge_renew = aggregate_sector.storage_pledge  * renew_share
-        sector_consensus_pledge_renew = aggregate_sector.consensus_pledge  * renew_share
-        sector_schedule_renew = {k: v * renew_share 
-                                 for k, v 
+        sector_storage_pledge_renew = aggregate_sector.storage_pledge * renew_share
+        sector_consensus_pledge_renew = aggregate_sector.consensus_pledge * renew_share
+        sector_schedule_renew = {k: v * renew_share
+                                 for k, v
                                  in aggregate_sector.reward_schedule.items()}
 
         # Assign values to the new renewed sectors
         power_rb_renew += sector_power_rb_renew
         power_qa_renew += sector_power_qa_renew
-        # Storage & Consensus Pledge are going to be recomputed 
+        # Storage & Consensus Pledge are going to be recomputed
         # after the for-loop
         for k, v in sector_schedule_renew.items():
             reward_schedule_renew[k] += v
@@ -205,8 +205,8 @@ def s_sectors_renew(params,
         # Subtract values from the non-renewed sectors
         aggregate_sector.power_rb -= sector_power_rb_renew
         aggregate_sector.power_qa -= sector_power_qa_renew
-        aggregate_sector.storage_pledge -= sector_storage_pledge_renew 
-        aggregate_sector.consensus_pledge -= sector_consensus_pledge_renew 
+        aggregate_sector.storage_pledge -= sector_storage_pledge_renew
+        aggregate_sector.consensus_pledge -= sector_consensus_pledge_renew
         for k, v in sector_schedule_renew.items():
             aggregate_sector.reward_schedule[k] -= v
 
@@ -214,7 +214,8 @@ def s_sectors_renew(params,
     storage_pledge_renew = 0.0
     consensus_pledge_renew = 0.0
     storage_pledge_renew = state['onboarding_storage_pledge'] * power_qa_renew
-    consensus_pledge_renew = state['onboarding_consensus_pledge'] * power_qa_renew
+    consensus_pledge_renew = state['onboarding_consensus_pledge'] * \
+        power_qa_renew
     reward_schedule_renew = dict(reward_schedule_renew)
 
     # Create new sector representing the Renewed Sectors
@@ -233,7 +234,6 @@ def s_sectors_expire(_1,
                      _3,
                      state: ConsensusPledgeDemoState,
                      signal: Signal) -> VariableUpdate:
-
     """
     Evolve the sector lifetime & expire if they're below zero.
     Freed tokens are handled implictly when re-computing the `token_distribution
@@ -289,36 +289,35 @@ def s_sectors_rewards(_1,
     & reward_schedule_init = {0: 20, 1: 30, 2: 40, 3: 50}
     then
     reward_schedule_final = {0: 20 + 5, 1: 30 + 5, 2: 40 + 5, 3: 50}
-    
+
     """
-    #retrieve total rewards
+    # retrieve total rewards
     total_reward = Reward("block_reward")
     linear_duration = ConsensusPledgeParams("linear_duration")
     current_sector_list = state["aggregate_sectors"]
     total_qa = AggregateSectorList.power_qa()
     sector_qa = AggregateSector("qa_power")
     reward_schedule = AggregateSector{reward_schedule}
-    
+    immediate_release = ConsensusPledgeParams("immediate_release_fraction")
+
     for agg_sector in current_sector_list:
-        #get share of total reward
-        share_qa = sector_qa / total_qa 
-        share_reward = share_qa * total_reward
+        # get share of total reward
+        share_qa = sector_qa / total_qa
+        available_reward = total_reward * (1.0 - immediate_release)
+        share_reward = share_qa * available_reward
         daily_reward = share_reward / linear_duration
-        #create new reward schedule dict to be merged
-        today_reward_schedule = {k:daily_reward for k in range(linear_duration)}
-        #pop 0 day from old reward schedule
-        reward_schedule.pop(0)
-        #create new list of dict items to iterate over
-        newlist = list(reward_schedule.items())
-        #create new dict from list with 1 subtracted from keys to reorder to day0 
-        reward_schedule = {k-1 : v for k,v in newlist}
+        # create new reward schedule dict to be merged
+        today_reward_schedule = {
+            k + state['days_passed']: daily_reward for k in range(linear_duration)}
+        # new method of transforming the dict
+        new_reward_schedule = {
+            k: v for k, v in reward_schedule.items() if k > state['days_passed']}
 
-        #create new dict, and adds the values from shifted reward schedule and 
-        #newly created reward schedule
-        updated_reward_schedule = {x: reward_schedule.get(x, 0) + today_reward_schedule.get(x, 0)
-        for x in set(reward_schedule).union(today_reward_schedule)}
+        # create new dict, and adds the values from shifted reward schedule and
+        # newly created reward schedule
+        updated_reward_schedule = {x: new_reward_schedule.get(x, 0.0) + today_reward_schedule.get(x, 0.0)
+                                   for x in set(new_reward_schedule).union(today_reward_schedule)}
         reward_schedule = updated_reward_schedule
-
 
     return ('aggregate_sectors', reward_schedule)  # TODO
 
