@@ -260,7 +260,7 @@ def s_sectors_expire(_1,
     return ('aggregate_sectors', current_sectors_list)
 
 
-def s_sectors_rewards(_1,
+def s_sectors_rewards(params,
                       _2,
                       _3,
                       state: ConsensusPledgeDemoState,
@@ -292,13 +292,14 @@ def s_sectors_rewards(_1,
 
     """
     # retrieve total rewards
-    total_reward = Reward("block_reward")
-    linear_duration = ConsensusPledgeParams("linear_duration")
+    total_reward = state["reward"]
+    linear_duration = params["linear_duration"]
     current_sector_list = state["aggregate_sectors"]
-    total_qa = AggregateSectorList.power_qa()
-    sector_qa = AggregateSector("qa_power")
-    reward_schedule = AggregateSector{reward_schedule}
-    immediate_release = ConsensusPledgeParams("immediate_release_fraction")
+    total_qa = state["power_qa"]
+    sector_qa = state["aggregate_sectors"]
+    reward_schedule = state["aggregate_sectors"]
+    immediate_release = params["immediate_release_fraction"]
+    days_passed = state['days_passed']
 
     for agg_sector in current_sector_list:
         # get share of total reward
@@ -308,10 +309,10 @@ def s_sectors_rewards(_1,
         daily_reward = share_reward / linear_duration
         # create new reward schedule dict to be merged
         today_reward_schedule = {
-            k + state['days_passed']: daily_reward for k in range(linear_duration)}
+            k + days_passed: daily_reward for k in range(linear_duration)}
         # new method of transforming the dict
         new_reward_schedule = {
-            k: v for k, v in reward_schedule.items() if k > state['days_passed']}
+            k: v for k, v in reward_schedule.items() if k > days_passed}
 
         # create new dict, and adds the values from shifted reward schedule and
         # newly created reward schedule
