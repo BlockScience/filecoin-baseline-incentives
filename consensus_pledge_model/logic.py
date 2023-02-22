@@ -260,7 +260,7 @@ def s_sectors_expire(_1,
     return ('aggregate_sectors', current_sectors_list)
 
 
-def s_sectors_rewards(params,
+def s_sectors_rewards(params: ConsensusPledgeParams,
                       _2,
                       _3,
                       state: ConsensusPledgeDemoState,
@@ -292,7 +292,7 @@ def s_sectors_rewards(params,
 
     """
     # retrieve total rewards
-    total_reward = state["reward"]
+    total_reward = state["reward"].block_reward
     linear_duration = params["linear_duration"]
     current_sector_list = state["aggregate_sectors"]
     total_qa = state["power_qa"]
@@ -316,9 +316,9 @@ def s_sectors_rewards(params,
 
         # create new dict, and adds the values from shifted reward schedule and
         # newly created reward schedule
-        updated_reward_schedule = {x: new_reward_schedule.get(x, 0.0) + today_reward_schedule.get(x, 0.0)
-                                   for x in set(new_reward_schedule).union(today_reward_schedule)}
-        reward_schedule = updated_reward_schedule
+        reward_days = set(new_reward_schedule | today_reward_schedule)
+        reward_schedule = {unlock_day: new_reward_schedule.get(
+            unlock_day, 0.0) + today_reward_schedule.get(unlock_day, 0.0) for unlock_day in reward_days}
 
     return ('aggregate_sectors', reward_schedule)  # TODO
 
@@ -337,9 +337,22 @@ def p_burn_fil(_1,
     return {}  # TODO
 
 
-def s_token_distribution(_1,
+def s_token_distribution(params: ConsensusPledgeParams,
                          _2,
                          _3,
                          state: ConsensusPledgeDemoState,
                          signal: Signal) -> VariableUpdate:
-    return ('token_distribution', None)  # TODO
+    distribution = state["token_distribution"]
+    rewards = state["reward"].block_reward
+    aggregate_sectors = state["aggregate_sectors"]
+    burn = 0.0  # TODO
+    #signal = {FIL_to_Vest : FIL , FIL_to_Burn : FIL}
+    today_vested = signal["Vesting_schedule"].get(FIL_to_vest, 0.0)
+
+    distribution = distribution.update_distribution(
+        new_rewards=rewards, 
+        new_vested=today_vested, 
+        aggregate_sectors=aggregate_sectors, 
+        marginal_burn=burn)
+
+    return ('token_distribution', distribution)  # TODO
