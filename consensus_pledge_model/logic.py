@@ -347,7 +347,7 @@ def s_token_distribution(params: ConsensusPledgeParams,
     aggregate_sectors = state["aggregate_sectors"]
     burn = 0.0  # TODO
     #signal = {FIL_to_Vest : FIL , FIL_to_Burn : FIL}
-    today_vested = signal["Vesting_schedule"].get(FIL_to_vest, 0.0)
+    today_vested = signal["Vesting_schedule"].get(FIL_to_Vest, 0.0)
 
     distribution = distribution.update_distribution(
         new_rewards=rewards, 
