@@ -128,8 +128,8 @@ class BaselineModelState (TypedDict):
     
 @dataclass
 class AggregateSector():
-    rb_power: PiB
-    qa_power: QA_PiB
+    power_rb: PiB
+    power_qa: QA_PiB
     remaining_days: Days
     storage_pledge: FIL
     consensus_pledge: FIL
@@ -161,12 +161,13 @@ class TokenDistribution():
                             new_rewards: float,
                             new_vested: float,
                             aggregate_sectors: list[AggregateSector],
-                            marginal_burn: float = 0.0) -> None:
+                            marginal_burn: float = 0.0):
         self.minted += new_rewards
         self.vested += new_vested
         self.collateral = sum(el.collateral for el in aggregate_sectors)
         self.locked_rewards = sum(el.locked_rewards for el in aggregate_sectors)
         self.burnt += marginal_burn
+        return self
 
 
     @property
@@ -193,7 +194,7 @@ class AggregateSectorList():
 class ConsensusPledgeDemoState(TypedDict):
     days_passed: Days
     delta_days: Days
-    aggregate_sectors: AggregateSectorList
+    aggregate_sectors: list[AggregateSector]
     token_distribution: TokenDistribution
     power_qa: QA_PiB
     power_rb: PiB
@@ -201,13 +202,13 @@ class ConsensusPledgeDemoState(TypedDict):
     cumm_capped_power: FILYear
     effective_days_passed: Days
     reward: Reward
-    onboarding_consensus_pledge: FIL_per_QA_PiB
-    onboarding_storage_pledge: FIL_per_QA_PiB
+    storage_pledge_per_new_qa_power: FIL_per_QA_PiB
+    consensus_pledge_per_new_qa_power: FIL_per_QA_PiB
 
 
 class ConsensusPledgeParams(TypedDict):
     timestep_in_days: Days
-    VestingSchedule: dict[Days, FIL]
+    vesting_schedule: dict[Days, FIL] # Days = Days since Simulation Start
     # Collateral Params
     target_locked_supply: float
     storage_pledge_factor: Days

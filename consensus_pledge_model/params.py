@@ -14,6 +14,7 @@ from consensus_pledge_model.types import AggregateSectorList
 DAYS_PER_TIMESTEP = 30
 YEAR = 365.25
 SIMULATION_TIME_IN_YEARS = 6
+TIMESTEP_IN_DAYS = 1
 
 BLOCKS_SINCE_LAUNCH = 1_563_129 # Block height used as an reference point
 DAYS_AFTER_LAUNCH = (BLOCKS_SINCE_LAUNCH * 30) / (60 * 60 * 24) # Days after launch
@@ -75,7 +76,9 @@ TIMESTEPS = int(ceil(SIMULATION_TIME_IN_YEARS * YEAR) / DAYS_PER_TIMESTEP)
 SAMPLES = 1
 
 # TODO: move from `hack` definitions towards `guess` or `estimate` ones.
-INITIAL_AGGREGATE_SECTORS = AggregateSectorList([]) # Source: hack
+# INITIAL_AGGREGATE_SECTORS = AggregateSectorList([]) # Source: hack
+INITIAL_AGGREGATE_SECTORS = []
+
 INITIAL_TOKEN_DISTRIBUTION: TokenDistribution = TokenDistribution(
     minted=0.0,
     vested=0.0,
@@ -92,7 +95,7 @@ INITIAL_TOKEN_DISTRIBUTION.update_distribution(new_rewards=INITIAL_REWARDS,
                                                aggregate_sectors=INITIAL_AGGREGATE_SECTORS,
                                                marginal_burn=INITIAL_BURNT)
 
-DEMO_VESTING_SCHEDULE: dict[Days, FIL] = None
+DEMO_VESTING_SCHEDULE: dict[Days, FIL] = {} # TODO: fill in
 AVERAGE_QUALITY_FACTOR = 3.0
 
 INITIAL_ONBOARDING_CONSENSUS_PLEDGE: FIL_per_QA_PiB = 0.0 # Source: hack
@@ -100,7 +103,7 @@ INITIAL_ONBOARDING_STORAGE_PLEDGE: FIL_per_QA_PiB = 0.0 # Source: hack
 
 CONSENSUS_PLEDGE_DEMO_INITIAL_STATE = ConsensusPledgeDemoState(
     days_passed=0,
-    delta_days=0,
+    delta_days=TIMESTEP_IN_DAYS,
     aggregate_sectors=INITIAL_AGGREGATE_SECTORS,
     token_distribution=INITIAL_TOKEN_DISTRIBUTION,
     power_qa=INITIAL_NETWORK_POWER,
@@ -108,16 +111,16 @@ CONSENSUS_PLEDGE_DEMO_INITIAL_STATE = ConsensusPledgeDemoState(
     baseline=INITIAL_BASELINE,
     cumm_capped_power=INITIAL_CUMM_CAPPED_POWER,
     effective_days_passed=INITIAL_EFFECTIVE_NETWORK_TIME,
-    reward=Reward(),
-    onboarding_consensus_pledge=INITIAL_ONBOARDING_CONSENSUS_PLEDGE,
-    onboarding_storage_pledge=INITIAL_ONBOARDING_STORAGE_PLEDGE
+    reward=Reward(0.0, 0.0), # HACK
+    storage_pledge_per_new_qa_power=INITIAL_ONBOARDING_CONSENSUS_PLEDGE,
+    consensus_pledge_per_new_qa_power=INITIAL_ONBOARDING_STORAGE_PLEDGE
 )
 
 LINEAR_DURATION: Days = 180 # Source: Spec
 
 CONSENSUS_PLEDGE_DEMO_SINGLE_RUN_PARAMS = ConsensusPledgeParams(
-    timestep_in_days=1,
-    VestingSchedule=DEMO_VESTING_SCHEDULE, # Source: Guess
+    timestep_in_days=TIMESTEP_IN_DAYS,
+    vesting_schedule=DEMO_VESTING_SCHEDULE, # Source: Guess
     target_locked_supply=0.3, # Source: Spec
     storage_pledge_factor=20, # Source: Spec 
     simple_mechanism=SimpleMinting(), # TODO: re-evaluate it

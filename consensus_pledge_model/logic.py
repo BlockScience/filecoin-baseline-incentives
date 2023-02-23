@@ -3,7 +3,6 @@ from consensus_pledge_model.params import YEAR
 from collections import defaultdict
 
 from consensus_pledge_model.types import *
-# TODO: Upgrade to the Consensus Pledge Model
 
 # ## Time Tracking
 
@@ -35,32 +34,22 @@ def s_delta_days(_1,
 # ## Network
 
 
-def s_network_power(params: ConsensusPledgeParams,
-                    _2,
-                    _3,
-                    state: ConsensusPledgeDemoState,
-                    signal: Signal) -> VariableUpdate:
+def s_power_qa(params: ConsensusPledgeParams,
+               _2,
+               _3,
+               state: ConsensusPledgeDemoState,
+               signal: Signal) -> VariableUpdate:
+    value = sum(s.power_qa for s in state['aggregate_sectors'])
+    return ('power_qa', value)
 
-    network_power = state['network_power']
-    days_passed = state['days_passed']
-    baseline_growth = params['baseline_mechanism'].annual_baseline_growth
-    scenario = params['network_power_scenario']
-    dt: Year = params['timestep_in_days'] / YEAR
 
-    # Logic around the GrowthScenario object.
-    if days_passed >= scenario.steady_after_beginning:
-        growth_rate = scenario.growth_steady * baseline_growth
-    elif days_passed >= scenario.take_off_after_beginning:
-        growth_rate = scenario.growth_take_off * baseline_growth
-    elif days_passed >= scenario.stabilized_after_beginning:
-        growth_rate = scenario.growth_stable * baseline_growth
-    else:
-        growth_rate = scenario.growth_fall * baseline_growth
-
-    fractional_growth = ((1 + growth_rate) ** dt)
-    new_power = network_power * fractional_growth
-
-    return ('network_power', new_power)
+def s_power_rb(params: ConsensusPledgeParams,
+               _2,
+               _3,
+               state: ConsensusPledgeDemoState,
+               signal: Signal) -> VariableUpdate:
+    value = sum(s.power_rb for s in state['aggregate_sectors'])
+    return ('power_rb', value)
 
 
 def s_baseline(params: ConsensusPledgeParams,
@@ -84,7 +73,7 @@ def s_cumm_capped_power(params: ConsensusPledgeParams,
     # TODO: refactor for making it cleaner
     DAYS_TO_YEARS = 1 / YEAR
     dt = params['timestep_in_days'] * DAYS_TO_YEARS
-    current_power = state['aggregate_sectors'].power_qa
+    current_power = state['power_qa']
 
     if params['baseline_activated'] is True:
         capped_power = min(current_power, state['baseline'])
@@ -135,14 +124,46 @@ def s_reward(params: ConsensusPledgeParams,
     return ('reward', reward)
 
 
-def s_onboarding_consensus_pledge(params, _2, _3, state, _5):
-    value = None  # TODO
-    return ('s_onboarding_consensus_pledge', value)
+def s_consensus_pledge_per_new_qa_power(params,
+                                        _2,
+                                        _3,
+                                        state,
+                                        _5):
+    """
+    CP per Sector = TLS * CircSupply * SectorQAP / max(baseline, QA_Net_Power)
+    Sum[SectorQAP] = OnboardingNetworkQAP
+    CP this round = OnboardingNetworkQAP * 
+    What should be returned: TLS * CircSupply / max(baseline, CurrentNetworkQAP)
+    """
+    value = params['target_locked_supply']
+    value *= state['token_distribution'].circulating
+    value /= max(state['baseline'], state['power_qa'])
+    return ('consensus_pledge_per_new_qa_power', value)
 
 
-def s_onboarding_storage_pledge(params, _2, _3, state, _5):
-    value = None  # TODO
-    return ('onboarding_storage_pledge', value)
+def s_storage_pledge_per_new_qa_power(params,
+                                      _2,
+                                      history: dict[list, dict[list, ConsensusPledgeDemoState]],
+                                      state: ConsensusPledgeDemoState, _5):
+    """
+    SP per Sector = Estimated 20 days of daily BR for the Sector
+    SP this round = OnboardingNetworkQAP * 20 * DailyBR / ExistingNetworkQAP
+    What should be returned: 20 * DailyBR / CurrentNetworkQAP
+    """
+
+    current_reward = state["reward"].block_reward
+    dt = state['delta_days']
+    daily_reward_estimate = current_reward / dt
+
+    value = daily_reward_estimate
+    value *= 20
+    value /= state["power_qa"]
+
+    #total_reward = state["reward"].block_reward
+    #total_qa = state["power_qa"]
+    #multiplier_days = 20
+    #value = multiplier_days * total_reward / total_qa
+    return ('storage_pledge_per_new_qa_power', value)
 
 
 def s_sectors_onboard(params,
@@ -153,19 +174,19 @@ def s_sectors_onboard(params,
     # Sector Properties
     power_rb_new = params['onboarding_rate']
     power_qa_new = power_rb_new * params['onboarding_quality_factor']
-    storage_pledge = state['onboarding_storage_pledge'] * power_qa_new
-    consensus_pledge = state['onboarding_consensus_pledge'] * power_rb_new
+    storage_pledge = state['storage_pledge_per_new_qa_power'] * power_qa_new
+    consensus_pledge = state['consensus_pledge_per_new_qa_power'] * power_qa_new
     reward_schedule = {}
 
-    # TODO: check if copying is too shallow or deep
+    # TODO: check if copying is too shallow or deep (low priority)
     current_sectors_list = state['aggregate_sectors']
-    new_sectors = AggregateSector(rb_power=power_rb_new,
-                                  qa_power=power_qa_new,
+    new_sectors = AggregateSector(power_rb=power_rb_new,
+                                  power_qa=power_qa_new,
                                   remaining_days=params['new_sector_lifetime'],
                                   storage_pledge=storage_pledge,
                                   consensus_pledge=consensus_pledge,
                                   reward_schedule=reward_schedule)
-    current_sectors_list.aggregate_sectors.append(new_sectors)
+    current_sectors_list.append(new_sectors)
 
     return ('aggregate_sectors', current_sectors_list)
 
@@ -177,7 +198,7 @@ def s_sectors_renew(params,
                     signal: Signal) -> VariableUpdate:
 
     renew_share = params['renewal_probability']
-    # TODO: check if copying is too shallow or deep
+    # TODO: check if copying is too shallow or deep (low priority)
     current_sectors_list = state['aggregate_sectors']
 
     power_rb_renew: PiB = 0.0
@@ -213,19 +234,23 @@ def s_sectors_renew(params,
     # Compute Pledges
     storage_pledge_renew = 0.0
     consensus_pledge_renew = 0.0
-    storage_pledge_renew = state['onboarding_storage_pledge'] * power_qa_renew
-    consensus_pledge_renew = state['onboarding_consensus_pledge'] * \
-        power_qa_renew
+
+    storage_pledge_renew = state['storage_pledge_per_new_qa_power']
+    storage_pledge_renew *= power_qa_renew
+
+    consensus_pledge_renew = state['consensus_pledge_per_new_qa_power']
+    consensus_pledge_renew *= power_qa_renew
+
     reward_schedule_renew = dict(reward_schedule_renew)
 
     # Create new sector representing the Renewed Sectors
-    new_sectors = AggregateSector(rb_power=power_rb_renew,
-                                  qa_power=power_qa_renew,
+    new_sectors = AggregateSector(power_rb=power_rb_renew,
+                                  power_qa=power_qa_renew,
                                   remaining_days=params['new_sector_lifetime'],
                                   storage_pledge=storage_pledge_renew,
                                   consensus_pledge=consensus_pledge_renew,
                                   reward_schedule=reward_schedule_renew)
-    current_sectors_list.aggregate_sectors.append(new_sectors)
+    current_sectors_list.append(new_sectors)
     return ('aggregate_sectors', current_sectors_list)
 
 
@@ -296,45 +321,53 @@ def s_sectors_rewards(params: ConsensusPledgeParams,
     linear_duration = params["linear_duration"]
     current_sector_list = state["aggregate_sectors"]
     total_qa = state["power_qa"]
-    sector_qa = state["aggregate_sectors"]
-    reward_schedule = state["aggregate_sectors"]
     immediate_release = params["immediate_release_fraction"]
     days_passed = state['days_passed']
 
     for agg_sector in current_sector_list:
+        reward_schedule = agg_sector.reward_schedule
         # get share of total reward
+        sector_qa = agg_sector.power_qa
         share_qa = sector_qa / total_qa
         available_reward = total_reward * (1.0 - immediate_release)
         share_reward = share_qa * available_reward
         daily_reward = share_reward / linear_duration
         # create new reward schedule dict to be merged
-        today_reward_schedule = {
-            k + days_passed: daily_reward for k in range(linear_duration)}
+        today_reward_schedule = {k + days_passed: daily_reward
+                                 for k
+                                 in range(linear_duration)}
         # new method of transforming the dict
-        new_reward_schedule = {
-            k: v for k, v in reward_schedule.items() if k > days_passed}
+        new_reward_schedule = {k: v
+                               for k, v
+                               in reward_schedule.items() if k > days_passed}
 
         # create new dict, and adds the values from shifted reward schedule and
         # newly created reward schedule
         reward_days = set(new_reward_schedule | today_reward_schedule)
-        reward_schedule = {unlock_day: new_reward_schedule.get(
-            unlock_day, 0.0) + today_reward_schedule.get(unlock_day, 0.0) for unlock_day in reward_days}
+        updated_reward_schedule = {unlock_day: new_reward_schedule.get(
+            unlock_day, 0.0) + today_reward_schedule.get(unlock_day, 0.0)
+            for unlock_day
+            in reward_days}
 
-    return ('aggregate_sectors', reward_schedule)  # TODO
+        agg_sector.reward_schedule = updated_reward_schedule
+
+    return ('aggregate_sectors', current_sector_list)
 
 
-def p_vest_fil(_1,
+def p_vest_fil(params: ConsensusPledgeParams,
                _2,
                _3,
                state: ConsensusPledgeDemoState) -> VariableUpdate:
-    return {}  # TODO
+    now = state['days_passed']
+    value = params['vesting_schedule'].get(now, 0.0)
+    return {'fil_to_vest': value}
 
 
 def p_burn_fil(_1,
                _2,
                _3,
                state: ConsensusPledgeDemoState) -> VariableUpdate:
-    return {}  # TODO
+    return {'fil_to_burn': 0.0}
 
 
 def s_token_distribution(params: ConsensusPledgeParams,
@@ -345,14 +378,13 @@ def s_token_distribution(params: ConsensusPledgeParams,
     distribution = state["token_distribution"]
     rewards = state["reward"].block_reward
     aggregate_sectors = state["aggregate_sectors"]
-    burn = 0.0  # TODO
-    #signal = {FIL_to_Vest : FIL , FIL_to_Burn : FIL}
-    today_vested = signal["Vesting_schedule"].get(FIL_to_Vest, 0.0)
+    burn = signal.get('fil_to_burn', 0.0)
+    today_vested = signal.get("fil_to_vest", 0.0)
 
     distribution = distribution.update_distribution(
-        new_rewards=rewards, 
-        new_vested=today_vested, 
-        aggregate_sectors=aggregate_sectors, 
+        new_rewards=rewards,
+        new_vested=today_vested,
+        aggregate_sectors=aggregate_sectors,
         marginal_burn=burn)
 
-    return ('token_distribution', distribution)  # TODO
+    return ('token_distribution', distribution)

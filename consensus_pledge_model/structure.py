@@ -33,8 +33,8 @@ CONSENSUS_PLEDGE_DEMO_BLOCKS = [
         'policies': {
         },
         'variables': {
-            'onboarding_consensus_pledge': s_onboarding_consensus_pledge,
-            'onboarding_storage_pledge': s_onboarding_storage_pledge
+            'consensus_pledge_per_new_qa_power': s_consensus_pledge_per_new_qa_power,
+            'storage_pledge_per_new_qa_power': s_storage_pledge_per_new_qa_power
         }
     },
         {
@@ -65,6 +65,17 @@ CONSENSUS_PLEDGE_DEMO_BLOCKS = [
         },
         'variables': {
             'aggregate_sectors': s_sectors_expire
+        }
+    },
+        {
+        'label': 'Compute Network Statistics',
+        'desc': 'eg. compute QA / RB Network Power',
+        'ignore': True,
+        'policies': {
+        },
+        'variables': {
+            'power_qa': s_power_qa,
+            'power_rb': s_power_rb
         }
     },
         {
