@@ -158,11 +158,11 @@ class TokenDistribution():
     burnt: float
 
     def update_distribution(self, 
-                            new_rewards: float,
                             new_vested: float,
+                            minted: float,
                             aggregate_sectors: list[AggregateSector],
                             marginal_burn: float = 0.0):
-        self.minted += new_rewards
+        self.minted = minted
         self.vested += new_vested
         self.collateral = sum(el.collateral for el in aggregate_sectors)
         self.locked_rewards = sum(el.locked_rewards for el in aggregate_sectors)

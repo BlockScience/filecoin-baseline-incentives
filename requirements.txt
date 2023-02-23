@@ -6,3 +6,4 @@ pandas
 ruamel.yaml
 streamlit
 plotly
+matplotlib

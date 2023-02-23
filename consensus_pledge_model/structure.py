@@ -124,7 +124,8 @@ CONSENSUS_PLEDGE_DEMO_BLOCKS = [
         'ignore': True,
         'policies': {
             'vest_fil': p_vest_fil,
-            'burn_fil': p_burn_fil
+            'burn_fil': p_burn_fil,
+            'minted_fil': p_minted_fil
         },
         'variables': {
             'token_distribution': s_token_distribution

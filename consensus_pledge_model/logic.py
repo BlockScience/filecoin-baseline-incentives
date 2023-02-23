@@ -369,6 +369,14 @@ def p_burn_fil(_1,
                state: ConsensusPledgeDemoState) -> VariableUpdate:
     return {'fil_to_burn': 0.0}
 
+def p_minted_fil(params: ConsensusPledgeParams,
+               _2,
+               _3,
+               state: ConsensusPledgeDemoState) -> VariableUpdate:
+
+    value = params['simple_mechanism'].issuance(state['effective_days_passed'])
+    value += params['baseline_mechanism'].issuance(state['effective_days_passed'])
+    return {'fil_minted': value}
 
 def s_token_distribution(params: ConsensusPledgeParams,
                          _2,
@@ -382,8 +390,8 @@ def s_token_distribution(params: ConsensusPledgeParams,
     today_vested = signal.get("fil_to_vest", 0.0)
 
     distribution = distribution.update_distribution(
-        new_rewards=rewards,
         new_vested=today_vested,
+        minted=signal.get('fil_minted', None),
         aggregate_sectors=aggregate_sectors,
         marginal_burn=burn)
 

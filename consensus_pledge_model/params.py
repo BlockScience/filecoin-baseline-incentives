@@ -88,10 +88,12 @@ INITIAL_TOKEN_DISTRIBUTION: TokenDistribution = TokenDistribution(
 )
 
 INITIAL_REWARDS: FIL = 0.0 # Source: hack
+INITIAL_MINTED = BaselineMinting().issuance(INITIAL_EFFECTIVE_NETWORK_TIME)
+INITIAL_MINTED += SimpleMinting().issuance(INITIAL_EFFECTIVE_NETWORK_TIME)
 INITIAL_VESTED: FIL = 0.0 # Source: hack
 INITIAL_BURNT: FIL = 0.0 # Source: hack
-INITIAL_TOKEN_DISTRIBUTION.update_distribution(new_rewards=INITIAL_REWARDS,
-                                               new_vested=INITIAL_VESTED,
+INITIAL_TOKEN_DISTRIBUTION.update_distribution(new_vested=INITIAL_VESTED,
+                                               minted=INITIAL_MINTED,
                                                aggregate_sectors=INITIAL_AGGREGATE_SECTORS,
                                                marginal_burn=INITIAL_BURNT)
 
