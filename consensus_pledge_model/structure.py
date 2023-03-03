@@ -1,8 +1,5 @@
 from consensus_pledge_model.logic import *
 
-BLOCKS = [{}] # HACK
-
-# TODO: Upgrade to the Consensus Pledge Model
 
 def generic_policy(_1, _2, _3, _4):
     return {}
@@ -10,9 +7,6 @@ def generic_policy(_1, _2, _3, _4):
 
 def generate_generic_suf(variable):
     return lambda _1, _2, _3, state, _5: (variable, state[variable])
-
-
-
 
 
 CONSENSUS_PLEDGE_DEMO_BLOCKS = [

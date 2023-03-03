@@ -157,16 +157,7 @@ SCENARIO2CHECKBOX = OrderedDict(
 
 # Run model
 
-df = run_cadcad_model(
-    fall_after_beginning=fall_after_beginning,
-    growth_fall=growth_fall,
-    stable_after_fall=stable_after_fall,
-    growth_stable=growth_stable,
-    take_off_after_stable=take_off_after_stable,
-    growth_take_off=growth_take_off,
-    steady_after_take_off=steady_after_take_off,
-    growth_steady=growth_steady,
-)
+df = run_cadcad_model()
 df = df[df["scenario"].isin(["user"] + [scenario for scenario, checked in SCENARIO2CHECKBOX.items() if checked])]
 
 # Plot results

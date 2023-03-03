@@ -13,6 +13,7 @@ system parameters & initial state.
 - Option 2 (cadCAD-tools easy run method): Import the objects at `consensus_pledge_model/__init__.py`
 and use them as arguments to the `cadCAD_tools.execution.easy_run` method. Refer to `consensus_pledge_model/__main__.py` to an example.
 - Option 3 (Streamlit, local)
+    - `streamlit run app/main.py`
 - Option 4 (Streamlit, cloud)
     1. Fork the repo
     2. Go to https://share.streamlit.io/ and log in

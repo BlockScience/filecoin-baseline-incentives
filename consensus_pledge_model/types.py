@@ -226,4 +226,23 @@ class ConsensusPledgeParams(TypedDict):
     renewal_probability: float
 
 
+
+class ConsensusPledgeSweepParams(TypedDict):
+    timestep_in_days: list[Days]
+    vesting_schedule: list[dict[Days, FIL]] # Days = Days since Simulation Start
+    # Collateral Params
+    target_locked_supply: list[float]
+    storage_pledge_factor: list[Days]
+    # Minting Params
+    simple_mechanism: list[object] # TODO: re-evaluate it
+    baseline_mechanism: list[object] # TODO: re-evaluate it
+    baseline_activated: list[bool]
+    # Reward Schedule Params
+    linear_duration: list[Days]
+    immediate_release_fraction: list[float]
+    # Behavioral Params   
+    new_sector_lifetime: list[Days]
+    onboarding_rate: list[PiB_per_Day]
+    onboarding_quality_factor: list[float]
+    renewal_probability: list[float]
     

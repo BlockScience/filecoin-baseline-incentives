@@ -9,8 +9,8 @@ import streamlit as st
 
 from cadCAD_tools.execution import easy_run
 from cadCAD_tools.preparation import sweep_cartesian_product
-from consensus_pledge_model.params import INITIAL_STATE, TIMESTEPS, SAMPLES, DAYS_PER_TIMESTEP
-from consensus_pledge_model.structure import BLOCKS
+from consensus_pledge_model.params import *
+from consensus_pledge_model.structure import CONSENSUS_PLEDGE_DEMO_BLOCKS
 from consensus_pledge_model.types import BaselineMinting, BaselineModelSweepParams, GrowthScenario, SimpleMinting
 from utils import load_constants
 
@@ -18,66 +18,25 @@ from utils import load_constants
 C = CONSTANTS = load_constants()
 
 
-@st.cache
-def run_cadcad_model(
-    fall_after_beginning,
-    growth_fall,
-    stable_after_fall,
-    growth_stable,
-    take_off_after_stable,
-    growth_take_off,
-    steady_after_take_off,
-    growth_steady,
-):
-    NPO = C["network_power"]["optimistic"]
+
+def run_cadcad_model():
     RESULTS = []
-    # Run pessimistic, optimistic scenarios
-    SCENARIOS = [
-        GrowthScenario(
-            label="optimistic",
-            fall_after_beginning=NPO["fall_after_beginning"] + C["days_after_launch"],
-            stable_after_fall=NPO["stable_after_fall"],
-            take_off_after_stable=NPO["take_off_after_stable"],
-            steady_after_take_off=NPO["steady_after_take_off"],
-            growth_fall=NPO["growth_fall"],
-            growth_stable=NPO["growth_stable"],
-            growth_take_off=NPO["growth_take_off"],
-            growth_steady=NPO["growth_steady"],
-        ),
-        GrowthScenario(
-            label="pessimistic",
-            fall_after_beginning=fall_after_beginning + C["days_after_launch"],
-            stable_after_fall=stable_after_fall,
-            take_off_after_stable=take_off_after_stable,
-            steady_after_take_off=steady_after_take_off,
-            growth_fall=growth_fall,
-            growth_stable=growth_stable,
-            growth_take_off=growth_take_off,
-            growth_steady=growth_steady,
-        ),
-    ]
-    RAW_PARAMS = BaselineModelSweepParams(
-        timestep_in_days=[DAYS_PER_TIMESTEP],
-        baseline_activated=[True, False],
-        network_power_scenario=SCENARIOS,
-        simple_mechanism=[SimpleMinting()],
-        baseline_mechanism=[BaselineMinting()],
-    )
-    PARAMS = sweep_cartesian_product(RAW_PARAMS)
-    RUN_ARGS = (INITIAL_STATE, PARAMS, BLOCKS, TIMESTEPS, SAMPLES)
+    SWEEP_RUN_PARAMS = sweep_cartesian_product(MULTI_RUN_PARAMS)
+    RUN_ARGS = (INITIAL_STATE, SWEEP_RUN_PARAMS, CONSENSUS_PLEDGE_DEMO_BLOCKS, TIMESTEPS, SAMPLES)
     RESULTS.append(easy_run(*RUN_ARGS))
     # Run baseline scenario
     RUN_ARGS = (
         {**INITIAL_STATE, "network_power": INITIAL_STATE["baseline"]},
-        {**RAW_PARAMS, "baseline_activated": [True], "network_power_scenario": [GrowthScenario("baseline")]},
-        BLOCKS,
+        {**SWEEP_RUN_PARAMS, "baseline_activated": [True], "network_power_scenario": [GrowthScenario("baseline")]},
+        CONSENSUS_PLEDGE_DEMO_BLOCKS,
         TIMESTEPS,
         SAMPLES,
     )
     RESULTS.append(easy_run(*RUN_ARGS))
     # Post-process results
     df = post_process_results(pd.concat(RESULTS))
-    df = df.assign(scenario=df.apply(map_args_to_scenario, axis=1))
+    df = df.assign(scenario='baseline')
+    # df = df.assign(scenario=df.apply(map_args_to_scenario, axis=1)) TODO: review
     # Compute mining utility
     baseline_marginal_reward = df[df["scenario"] == "baseline"]["marginal_reward"]
     num_scens = len(df["scenario"].unique())
@@ -99,17 +58,16 @@ def run_cadcad_model(
 def post_process_results(results):
     dfs = [
         results,
-        results.reward.map(lambda x: x.__dict__).apply(pd.Series),
-        results.network_power_scenario.map(lambda x: x.__dict__).apply(pd.Series),
+        results.reward.map(lambda x: x.__dict__).apply(pd.Series)
     ]
 
-    DROP_COLS = ["reward", "network_power_scenario", "simple_mechanism", "baseline_mechanism"]
+    DROP_COLS = ["reward", "simple_mechanism", "baseline_mechanism"]
 
     df = (
         pd.concat(dfs, axis=1)
         .drop(columns=DROP_COLS)
         .assign(block_reward=lambda x: x.simple_reward + x.baseline_reward)
-        .assign(marginal_reward=lambda x: x.block_reward / x.network_power)
+        .assign(marginal_reward=lambda x: x.block_reward / x.power_qa)
         .assign(years_passed=lambda x: x.days_passed / C["days_per_year"])
     )
     return df

@@ -3,7 +3,7 @@ from math import ceil
 from consensus_pledge_model.types import BaselineMinting, BaselineModelState, BaselineModelParams, BaselineModelSweepParams, GrowthScenario, Reward, SimpleMinting
 from cadCAD_tools.preparation import sweep_cartesian_product
 
-from consensus_pledge_model.types import ConsensusPledgeDemoState, ConsensusPledgeParams
+from consensus_pledge_model.types import ConsensusPledgeDemoState, ConsensusPledgeParams, ConsensusPledgeSweepParams
 from consensus_pledge_model.types import QA_PiB, PiB_per_Day, PiB, Days, FIL, FIL_per_QA_PiB
 from consensus_pledge_model.types import AggregateSector, TokenDistribution
 from consensus_pledge_model.types import AggregateSectorList
@@ -11,10 +11,13 @@ from consensus_pledge_model.types import AggregateSectorList
 # TODO: Upgrade to the Consensus Pledge Model
 # TODO: pinpoint the sources for the numerical constants
 
-DAYS_PER_TIMESTEP = 30
+# TODO: refactor
+# DAYS_PER_TIMESTEP = 1
 YEAR = 365.25
-SIMULATION_TIME_IN_YEARS = 6
+# SIMULATION_TIME_IN_YEARS = 6
 TIMESTEP_IN_DAYS = 1
+# TIMESTEPS = int(ceil(SIMULATION_TIME_IN_YEARS * YEAR) / DAYS_PER_TIMESTEP)
+TIMESTEPS = 10
 
 BLOCKS_SINCE_LAUNCH = 1_563_129 # Block height used as an reference point
 DAYS_AFTER_LAUNCH = (BLOCKS_SINCE_LAUNCH * 30) / (60 * 60 * 24) # Days after launch
@@ -31,49 +34,12 @@ INITIAL_CUMM_CAPPED_POWER = INITIAL_NETWORK_POWER * YEARS_AFTER_LAUNCH / 2
 # Guess-estimate
 INITIAL_EFFECTIVE_NETWORK_TIME: Days = 1.92 * 365.25
 
-SCENARIOS = [
-    GrowthScenario(label='optimistic',
-                   fall_after_beginning=1.0 * YEAR + DAYS_AFTER_LAUNCH,
-                   stable_after_fall=1.0 * YEAR,
-                   take_off_after_stable=1.0 * YEAR,
-                   steady_after_take_off=1.0 * YEAR,
-                   growth_fall=1.05,
-                   growth_stable=1.05,
-                   growth_take_off=1.05,
-                   growth_steady=1.05
-                   ),
-    GrowthScenario(label='pessimistic',
-                   fall_after_beginning=0.5 * YEAR + DAYS_AFTER_LAUNCH,
-                   stable_after_fall=0.5 * YEAR,
-                   take_off_after_stable=3.0 * YEAR,
-                   steady_after_take_off=0.5 * YEAR,
-                   growth_fall=0.0,
-                   growth_stable=1.0,
-                   growth_take_off=4.0,
-                   growth_steady=1.0
-                   )
-]
 
-
-RAW_PARAMS = BaselineModelSweepParams(timestep_in_days=[DAYS_PER_TIMESTEP],
-                                      baseline_activated=[True, False],
-                                      network_power_scenario=SCENARIOS,
-                                      simple_mechanism=[SimpleMinting()],
-                                      baseline_mechanism=[BaselineMinting()])
-
-PARAMS = sweep_cartesian_product(RAW_PARAMS)
-
-INITIAL_STATE = BaselineModelState(days_passed=DAYS_AFTER_LAUNCH,
-                                   delta_days=nan,
-                                   network_power=INITIAL_NETWORK_POWER,
-                                   baseline=INITIAL_BASELINE,
-                                   cumm_capped_power=INITIAL_CUMM_CAPPED_POWER, 
-                                   effective_network_time=INITIAL_EFFECTIVE_NETWORK_TIME,
-                                   reward=Reward()
-                                   )
-
-TIMESTEPS = int(ceil(SIMULATION_TIME_IN_YEARS * YEAR) / DAYS_PER_TIMESTEP)
 SAMPLES = 1
+
+"""
+Note: the previous code from the Baseline Edu Calculator ends here.
+"""
 
 # TODO: move from `hack` definitions towards `guess` or `estimate` ones.
 # INITIAL_AGGREGATE_SECTORS = AggregateSectorList([]) # Source: hack
@@ -103,7 +69,7 @@ AVERAGE_QUALITY_FACTOR = 3.0
 INITIAL_ONBOARDING_CONSENSUS_PLEDGE: FIL_per_QA_PiB = 0.0 # Source: hack
 INITIAL_ONBOARDING_STORAGE_PLEDGE: FIL_per_QA_PiB = 0.0 # Source: hack
 
-CONSENSUS_PLEDGE_DEMO_INITIAL_STATE = ConsensusPledgeDemoState(
+INITIAL_STATE = ConsensusPledgeDemoState(
     days_passed=0,
     delta_days=TIMESTEP_IN_DAYS,
     aggregate_sectors=INITIAL_AGGREGATE_SECTORS,
@@ -120,7 +86,7 @@ CONSENSUS_PLEDGE_DEMO_INITIAL_STATE = ConsensusPledgeDemoState(
 
 LINEAR_DURATION: Days = 180 # Source: Spec
 
-CONSENSUS_PLEDGE_DEMO_SINGLE_RUN_PARAMS = ConsensusPledgeParams(
+SINGLE_RUN_PARAMS = ConsensusPledgeParams(
     timestep_in_days=TIMESTEP_IN_DAYS,
     vesting_schedule=DEMO_VESTING_SCHEDULE, # Source: Guess
     target_locked_supply=0.3, # Source: Spec
@@ -135,3 +101,6 @@ CONSENSUS_PLEDGE_DEMO_SINGLE_RUN_PARAMS = ConsensusPledgeParams(
     onboarding_quality_factor=2.0, # Source: Guess
     renewal_probability=0.01 # Source: Guess
 )
+
+
+MULTI_RUN_PARAMS = ConsensusPledgeSweepParams(**{k: [v] for k, v in SINGLE_RUN_PARAMS.items()})

@@ -9,17 +9,17 @@ import plotly.express as px
 import matplotlib.pyplot as plt
 
 # %%
-from consensus_pledge_model.params import CONSENSUS_PLEDGE_DEMO_INITIAL_STATE
-from consensus_pledge_model.params import CONSENSUS_PLEDGE_DEMO_SINGLE_RUN_PARAMS
+from consensus_pledge_model.params import INITIAL_STATE
+from consensus_pledge_model.params import SINGLE_RUN_PARAMS
 from consensus_pledge_model.structure import CONSENSUS_PLEDGE_DEMO_BLOCKS
 from cadCAD_tools import easy_run
 
-N_timesteps = 210
+N_timesteps = 30
 N_samples = 1
 # %%
-sweep_params = {k: [v] for k, v in CONSENSUS_PLEDGE_DEMO_SINGLE_RUN_PARAMS.items()}
+sweep_params = {k: [v] for k, v in SINGLE_RUN_PARAMS.items()}
 
-sim_args = (CONSENSUS_PLEDGE_DEMO_INITIAL_STATE,
+sim_args = (INITIAL_STATE,
             sweep_params, 
             CONSENSUS_PLEDGE_DEMO_BLOCKS, 
             N_timesteps,
@@ -106,6 +106,13 @@ x = sim_df.days_passed
 y = sim_df.token_distribution.map(lambda x: x.collateral / x.available)
 plt.plot(x, y, '.', markersize=0.5)
 plt.show()
+
+# %%
+x = sim_df.days_passed
+y = sim_df.consensus_pledge_per_new_qa_power * sim_df.power_qa
+plt.plot(x, y, '.', markersize=0.5)
+plt.show()
+
 
 # For 360 days of simulation:
 # 360 new Aggregate Sectors

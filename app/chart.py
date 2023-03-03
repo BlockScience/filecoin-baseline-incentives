@@ -31,9 +31,9 @@ class NetworkPowerPlotlyChart(PlotlyChart):
         chart = px.line(
             df,
             x="years_passed",
-            y="network_power",
+            y="power_rb",
             color="scenario",
-            title="Network Power vs. Time",
+            title="RB Network Power vs. Time",
             labels={
                 "years_passed": "Year",
                 "network_power": "Raw Bytes Network Power (RB PiB)",
