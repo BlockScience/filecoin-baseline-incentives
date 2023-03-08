@@ -31,6 +31,17 @@ def s_delta_days(_1,
     value = signal['delta_in_days']
     return ('delta_days', value)
 
+
+def s_behaviour(params: ConsensusPledgeParams,
+                 _2,
+                 _3,
+                 state: ConsensusPledgeDemoState,
+                 signal: Signal) -> VariableUpdate:
+    behaviour_params = params['behavioural_params']
+    filtered_params = {k: v for k, v in behaviour_params.items() if k >= state['days_passed']}
+    value = list(filtered_params.values())[0]
+    return ('behaviour', value)
+
 # ## Network
 
 
@@ -172,21 +183,24 @@ def s_sectors_onboard(params,
                       state: ConsensusPledgeDemoState,
                       signal: Signal) -> VariableUpdate:
     # Sector Properties
-    power_rb_new = params['onboarding_rate']
-    power_qa_new = power_rb_new * params['onboarding_quality_factor']
-    storage_pledge = state['storage_pledge_per_new_qa_power'] * power_qa_new
-    consensus_pledge = state['consensus_pledge_per_new_qa_power'] * power_qa_new
-    reward_schedule = {}
+    power_rb_new = state['behaviour'].new_sector_rb_onboarding_rate
+    power_qa_new = power_rb_new * state['behaviour'].new_sector_quality_factor
 
-    # TODO: check if copying is too shallow or deep (low priority)
-    current_sectors_list = state['aggregate_sectors'].copy()
-    new_sectors = AggregateSector(power_rb=power_rb_new,
-                                  power_qa=power_qa_new,
-                                  remaining_days=params['new_sector_lifetime'],
-                                  storage_pledge=storage_pledge,
-                                  consensus_pledge=consensus_pledge,
-                                  reward_schedule=reward_schedule)
-    current_sectors_list.append(new_sectors)
+    if power_rb_new > 0:
+        storage_pledge = state['storage_pledge_per_new_qa_power'] * power_qa_new
+        consensus_pledge = state['consensus_pledge_per_new_qa_power'] * power_qa_new
+        reward_schedule = {}
+        # TODO: check if copying is too shallow or deep (low priority)
+        current_sectors_list = state['aggregate_sectors'].copy()
+        new_sectors = AggregateSector(power_rb=power_rb_new,
+                                    power_qa=power_qa_new,
+                                    remaining_days=state['behaviour'].new_sector_lifetime,
+                                    storage_pledge=storage_pledge,
+                                    consensus_pledge=consensus_pledge,
+                                    reward_schedule=reward_schedule)
+        current_sectors_list.append(new_sectors)
+    else:
+        pass
 
     return ('aggregate_sectors', current_sectors_list)
 
@@ -197,7 +211,7 @@ def s_sectors_renew(params,
                     state: ConsensusPledgeDemoState,
                     signal: Signal) -> VariableUpdate:
 
-    renew_share = params['renewal_probability']
+    renew_share = state['behaviour'].renewal_probability
     # TODO: check if copying is too shallow or deep (low priority)
     current_sectors_list = state['aggregate_sectors'].copy() 
 
@@ -246,7 +260,7 @@ def s_sectors_renew(params,
     # Create new sector representing the Renewed Sectors
     new_sectors = AggregateSector(power_rb=power_rb_renew,
                                   power_qa=power_qa_renew,
-                                  remaining_days=params['new_sector_lifetime'],
+                                  remaining_days=state['behaviour'].renewal_lifetime,
                                   storage_pledge=storage_pledge_renew,
                                   consensus_pledge=consensus_pledge_renew,
                                   reward_schedule=reward_schedule_renew)
@@ -266,7 +280,7 @@ def s_sectors_expire(_1,
     # FIXME: assume that locked rewards are going to be released.
     """
 
-    current_sectors_list = state['aggregate_sectors']
+    current_sectors_list = state['aggregate_sectors'].copy()
     expired_sectors_indices = []
 
     # If remaining days are below zero, get their index for removing from the

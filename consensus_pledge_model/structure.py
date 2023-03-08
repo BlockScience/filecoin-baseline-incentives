@@ -22,6 +22,15 @@ CONSENSUS_PLEDGE_DEMO_BLOCKS = [
         }
     },
     {
+        'label': 'Select Behaviour Params',
+        'ignore': True, 
+        'policies': {
+        },
+        'variables': {
+            'behaviour': s_behaviour
+        }
+    },
+    {
         'label': 'Compute Collateral to be paid on this Round',
         'ignore': True,
         'policies': {
@@ -69,7 +78,8 @@ CONSENSUS_PLEDGE_DEMO_BLOCKS = [
         },
         'variables': {
             'power_qa': s_power_qa,
-            'power_rb': s_power_rb
+            'power_rb': s_power_rb,
+            'baseline': s_baseline
         }
     },
         {

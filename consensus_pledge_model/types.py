@@ -15,37 +15,6 @@ QA_PiB = Annotated[float, "PiB (QA)"]
 PiB_per_Day = Annotated[float, "PiB per Day"]
 FIL_per_QA_PiB = Annotated[float, "PiB per Day"]
 
-@dataclass
-class GrowthScenario():
-    """
-    Container for wrapping all the parameters for a growth scenario.
-    """
-    label: str = 'no-label'
-
-    fall_after_beginning: Annotated[float, 'days'] = 365.25
-    stable_after_fall: Annotated[float, 'days'] = 365.25
-    take_off_after_stable: Annotated[float, 'days'] = 365.25
-    steady_after_take_off: Annotated[float, 'days'] = 365.25
-
-    # Growth ratio as a fraction of the baseline function growth
-    growth_fall: Annotated[float, '%/baseline'] = 1.0
-    growth_stable: Annotated[float, '%/baseline'] = 1.0
-    growth_take_off: Annotated[float, '%/baseline'] = 1.0
-    growth_steady: Annotated[float, '%/baseline'] = 1.0
-
-    @property
-    def stabilized_after_beginning(self):
-        return self.stable_after_fall + self.fall_after_beginning
-
-    @property
-    def take_off_after_beginning(self):
-        return self.stabilized_after_beginning + self.take_off_after_stable
-    
-    @property
-    def steady_after_beginning(self):
-        return self.take_off_after_beginning + self.steady_after_take_off
-
-
 
 @dataclass
 class Reward():
@@ -102,30 +71,6 @@ class BaselineMinting(SimpleMinting):
     #             * log(1 - issuance_so_far / self.issuance_baseline))
 
 
-class BaselineModelParams (TypedDict):
-    timestep_in_days: Days
-    baseline_activated: bool
-    network_power_scenario: GrowthScenario
-    simple_mechanism: SimpleMinting
-    baseline_mechanism: BaselineMinting
-    
-class BaselineModelSweepParams (TypedDict):
-    timestep_in_days: list[Days]
-    baseline_activated: list[bool]
-    network_power_scenario: list[GrowthScenario]
-    simple_mechanism: list[SimpleMinting]
-    baseline_mechanism: list[BaselineMinting]
-    
-# TODO: deactivate
-class BaselineModelState (TypedDict):
-    days_passed: Days
-    delta_days: Days
-    network_power: QA_PiB
-    baseline: QA_PiB
-    cumm_capped_power: FILYear
-    effective_network_time: Year
-    reward: Reward
-    
 @dataclass
 class AggregateSector():
     power_rb: PiB
@@ -184,6 +129,15 @@ class TokenDistribution():
 
 
 @dataclass
+class BehaviouralParams():
+    label: str
+    new_sector_rb_onboarding_rate: PiB_per_Day
+    new_sector_quality_factor: float
+    new_sector_lifetime: Days
+    renewal_probability: float
+    renewal_lifetime: Days
+
+@dataclass
 class AggregateSectorList():
     aggregate_sectors: list[AggregateSector]
 
@@ -204,6 +158,7 @@ class ConsensusPledgeDemoState(TypedDict):
     reward: Reward
     storage_pledge_per_new_qa_power: FIL_per_QA_PiB
     consensus_pledge_per_new_qa_power: FIL_per_QA_PiB
+    behaviour: BehaviouralParams
 
 
 class ConsensusPledgeParams(TypedDict):
@@ -219,11 +174,8 @@ class ConsensusPledgeParams(TypedDict):
     # Reward Schedule Params
     linear_duration: Days
     immediate_release_fraction: float
-    # Behavioral Params   
-    new_sector_lifetime: Days
-    onboarding_rate: PiB_per_Day
-    onboarding_quality_factor: float
-    renewal_probability: float
+    # Behavioural Params   
+    behavioural_params: dict[Days, BehaviouralParams]
 
 
 
@@ -240,9 +192,5 @@ class ConsensusPledgeSweepParams(TypedDict):
     # Reward Schedule Params
     linear_duration: list[Days]
     immediate_release_fraction: list[float]
-    # Behavioral Params   
-    new_sector_lifetime: list[Days]
-    onboarding_rate: list[PiB_per_Day]
-    onboarding_quality_factor: list[float]
-    renewal_probability: list[float]
-    
+    # Behavioural Params   
+    behavioural_params: dict[Days, BehaviouralParams]
