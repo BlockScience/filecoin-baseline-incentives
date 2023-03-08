@@ -7,3 +7,4 @@ ruamel.yaml
 streamlit
 plotly
 matplotlib
+numpy

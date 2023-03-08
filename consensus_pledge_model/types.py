@@ -28,17 +28,19 @@ class Reward():
 
 @dataclass
 class SimpleMinting():
+    time_offset: Year = 0.0
     total_issuance: FIL = 0.33e9
     decay = log(2) / 6.0
 
     def issuance(self, years_passed: Year) -> FIL:
-        issuance_fraction = (1 - exp(-1 * self.decay * years_passed))
+        issuance_fraction = (1 - exp(-1 * self.decay * (years_passed + self.time_offset)))
         return self.total_issuance * issuance_fraction
 
     
 @dataclass
 class BaselineMinting(SimpleMinting):
     # Parameters
+    time_offset: Year = 0.0
     total_issuance: FIL = 0.77e9
     decay: float = log(2) / 6.0
     initial_baseline: FIL = 2888
@@ -59,7 +61,7 @@ class BaselineMinting(SimpleMinting):
                           years_passed: Year) -> FIL:
         return (self.initial_baseline
                 * (1 + self.annual_baseline_growth)
-                ** years_passed)
+                ** (years_passed + self.time_offset))
 
     def issuance(self, effective_years_passed: Year) -> FIL:
         issuance_fraction = (1 - exp(-1 * self.decay * effective_years_passed))
@@ -144,6 +146,14 @@ class AggregateSectorList():
     @property
     def power_qa(self) -> QA_PiB:
         return sum(agg_sector.power_qa for agg_sector in self.aggregate_sectors)
+
+
+@dataclass
+class Metrics():
+    locked_rewards: FIL
+    collateral: FIL
+    consensus_pledge: FIL
+    storage_pledge: FIL
 
 class ConsensusPledgeDemoState(TypedDict):
     days_passed: Days

@@ -26,14 +26,19 @@ INITIAL_POWER_RB = 16 * 1024
 INITIAL_POWER_QA: QA_PiB = 18 * 1024
 
 # Guess-estimate
-INITIAL_BASELINE: PiB = 10 * 1024  # RBP PiB
-BASELINE_MINTING_MECH = BaselineMinting(initial_baseline=INITIAL_BASELINE)
+
 
 # Guess-estimate
-YEARS_AFTER_LAUNCH = 3
+YEARS_AFTER_LAUNCH = 2
 INITIAL_CUMM_CAPPED_POWER = INITIAL_POWER_QA * YEARS_AFTER_LAUNCH * 0.75
-INITIAL_EFFECTIVE_NETWORK_TIME: Days = BASELINE_MINTING_MECH.effective_network_time(INITIAL_CUMM_CAPPED_POWER)
 
+SIMPLE_MINTING_MECH = SimpleMinting(time_offset=YEARS_AFTER_LAUNCH)
+BASELINE_MINTING_MECH = BaselineMinting(time_offset=YEARS_AFTER_LAUNCH)
+INITIAL_EFFECTIVE_NETWORK_TIME: Days = BASELINE_MINTING_MECH.effective_network_time(INITIAL_CUMM_CAPPED_POWER)
+INITIAL_BASELINE: PiB = BASELINE_MINTING_MECH.baseline_function(0.0)
+
+INITIAL_SIMPLE_REWARD = SIMPLE_MINTING_MECH.issuance(0) - SIMPLE_MINTING_MECH.issuance(-1/365.25)
+INITIAL_BASELINE_REWARD = BASELINE_MINTING_MECH.issuance(INITIAL_EFFECTIVE_NETWORK_TIME) - BASELINE_MINTING_MECH.issuance(INITIAL_EFFECTIVE_NETWORK_TIME - (1/365.25))
 
 LINEAR_DURATION: Days = 180  # Source: Spec
 
@@ -75,7 +80,7 @@ INITIAL_AGGREGATE_SECTORS = [AggregateSector(avg_sector_power_rb,
                                              avg_sector_storage_pledge,
                                              avg_sector_consensus_pledge,
                                              generate_demo_reward_schedule(sector_lifetime, avg_day_reward))
-                               for sector_lifetime in range(MAX_SECTOR_LIFETIME)]
+                               for sector_lifetime in range(1, MAX_SECTOR_LIFETIME)]
 
 
 INITIAL_TOKEN_DISTRIBUTION: TokenDistribution = TokenDistribution(
@@ -87,8 +92,8 @@ INITIAL_TOKEN_DISTRIBUTION: TokenDistribution = TokenDistribution(
 )
 
 INITIAL_REWARDS: FIL = 0.0  # Source: hack
-INITIAL_MINTED = BaselineMinting().issuance(INITIAL_EFFECTIVE_NETWORK_TIME)
-INITIAL_MINTED += SimpleMinting().issuance(INITIAL_EFFECTIVE_NETWORK_TIME)
+INITIAL_MINTED = BASELINE_MINTING_MECH.issuance(INITIAL_EFFECTIVE_NETWORK_TIME)
+INITIAL_MINTED += SIMPLE_MINTING_MECH.issuance(0)
 INITIAL_VESTED: FIL = 0.0  # Source: hack
 INITIAL_BURNT: FIL = 0.0  # Source: hack
 INITIAL_TOKEN_DISTRIBUTION.update_distribution(new_vested=INITIAL_VESTED,
@@ -104,22 +109,22 @@ INITIAL_ONBOARDING_STORAGE_PLEDGE: FIL_per_QA_PiB = 0.0  # Source: hack
 
 INITIAL_BEHAVIOURAL_PARAMS = {
     180: BehaviouralParams('Initial Phase',
-                         new_sector_rb_onboarding_rate=10,
+                         new_sector_rb_onboarding_rate=1,
                          new_sector_quality_factor=2.0,
                          new_sector_lifetime=180,
-                         renewal_probability=0.5,
+                         renewal_probability=0.02,
                          renewal_lifetime=180),
     270: BehaviouralParams('Phase 2',
                            new_sector_rb_onboarding_rate=1,
                            new_sector_quality_factor=2.0,
                            new_sector_lifetime=360,
-                           renewal_probability=0.1,
+                           renewal_probability=0.02,
                            renewal_lifetime=360),
     360: BehaviouralParams('Phase 3',
                            new_sector_rb_onboarding_rate=50,
                            new_sector_quality_factor=2.0,
                            new_sector_lifetime=180,
-                           renewal_probability=0.5,
+                           renewal_probability=0.02,
                            renewal_lifetime=180)
 }
 
@@ -133,7 +138,7 @@ INITIAL_STATE = ConsensusPledgeDemoState(
     baseline=INITIAL_BASELINE,
     cumm_capped_power=INITIAL_CUMM_CAPPED_POWER,
     effective_network_time=INITIAL_EFFECTIVE_NETWORK_TIME,
-    reward=Reward(0.0, 0.0),  # HACK
+    reward=Reward(INITIAL_SIMPLE_REWARD, INITIAL_BASELINE_REWARD), 
     storage_pledge_per_new_qa_power=INITIAL_ONBOARDING_CONSENSUS_PLEDGE,
     consensus_pledge_per_new_qa_power=INITIAL_ONBOARDING_STORAGE_PLEDGE,
     behaviour=None
@@ -144,8 +149,8 @@ SINGLE_RUN_PARAMS = ConsensusPledgeParams(
     vesting_schedule=DEMO_VESTING_SCHEDULE,  # Source: Guess
     target_locked_supply=0.3,  # Source: Spec
     storage_pledge_factor=20,  # Source: Spec
-    simple_mechanism=SimpleMinting(),  # TODO: re-evaluate it
-    baseline_mechanism=BASELINE_MINTING_MECH,  # TODO: re-evaluate it
+    simple_mechanism=SIMPLE_MINTING_MECH, 
+    baseline_mechanism=BASELINE_MINTING_MECH, 
     baseline_activated=True,
     linear_duration=LINEAR_DURATION,
     immediate_release_fraction=0.25,  # Source: Spec
