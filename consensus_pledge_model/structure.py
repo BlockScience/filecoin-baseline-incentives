@@ -89,7 +89,7 @@ CONSENSUS_PLEDGE_DEMO_BLOCKS = [
         'policies': {
         },
         'variables': {
-            'effective_days_passed': s_effective_network_time
+            'effective_network_time': s_effective_network_time
         }
     },
         {

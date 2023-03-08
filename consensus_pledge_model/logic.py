@@ -1,7 +1,7 @@
 from cadCAD_tools.types import Signal, VariableUpdate
 from consensus_pledge_model.params import YEAR
 from collections import defaultdict
-
+from copy import copy, deepcopy
 from consensus_pledge_model.types import *
 
 # ## Time Tracking
@@ -112,8 +112,8 @@ def s_reward(params: ConsensusPledgeParams,
 
     # Baseline Minting
     baseline_mechanism = params['baseline_mechanism']
-    eff_t_i = history[-1][-1]['effective_days_passed'] / 365.25  # HACK
-    eff_t_f = state['effective_days_passed'] / 365.25  # HACK
+    eff_t_i = history[-1][-1]['effective_network_time']
+    eff_t_f = state['effective_network_time']
 
     baseline_issuance_start = baseline_mechanism.issuance(eff_t_i)
     baseline_issuance_end = baseline_mechanism.issuance(eff_t_f)
@@ -179,7 +179,7 @@ def s_sectors_onboard(params,
     reward_schedule = {}
 
     # TODO: check if copying is too shallow or deep (low priority)
-    current_sectors_list = state['aggregate_sectors']
+    current_sectors_list = state['aggregate_sectors'].copy()
     new_sectors = AggregateSector(power_rb=power_rb_new,
                                   power_qa=power_qa_new,
                                   remaining_days=params['new_sector_lifetime'],
@@ -199,7 +199,7 @@ def s_sectors_renew(params,
 
     renew_share = params['renewal_probability']
     # TODO: check if copying is too shallow or deep (low priority)
-    current_sectors_list = state['aggregate_sectors']
+    current_sectors_list = state['aggregate_sectors'].copy() 
 
     power_rb_renew: PiB = 0.0
     power_qa_renew: QA_PiB = 0.0
@@ -374,8 +374,8 @@ def p_minted_fil(params: ConsensusPledgeParams,
                _3,
                state: ConsensusPledgeDemoState) -> VariableUpdate:
 
-    value = params['simple_mechanism'].issuance(state['effective_days_passed'])
-    value += params['baseline_mechanism'].issuance(state['effective_days_passed'])
+    value = params['simple_mechanism'].issuance(state['effective_network_time'])
+    value += params['baseline_mechanism'].issuance(state['effective_network_time'])
     return {'fil_minted': value}
 
 def s_token_distribution(params: ConsensusPledgeParams,
@@ -383,7 +383,7 @@ def s_token_distribution(params: ConsensusPledgeParams,
                          _3,
                          state: ConsensusPledgeDemoState,
                          signal: Signal) -> VariableUpdate:
-    distribution = state["token_distribution"]
+    distribution = copy(state["token_distribution"])
     rewards = state["reward"].block_reward
     aggregate_sectors = state["aggregate_sectors"]
     burn = signal.get('fil_to_burn', 0.0)

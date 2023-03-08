@@ -200,7 +200,7 @@ class ConsensusPledgeDemoState(TypedDict):
     power_rb: PiB
     baseline: PiB
     cumm_capped_power: FILYear
-    effective_days_passed: Days
+    effective_network_time: Year
     reward: Reward
     storage_pledge_per_new_qa_power: FIL_per_QA_PiB
     consensus_pledge_per_new_qa_power: FIL_per_QA_PiB
