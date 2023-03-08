@@ -134,3 +134,4 @@ dmypy.json
 
 data/simulations/*.pkl.gz
 .vscode
+profiling/output.pstats
