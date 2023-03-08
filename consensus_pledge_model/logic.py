@@ -333,7 +333,7 @@ def s_sectors_rewards(params: ConsensusPledgeParams,
     # retrieve total rewards
     total_reward = state["reward"].block_reward
     linear_duration = params["linear_duration"]
-    current_sector_list = state["aggregate_sectors"]
+    current_sector_list = state["aggregate_sectors"].copy()
     total_qa = state["power_qa"]
     immediate_release = params["immediate_release_fraction"]
     days_passed = state['days_passed']

@@ -21,7 +21,6 @@ TIMESTEPS = 360
 # YEARS_AFTER_LAUNCH = DAYS_AFTER_LAUNCH / YEAR
 
 
-
 INITIAL_POWER_RB = 16 * 1024
 INITIAL_POWER_QA: QA_PiB = 18 * 1024
 
@@ -34,11 +33,14 @@ INITIAL_CUMM_CAPPED_POWER = INITIAL_POWER_QA * YEARS_AFTER_LAUNCH * 0.75
 
 SIMPLE_MINTING_MECH = SimpleMinting(time_offset=YEARS_AFTER_LAUNCH)
 BASELINE_MINTING_MECH = BaselineMinting(time_offset=YEARS_AFTER_LAUNCH)
-INITIAL_EFFECTIVE_NETWORK_TIME: Days = BASELINE_MINTING_MECH.effective_network_time(INITIAL_CUMM_CAPPED_POWER)
+INITIAL_EFFECTIVE_NETWORK_TIME: Days = BASELINE_MINTING_MECH.effective_network_time(
+    INITIAL_CUMM_CAPPED_POWER)
 INITIAL_BASELINE: PiB = BASELINE_MINTING_MECH.baseline_function(0.0)
 
-INITIAL_SIMPLE_REWARD = SIMPLE_MINTING_MECH.issuance(0) - SIMPLE_MINTING_MECH.issuance(-1/365.25)
-INITIAL_BASELINE_REWARD = BASELINE_MINTING_MECH.issuance(INITIAL_EFFECTIVE_NETWORK_TIME) - BASELINE_MINTING_MECH.issuance(INITIAL_EFFECTIVE_NETWORK_TIME - (1/365.25))
+INITIAL_SIMPLE_REWARD = SIMPLE_MINTING_MECH.issuance(
+    0) - SIMPLE_MINTING_MECH.issuance(-1/365.25)
+INITIAL_BASELINE_REWARD = BASELINE_MINTING_MECH.issuance(
+    INITIAL_EFFECTIVE_NETWORK_TIME) - BASELINE_MINTING_MECH.issuance(INITIAL_EFFECTIVE_NETWORK_TIME - (1/365.25))
 
 LINEAR_DURATION: Days = 180  # Source: Spec
 
@@ -60,27 +62,30 @@ INITIAL_CONSENSUS_PLEDGE: FIL = INITIAL_COLLATERAL * 0.85
 MAX_SECTOR_LIFETIME = 360
 avg_sector_power_rb = INITIAL_POWER_RB / MAX_SECTOR_LIFETIME
 avg_sector_power_qa = INITIAL_POWER_QA / MAX_SECTOR_LIFETIME
-avg_sector_storage_pledge = INITIAL_STORAGE_PLEDGE * avg_sector_power_qa / INITIAL_POWER_QA
-avg_sector_consensus_pledge = INITIAL_CONSENSUS_PLEDGE  * avg_sector_power_qa / INITIAL_POWER_QA
+avg_sector_storage_pledge = INITIAL_STORAGE_PLEDGE * \
+    avg_sector_power_qa / INITIAL_POWER_QA
+avg_sector_consensus_pledge = INITIAL_CONSENSUS_PLEDGE * \
+    avg_sector_power_qa / INITIAL_POWER_QA
 
 
-number_of_day_rewards = sum(min(LINEAR_DURATION, sector_lifetime) 
-                            for sector_lifetime 
+number_of_day_rewards = sum(min(LINEAR_DURATION, sector_lifetime)
+                            for sector_lifetime
                             in range(MAX_SECTOR_LIFETIME))
 avg_day_reward = INITIAL_LOCKED_REWARDS / number_of_day_rewards
+
 
 def generate_demo_reward_schedule(sector_lifetime, reward):
     number_of_rewards = min(sector_lifetime, LINEAR_DURATION)
     return {i: reward for i in range(number_of_rewards)}
 
 
-INITIAL_AGGREGATE_SECTORS = [AggregateSector(avg_sector_power_rb, 
+INITIAL_AGGREGATE_SECTORS = [AggregateSector(avg_sector_power_rb,
                                              avg_sector_power_qa,
                                              sector_lifetime,
                                              avg_sector_storage_pledge,
                                              avg_sector_consensus_pledge,
                                              generate_demo_reward_schedule(sector_lifetime, avg_day_reward))
-                               for sector_lifetime in range(1, MAX_SECTOR_LIFETIME)]
+                             for sector_lifetime in range(1, MAX_SECTOR_LIFETIME)]
 
 
 INITIAL_TOKEN_DISTRIBUTION: TokenDistribution = TokenDistribution(
@@ -109,11 +114,11 @@ INITIAL_ONBOARDING_STORAGE_PLEDGE: FIL_per_QA_PiB = 0.0  # Source: hack
 
 INITIAL_BEHAVIOURAL_PARAMS = {
     180: BehaviouralParams('Initial Phase',
-                         new_sector_rb_onboarding_rate=1,
-                         new_sector_quality_factor=2.0,
-                         new_sector_lifetime=180,
-                         renewal_probability=0.02,
-                         renewal_lifetime=180),
+                           new_sector_rb_onboarding_rate=1,
+                           new_sector_quality_factor=2.0,
+                           new_sector_lifetime=180,
+                           renewal_probability=0.02,
+                           renewal_lifetime=180),
     270: BehaviouralParams('Phase 2',
                            new_sector_rb_onboarding_rate=1,
                            new_sector_quality_factor=2.0,
@@ -138,7 +143,7 @@ INITIAL_STATE = ConsensusPledgeDemoState(
     baseline=INITIAL_BASELINE,
     cumm_capped_power=INITIAL_CUMM_CAPPED_POWER,
     effective_network_time=INITIAL_EFFECTIVE_NETWORK_TIME,
-    reward=Reward(INITIAL_SIMPLE_REWARD, INITIAL_BASELINE_REWARD), 
+    reward=Reward(INITIAL_SIMPLE_REWARD, INITIAL_BASELINE_REWARD),
     storage_pledge_per_new_qa_power=INITIAL_ONBOARDING_CONSENSUS_PLEDGE,
     consensus_pledge_per_new_qa_power=INITIAL_ONBOARDING_STORAGE_PLEDGE,
     behaviour=None
@@ -149,8 +154,8 @@ SINGLE_RUN_PARAMS = ConsensusPledgeParams(
     vesting_schedule=DEMO_VESTING_SCHEDULE,  # Source: Guess
     target_locked_supply=0.3,  # Source: Spec
     storage_pledge_factor=20,  # Source: Spec
-    simple_mechanism=SIMPLE_MINTING_MECH, 
-    baseline_mechanism=BASELINE_MINTING_MECH, 
+    simple_mechanism=SIMPLE_MINTING_MECH,
+    baseline_mechanism=BASELINE_MINTING_MECH,
     baseline_activated=True,
     linear_duration=LINEAR_DURATION,
     immediate_release_fraction=0.25,  # Source: Spec
