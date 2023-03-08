@@ -7,14 +7,14 @@ sys.path.append('../')
 import pandas as pd
 import plotly.express as px
 import matplotlib.pyplot as plt
-
+import numpy as np
 # %%
 from consensus_pledge_model.params import INITIAL_STATE
 from consensus_pledge_model.params import SINGLE_RUN_PARAMS
 from consensus_pledge_model.structure import CONSENSUS_PLEDGE_DEMO_BLOCKS
 from cadCAD_tools import easy_run
 
-N_timesteps = 30
+N_timesteps = 360
 N_samples = 1
 # %%
 sweep_params = {k: [v] for k, v in SINGLE_RUN_PARAMS.items()}
@@ -51,11 +51,11 @@ sim_df.reward.map(lambda x: x.baseline_reward)
 x = sim_df.days_passed
 y = sim_df.baseline
 plt.plot(x, y, '.', markersize=1)
-plt.show()
-# %%
+
 x = sim_df.days_passed
 y = sim_df.power_rb
 plt.plot(x, y, '.', markersize=1)
+
 plt.show()
 # %%
 x = sim_df.days_passed
@@ -122,4 +122,14 @@ plt.show()
 # Incl substeps: 140M of reward data to store
 # Assume unit of data = 8 bytes:
 # 1119744000 bytes = 1.04 GB of data
+# %%
+x = sim_df.days_passed
+y = sim_df.consensus_pledge_per_new_qa_power
+plt.plot(x, y, '.', markersize=0.5)
+plt.show()
+# %%
+x = sim_df.days_passed
+y = sim_df.storage_pledge_per_new_qa_power
+plt.plot(x, y, '.', markersize=0.5)
+plt.show()
 # %%
