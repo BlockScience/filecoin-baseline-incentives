@@ -144,14 +144,14 @@ class TokenDistributionPlotlyChart(PlotlyChart):
         chart = px.line(
             df,
             x="years_passed",
-            y=["fil_circulating", "fil_locked_reward", "fil_collateral", "fil_vested"],
+            y=["fil_circulating", "fil_locked_reward", "fil_collateral", "fil_vested", 'fil_locked'],
             title="Token Distribution",
             line_dash='scenario',
             labels={
                 "years_passed": "Year"
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(0, 400_000_000),
+            range_y=(0, 500_000_000),
             #log_y=True,
         )
         return cls(chart)
@@ -170,7 +170,7 @@ class CriticalCostPlotlyChart(PlotlyChart):
                 "years_passed": "Year"
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(10_000_000, 40_000_000),
+            range_y=(0, 40_000_000),
             #log_y=True,
         )
         return cls(chart)
