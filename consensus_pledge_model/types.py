@@ -172,6 +172,7 @@ class ConsensusPledgeDemoState(TypedDict):
 
 
 class ConsensusPledgeParams(TypedDict):
+    label: str
     timestep_in_days: Days
     vesting_schedule: dict[Days, FIL] # Days = Days since Simulation Start
     # Collateral Params
@@ -190,6 +191,7 @@ class ConsensusPledgeParams(TypedDict):
 
 
 class ConsensusPledgeSweepParams(TypedDict):
+    label: list[str]
     timestep_in_days: list[Days]
     vesting_schedule: list[dict[Days, FIL]] # Days = Days since Simulation Start
     # Collateral Params
@@ -203,4 +205,4 @@ class ConsensusPledgeSweepParams(TypedDict):
     linear_duration: list[Days]
     immediate_release_fraction: list[float]
     # Behavioural Params   
-    behavioural_params: dict[Days, BehaviouralParams]
+    behavioural_params: list[dict[Days, BehaviouralParams]]

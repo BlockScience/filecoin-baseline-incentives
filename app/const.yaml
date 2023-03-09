@@ -1,25 +1,11 @@
 days_per_year: 365.25
 days_per_step: 1
 days_after_launch: 0      # how many days after launch should we start simulation?
-network_power:
-  pessimistic:
-    fall_after_beginning: 365.25   # days
-    growth_fall: -0.1              # rate
-    stable_after_fall: 182.625     # days
-    growth_stable: 1.0             # rate
-    take_off_after_stable: 1095.75 # days
-    growth_take_off: 6.0           # rate
-    steady_after_take_off: 182.625 # days
-    growth_steady: 1.0             # rate
-  optimistic:
-    fall_after_beginning: 365.25   # days
-    growth_fall: 1.05              # rate
-    stable_after_fall: 365.25      # days
-    growth_stable: 1.05            # rate
-    take_off_after_stable: 365.25  # days
-    growth_take_off: 1.05          # rate
-    steady_after_take_off: 365.25  # days
-    growth_steady: 1.05            # rate
+new_sector_rb_onboarding_rate: 10.0
+new_sector_quality_factor: 2.0
+new_sector_lifetime: 180
+renewal_probability: 0.02
+renewal_lifetime: 180
 speed_to_latency:                  # seconds per simulation replay step
   slow: .5
   medium: .1

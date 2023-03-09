@@ -1,3 +1,5 @@
+# %%
+
 import os
 import sys
 
@@ -5,13 +7,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import numpy as np
 import pandas as pd
-import streamlit as st
 
 from cadCAD_tools.execution import easy_run
-from cadCAD_tools.preparation import sweep_cartesian_product
-from consensus_pledge_model.params import *
+from consensus_pledge_model.types import ConsensusPledgeSweepParams, BehaviouralParams
+from consensus_pledge_model.params import INITIAL_STATE, SINGLE_RUN_PARAMS, TIMESTEPS, SAMPLES
 from consensus_pledge_model.structure import CONSENSUS_PLEDGE_DEMO_BLOCKS
-from consensus_pledge_model.types import BaselineMinting, BaselineModelSweepParams, GrowthScenario, SimpleMinting
 from utils import load_constants
 
 
@@ -19,41 +19,35 @@ C = CONSTANTS = load_constants()
 
 
 
-def run_cadcad_model():
+def run_cadcad_model(new_sector_rb_onboarding_rate,
+                     new_sector_quality_factor,
+                     new_sector_lifetime):
+    
     RESULTS = []
-    SWEEP_RUN_PARAMS = sweep_cartesian_product(MULTI_RUN_PARAMS)
+
+    ## Scenario 1 - User
+
+    user_behaviour_params = BehaviouralParams('user',
+                                              new_sector_rb_onboarding_rate,
+                                              new_sector_quality_factor,
+                                              new_sector_lifetime,
+                                              0.02,
+                                              new_sector_lifetime)
+
+    params = SINGLE_RUN_PARAMS.copy()
+    params["behavioural_params"] = {TIMESTEPS: user_behaviour_params}
+
+    
+    SWEEP_RUN_PARAMS = ConsensusPledgeSweepParams(**{k: [v] for k, v in params.items()})
     RUN_ARGS = (INITIAL_STATE, SWEEP_RUN_PARAMS, CONSENSUS_PLEDGE_DEMO_BLOCKS, TIMESTEPS, SAMPLES)
     RESULTS.append(easy_run(*RUN_ARGS))
-    # Run baseline scenario
-    RUN_ARGS = (
-        {**INITIAL_STATE, "network_power": INITIAL_STATE["baseline"]},
-        {**SWEEP_RUN_PARAMS, "baseline_activated": [True], "network_power_scenario": [GrowthScenario("baseline")]},
-        CONSENSUS_PLEDGE_DEMO_BLOCKS,
-        TIMESTEPS,
-        SAMPLES,
-    )
-    RESULTS.append(easy_run(*RUN_ARGS))
+
     # Post-process results
     df = post_process_results(pd.concat(RESULTS))
-    df = df.assign(scenario='baseline')
-    # df = df.assign(scenario=df.apply(map_args_to_scenario, axis=1)) TODO: review
-    # Compute mining utility
-    baseline_marginal_reward = df[df["scenario"] == "baseline"]["marginal_reward"]
-    num_scens = len(df["scenario"].unique())
-    mining_utility_denom = np.array(num_scens * baseline_marginal_reward.tolist())
-    df = df.assign(mining_utility=df["marginal_reward"] / mining_utility_denom)
+    df = df.assign(scenario='user')
+    
     # Return relevant scenarios
-    return df[
-        df["scenario"].isin(
-            [
-                "user",
-                "user-baseline-deactivated",
-                "optimistic",
-                "baseline",
-            ]
-        )
-    ].query("timestep > 0")
-
+    return df.query('timestep > 0')
 
 def post_process_results(results):
     dfs = [
@@ -65,10 +59,15 @@ def post_process_results(results):
 
     df = (
         pd.concat(dfs, axis=1)
-        .drop(columns=DROP_COLS)
+        .assign(simple_reward=lambda df: df.reward.map(lambda x: x.simple_reward))
+        .assign(baseline_reward=lambda df: df.reward.map(lambda x: x.baseline_reward))
+        .assign(fil_locked=lambda df: df.token_distribution.map(lambda x: x.locked))
+        .assign(fil_collateral=lambda df: df.token_distribution.map(lambda x: x.collateral))
+        .assign(fil_locked_reward=lambda df: df.token_distribution.map(lambda x: x.locked_rewards))
         .assign(block_reward=lambda x: x.simple_reward + x.baseline_reward)
         .assign(marginal_reward=lambda x: x.block_reward / x.power_qa)
         .assign(years_passed=lambda x: x.days_passed / C["days_per_year"])
+        .drop(columns=DROP_COLS)
     )
     return df
 
@@ -85,3 +84,7 @@ def map_args_to_scenario(row):
         return "baseline"
     else:
         return label, baseline_activated
+
+# %%
+sim_df = run_cadcad_model(10, 2, 180)
+# %%

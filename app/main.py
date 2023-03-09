@@ -62,7 +62,7 @@ with image_container:
 
 st.sidebar.markdown("# Parameters for the `user` scenario")
 
-defaults = C["network_power"]["pessimistic"]
+defaults = C
 
 st.sidebar.markdown(
     """
@@ -73,99 +73,38 @@ The trajectory is described as being:
 """
 )
 
-st.sidebar.markdown("### 1️⃣ Cross Baseline Function From Above")
-
-fall_after_beginning = (
-    st.sidebar.slider(
-        "How long? (in years since last change)",
-        0.0,
-        8.0,
-        defaults["fall_after_beginning"] / C["days_per_year"],
-        0.25,
-        key="fall_interval",
-    )
-    * C["days_per_year"]
+new_sector_rb_onboarding_rate = st.sidebar.slider(
+    "RB Onboarding Rate (PiB)", 0.0, 100.0, defaults["new_sector_rb_onboarding_rate"], 0.1, key="new_sector_rb_onboarding_rate"
 )
 
-growth_fall = st.sidebar.slider(
-    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 1.2, defaults["growth_fall"], 0.1, key="fall_fraction"
+new_sector_quality_factor = st.sidebar.slider(
+    "RB Onboarding QF", 1.0, 10.0, defaults["new_sector_quality_factor"], 0.1, key="new_sector_quality_factor"
 )
 
-st.sidebar.markdown("### 2️⃣ Stabilize Below Baseline Function")
-
-stable_after_fall = (
-    st.sidebar.slider(
-        "How long? (in years since last change)",
-        0.0,
-        8.0,
-        defaults["stable_after_fall"] / C["days_per_year"],
-        0.25,
-        key="stable_interval",
-    )
-    * C["days_per_year"]
+new_sector_lifetime = st.sidebar.slider(
+    "New Sector Lifetime", 180, 360, defaults["new_sector_lifetime"], 1, key="new_sector_lifetime"
 )
 
-growth_stable = st.sidebar.slider(
-    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 1.2, defaults["growth_stable"], 0.1, key="stable_fraction"
-)
+# st.sidebar.markdown("## Compare Against")
 
-st.sidebar.markdown("### 3️⃣ Recross Baseline Function from Below")
-
-take_off_after_stable = (
-    st.sidebar.slider(
-        "How long? (in years since last change)",
-        0.0,
-        8.0,
-        defaults["take_off_after_stable"] / C["days_per_year"],
-        0.25,
-        key="take_off_interval",
-    )
-    * C["days_per_year"]
-)
-
-growth_take_off = st.sidebar.slider(
-    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 8.0, defaults["growth_take_off"], 0.1, key="take_off_fraction"
-)
-
-st.sidebar.markdown("### 4️⃣ Stabilize Above Baseline Function")
-
-steady_after_take_off = (
-    st.sidebar.slider(
-        "How long? (in years since last change)",
-        0.0,
-        8.0,
-        defaults["steady_after_take_off"] / C["days_per_year"],
-        0.25,
-        key="steady_interval",
-    )
-    * C["days_per_year"]
-)
-
-growth_steady = st.sidebar.slider(
-    "rb-NP growth (as a fraction of the baseline growth)", -0.2, 1.2, defaults["growth_steady"], 0.1, key="steady_fraction"
-)
-
-st.sidebar.markdown("## Compare Against")
-
-SCENARIO2CHECKBOX = OrderedDict(
-    {
-        "user-baseline-deactivated": st.sidebar.checkbox("User + BaseFunc Deactivated Scenario", value=True),
-        "optimistic": st.sidebar.checkbox("Optimistic Scenario", value=True),
-        "baseline": st.sidebar.checkbox("BaseFunc Scenario", value=True),
-    }
-)
+# SCENARIO2CHECKBOX = OrderedDict(
+#     {
+#         "user-baseline-deactivated": st.sidebar.checkbox("User + BaseFunc Deactivated Scenario", value=True),
+#         "optimistic": st.sidebar.checkbox("Optimistic Scenario", value=True),
+#         "baseline": st.sidebar.checkbox("BaseFunc Scenario", value=True),
+#     }
+# )
 
 # Run model
 
-df = run_cadcad_model()
-df = df[df["scenario"].isin(["user"] + [scenario for scenario, checked in SCENARIO2CHECKBOX.items() if checked])]
+df = run_cadcad_model(new_sector_rb_onboarding_rate, new_sector_quality_factor, new_sector_lifetime)
+# df = df[df["scenario"].isin(["user"] + [scenario for scenario, checked in SCENARIO2CHECKBOX.items() if checked])]
 
 # Plot results
 
 with plot_container:
     (num_steps,) = set(df["scenario"].value_counts())
     network_power_chart = NetworkPowerPlotlyChart.build(df, num_steps)
-    mining_utility_chart = MiningUtilityPlotlyChart.build(df, num_steps)
     effective_network_time_chart = EffectiveNetworkTimePlotlyChart.build(df, num_steps)
     simple_reward_chart = SimpleRewardPlotlyChart.build(df, num_steps)
     baseline_reward_chart = BaselineRewardPlotlyChart.build(df, num_steps)

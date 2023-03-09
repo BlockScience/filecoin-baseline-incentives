@@ -39,8 +39,8 @@ class NetworkPowerPlotlyChart(PlotlyChart):
                 "network_power": "Raw Bytes Network Power (RB PiB)",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(1e4, 2e6),
-            log_y=True,
+            range_y=(0, 20_000),
+            #log_y=True,
         )
         return cls(chart)
 
@@ -78,7 +78,7 @@ class EffectiveNetworkTimePlotlyChart(PlotlyChart):
                 "effective_network_time": "Effective Network Time (Years)",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(1.5, 8),
+            range_y=(2.5, 3.5),
         )
         return cls(chart)
 
@@ -97,7 +97,7 @@ class SimpleRewardPlotlyChart(PlotlyChart):
                 "simple_reward": "Simple Reward (FIL / month)",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(1e6, 3e6),
+            range_y=(0, 100_000),
         )
         return cls(chart)
 
@@ -116,7 +116,7 @@ class BaselineRewardPlotlyChart(PlotlyChart):
                 "baseline_reward": "Baseline Reward (FIL / month)",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(1e6, 7e6),
+            range_y=(0, 200_000),
         )
         return cls(chart)
 
