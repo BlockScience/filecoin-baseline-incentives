@@ -118,18 +118,19 @@ df = run_cadcad_model(duration_1, new_sector_rb_onboarding_rate_1, new_sector_qu
 # Plot results
 
 
+user_df = df.query("scenario == 'user'")
 with plot_container:
-    (num_steps,) = set(df["scenario"].value_counts())
-    network_power_chart = NetworkPowerPlotlyChart.build(df, num_steps)
-    qa_power_chart = QAPowerPlotlyChart.build(df, num_steps)
-    onboarding_collateral_chart = OnboardingCollateralPlotlyChart.build(df, num_steps)
+    num_steps = df.timestep.nunique()
+    network_power_chart = NetworkPowerPlotlyChart.build(user_df, num_steps)
+    qa_power_chart = QAPowerPlotlyChart.build(user_df, num_steps)
+    onboarding_collateral_chart = OnboardingCollateralPlotlyChart.build(user_df, num_steps)
     token_dist_chart = TokenDistributionPlotlyChart.build(df, num_steps)
     critical_cost_chart = CriticalCostPlotlyChart.build(df, num_steps)
     circulating_surplus_chart = CirculatingSurplusPlotlyChart.build(df, num_steps)
-    effective_network_time_chart = EffectiveNetworkTimePlotlyChart.build(df, num_steps)
-    simple_reward_chart = SimpleRewardPlotlyChart.build(df, num_steps)
-    baseline_reward_chart = BaselineRewardPlotlyChart.build(df, num_steps)
-    marginal_reward_chart = MarginalRewardPlotlyChart.build(df, num_steps)
+    effective_network_time_chart = EffectiveNetworkTimePlotlyChart.build(user_df, num_steps)
+    simple_reward_chart = SimpleRewardPlotlyChart.build(user_df, num_steps)
+    baseline_reward_chart = BaselineRewardPlotlyChart.build(user_df, num_steps)
+    marginal_reward_chart = MarginalRewardPlotlyChart.build(user_df, num_steps)
     
 
 # Download data

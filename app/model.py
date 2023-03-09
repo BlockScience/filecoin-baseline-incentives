@@ -6,10 +6,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import pandas as pd
 from cadCAD_tools.execution import easy_run
 from consensus_pledge_model.types import ConsensusPledgeSweepParams, BehaviouralParams
-from consensus_pledge_model.params import INITIAL_STATE, SINGLE_RUN_PARAMS, TIMESTEPS, SAMPLES
+from consensus_pledge_model.params import INITIAL_STATE, MULTI_RUN_PARAMS, TIMESTEPS, SAMPLES
 from consensus_pledge_model.structure import CONSENSUS_PLEDGE_DEMO_BLOCKS
 from utils import load_constants
 from copy import deepcopy
+from cadCAD_tools.preparation import sweep_cartesian_product
 
 C = CONSTANTS = load_constants()
 
@@ -37,18 +38,19 @@ def run_cadcad_model(duration_1,
                                               new_sector_lifetime_2,
                                               0.02,
                                               new_sector_lifetime_2)
-    params = SINGLE_RUN_PARAMS.copy()
-    params["behavioural_params"] = {duration_1: first_year,
-                                    10000: second_year}
+    params = MULTI_RUN_PARAMS.copy()
+    params["behavioural_params"] = [{duration_1: first_year,
+                                    10000: second_year}]
 
+    RUN_ARGS = (deepcopy(INITIAL_STATE), sweep_cartesian_product(params), CONSENSUS_PLEDGE_DEMO_BLOCKS, TIMESTEPS, SAMPLES)
     
-    SWEEP_RUN_PARAMS = ConsensusPledgeSweepParams(**{k: [v] for k, v in params.items()})
-    RUN_ARGS = (deepcopy(INITIAL_STATE), SWEEP_RUN_PARAMS, CONSENSUS_PLEDGE_DEMO_BLOCKS, TIMESTEPS, SAMPLES)
     df = easy_run(*RUN_ARGS)
 
     # Post-process results
     df = post_process_results(df)
-    df = df.assign(scenario='user')
+    df['scenario'] = ''
+    df.loc[df.target_locked_supply == 0.3, 'scenario'] = 'user'
+    df.loc[df.target_locked_supply == 0.0, 'scenario'] = 'user-deactivated'
     
     # Return relevant scenarios
     return df.query('timestep > 1')

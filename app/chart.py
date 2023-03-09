@@ -75,7 +75,7 @@ class EffectiveNetworkTimePlotlyChart(PlotlyChart):
                 "effective_network_time": "Effective Network Time (Years)",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(2.5, 4.0),
+            range_y=(2.5, 4.5),
         )
         return cls(chart)
 
@@ -132,7 +132,7 @@ class MarginalRewardPlotlyChart(PlotlyChart):
                 "marginal_reward": "Marginal Reward (FIL / (month * RB PiB))",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(5, 12),
+            range_y=(0, 12),
             # log_y=True
         )
         return cls(chart)
@@ -146,6 +146,7 @@ class TokenDistributionPlotlyChart(PlotlyChart):
             x="years_passed",
             y=["fil_circulating", "fil_locked_reward", "fil_collateral", "fil_vested"],
             title="Token Distribution",
+            line_dash='scenario',
             labels={
                 "years_passed": "Year"
             },
@@ -164,6 +165,7 @@ class CriticalCostPlotlyChart(PlotlyChart):
             x="years_passed",
             y="critical_cost",
             title="Critical Cost",
+            line_dash='scenario',
             labels={
                 "years_passed": "Year"
             },
@@ -182,6 +184,7 @@ class CirculatingSurplusPlotlyChart(PlotlyChart):
             x="years_passed",
             y="circulating_surplus",
             title="Circulating Surplus",
+            line_dash='scenario',
             labels={
                 "years_passed": "Year"
             },

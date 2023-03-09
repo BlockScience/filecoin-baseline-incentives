@@ -14,6 +14,7 @@ YEAR = 365.25
 TIMESTEP_IN_DAYS = 7
 # TIMESTEPS = int(ceil(SIMULATION_TIME_IN_YEARS * YEAR) / DAYS_PER_TIMESTEP)
 TIMESTEPS = 750
+#TIMESTEPS = 35
 
 # BLOCKS_SINCE_LAUNCH = 2_563_129  # Block height used as an reference point
 # DAYS_AFTER_LAUNCH = (BLOCKS_SINCE_LAUNCH * 30) / \
@@ -165,3 +166,4 @@ SINGLE_RUN_PARAMS = ConsensusPledgeParams(
 
 MULTI_RUN_PARAMS = ConsensusPledgeSweepParams(
     **{k: [v] for k, v in SINGLE_RUN_PARAMS.items()})
+MULTI_RUN_PARAMS['target_locked_supply'] = [0.3, 0.0]
