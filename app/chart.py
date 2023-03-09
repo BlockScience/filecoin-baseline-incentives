@@ -38,11 +38,28 @@ class NetworkPowerPlotlyChart(PlotlyChart):
                 "network_power": "Raw Bytes Network Power (RB PiB)",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(10_000, 40_000),
+            range_y=(10_000, 50_000),
             #log_y=True,
         )
         return cls(chart)
 
+class QAPowerPlotlyChart(PlotlyChart):
+    @classmethod
+    def build(cls, df, num_steps):
+        chart = px.line(
+            df,
+            x="years_passed",
+            y='power_qa',
+            title="QA Power vs. Time",
+            labels={
+                "years_passed": "Year",
+                "network_power": "QA Network Power (QA PiB)",
+            },
+            range_x=cls.compose_x_domain(num_steps),
+            range_y=(10_000, 150_000),
+            #log_y=True,
+        )
+        return cls(chart)
 
 class EffectiveNetworkTimePlotlyChart(PlotlyChart):
     @classmethod
@@ -115,7 +132,7 @@ class MarginalRewardPlotlyChart(PlotlyChart):
                 "marginal_reward": "Marginal Reward (FIL / (month * RB PiB))",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(8, 12),
+            range_y=(5, 12),
             # log_y=True
         )
         return cls(chart)
@@ -133,7 +150,7 @@ class TokenDistributionPlotlyChart(PlotlyChart):
                 "years_passed": "Year"
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(0, 350_000_000),
+            range_y=(0, 400_000_000),
             #log_y=True,
         )
         return cls(chart)
@@ -169,7 +186,7 @@ class CirculatingSurplusPlotlyChart(PlotlyChart):
                 "years_passed": "Year"
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(0, 20),
+            range_y=(5, 30),
         )
         return cls(chart)
     
@@ -185,6 +202,6 @@ class OnboardingCollateralPlotlyChart(PlotlyChart):
                 "years_passed": "Year"
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(0, 5_000),
+            range_y=(0, 6_000),
         )
         return cls(chart)

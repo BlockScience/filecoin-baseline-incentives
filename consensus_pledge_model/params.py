@@ -11,7 +11,7 @@ from consensus_pledge_model.types import TokenDistribution, BehaviouralParams, A
 # DAYS_PER_TIMESTEP = 1
 YEAR = 365.25
 # SIMULATION_TIME_IN_YEARS = 6
-TIMESTEP_IN_DAYS = 1
+TIMESTEP_IN_DAYS = 7
 # TIMESTEPS = int(ceil(SIMULATION_TIME_IN_YEARS * YEAR) / DAYS_PER_TIMESTEP)
 TIMESTEPS = 750
 

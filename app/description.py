@@ -5,10 +5,6 @@ import streamlit as st
 def description():
     st.write(
         """
-**Baseline Minting enhances the long-term sustainability** of the Network Power by witholding part of the block reward when it's below the Baseline Function. These savings:
-
-- **Enhance security** by witholding rewards if a significant share of the network temporarily goes down.
-- **Improve sustainability** by distributing these rewards to future miners when the network recovers.
 
 ## Simulations
 

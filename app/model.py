@@ -15,21 +15,31 @@ C = CONSTANTS = load_constants()
 
 
 
-def run_cadcad_model(new_sector_rb_onboarding_rate,
-                     new_sector_quality_factor,
-                     new_sector_lifetime):
+def run_cadcad_model(duration_1,
+                     new_sector_rb_onboarding_rate_1,
+                     new_sector_quality_factor_1,
+                     new_sector_lifetime_1,
+                     new_sector_rb_onboarding_rate_2,
+                     new_sector_quality_factor_2,
+                     new_sector_lifetime_2):
     
     ## Scenario 1 - User
 
-    user_behaviour_params = BehaviouralParams('user',
-                                              new_sector_rb_onboarding_rate,
-                                              new_sector_quality_factor,
-                                              new_sector_lifetime,
+    first_year = BehaviouralParams('first_year',
+                                              new_sector_rb_onboarding_rate_1,
+                                              new_sector_quality_factor_1,
+                                              new_sector_lifetime_1,
                                               0.02,
-                                              new_sector_lifetime)
-
+                                              new_sector_lifetime_1)
+    second_year = BehaviouralParams('second_year',
+                                              new_sector_rb_onboarding_rate_2,
+                                              new_sector_quality_factor_2,
+                                              new_sector_lifetime_2,
+                                              0.02,
+                                              new_sector_lifetime_2)
     params = SINGLE_RUN_PARAMS.copy()
-    params["behavioural_params"] = {TIMESTEPS: user_behaviour_params}
+    params["behavioural_params"] = {duration_1: first_year,
+                                    10000: second_year}
 
     
     SWEEP_RUN_PARAMS = ConsensusPledgeSweepParams(**{k: [v] for k, v in params.items()})

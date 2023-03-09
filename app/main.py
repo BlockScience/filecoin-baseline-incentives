@@ -13,12 +13,12 @@ C = CONSTANTS = load_constants()
 # Define layout
 
 st.set_page_config(
-    page_title="Filecoin Baseline Minting Educational Calculator",
+    page_title="Filecoin Consensus Pledge Educational Calculator",
     page_icon=os.path.join(os.path.dirname(__file__), "assets", "icon.png"),
     layout="wide",
 )
 
-st.markdown("# Filecoin Baseline Minting Educational Calculator")
+st.markdown("# Filecoin Consensus Pledge Educational Calculator")
 
 st.markdown(
     """
@@ -64,16 +64,39 @@ The trajectory is described as being:
 """
 )
 
-new_sector_rb_onboarding_rate = st.sidebar.slider(
-    "RB Onboarding Rate (PiB)", 0.0, 100.0, defaults["new_sector_rb_onboarding_rate"], 0.1, key="new_sector_rb_onboarding_rate"
+st.sidebar.markdown(
+"""## Phase one"""
+)
+duration_1 = st.sidebar.slider(
+    "Duration in Days", 0, 560, defaults["duration_1"], 7, key="duration_1"
 )
 
-new_sector_quality_factor = st.sidebar.slider(
-    "RB Onboarding QF", 1.0, 10.0, defaults["new_sector_quality_factor"], 0.1, key="new_sector_quality_factor"
+new_sector_rb_onboarding_rate_1 = st.sidebar.slider(
+    "RB Onboarding Rate (PiB)", 0.0, 100.0, defaults["new_sector_rb_onboarding_rate_1"], 0.1, key="new_sector_rb_onboarding_rate_1"
 )
 
-new_sector_lifetime = st.sidebar.slider(
-    "New Sector Lifetime", 180, 360, defaults["new_sector_lifetime"], 1, key="new_sector_lifetime"
+new_sector_quality_factor_1 = st.sidebar.slider(
+    "RB Onboarding QF", 1.0, 10.0, defaults["new_sector_quality_factor_1"], 0.1, key="new_sector_quality_factor_1"
+)
+
+new_sector_lifetime_1 = st.sidebar.slider(
+    "New Sector Lifetime", 180, 360, defaults["new_sector_lifetime_1"], 1, key="new_sector_lifetime_1"
+)
+
+st.sidebar.markdown(
+"""## Phase two"""
+)
+
+new_sector_rb_onboarding_rate_2 = st.sidebar.slider(
+    "RB Onboarding Rate (PiB)", 0.0, 100.0, defaults["new_sector_rb_onboarding_rate_2"], 0.1, key="new_sector_rb_onboarding_rate_2"
+)
+
+new_sector_quality_factor_2 = st.sidebar.slider(
+    "RB Onboarding QF", 1.0, 10.0, defaults["new_sector_quality_factor_2"], 0.1, key="new_sector_quality_factor_2"
+)
+
+new_sector_lifetime_2 = st.sidebar.slider(
+    "New Sector Lifetime", 180, 360, defaults["new_sector_lifetime_2"], 1, key="new_sector_lifetime_2"
 )
 
 # st.sidebar.markdown("## Compare Against")
@@ -88,7 +111,8 @@ new_sector_lifetime = st.sidebar.slider(
 
 # Run model
 
-df = run_cadcad_model(new_sector_rb_onboarding_rate, new_sector_quality_factor, new_sector_lifetime)
+df = run_cadcad_model(duration_1, new_sector_rb_onboarding_rate_1, new_sector_quality_factor_1, new_sector_lifetime_1,
+                      new_sector_rb_onboarding_rate_2, new_sector_quality_factor_2, new_sector_lifetime_2)
 # df = df[df["scenario"].isin(["user"] + [scenario for scenario, checked in SCENARIO2CHECKBOX.items() if checked])]
 
 # Plot results
@@ -97,6 +121,7 @@ df = run_cadcad_model(new_sector_rb_onboarding_rate, new_sector_quality_factor, 
 with plot_container:
     (num_steps,) = set(df["scenario"].value_counts())
     network_power_chart = NetworkPowerPlotlyChart.build(df, num_steps)
+    qa_power_chart = QAPowerPlotlyChart.build(df, num_steps)
     onboarding_collateral_chart = OnboardingCollateralPlotlyChart.build(df, num_steps)
     token_dist_chart = TokenDistributionPlotlyChart.build(df, num_steps)
     critical_cost_chart = CriticalCostPlotlyChart.build(df, num_steps)
