@@ -167,7 +167,7 @@ def s_storage_pledge_per_new_qa_power(params,
     daily_reward_estimate = current_reward / dt
 
     value = daily_reward_estimate
-    value *= 20
+    value *= 20.0
     value /= state["power_qa"]
 
     #total_reward = state["reward"].block_reward
@@ -182,16 +182,17 @@ def s_sectors_onboard(params,
                       _3,
                       state: ConsensusPledgeDemoState,
                       signal: Signal) -> VariableUpdate:
+    
+    current_sectors_list = state['aggregate_sectors'].copy()
     # Sector Properties
     power_rb_new = state['behaviour'].new_sector_rb_onboarding_rate
     power_qa_new = power_rb_new * state['behaviour'].new_sector_quality_factor
 
-    if power_rb_new > 0:
+    if power_rb_new > 0.0:
         storage_pledge = state['storage_pledge_per_new_qa_power'] * power_qa_new
         consensus_pledge = state['consensus_pledge_per_new_qa_power'] * power_qa_new
         reward_schedule = {}
         # TODO: check if copying is too shallow or deep (low priority)
-        current_sectors_list = state['aggregate_sectors'].copy()
         new_sectors = AggregateSector(power_rb=power_rb_new,
                                     power_qa=power_qa_new,
                                     remaining_days=state['behaviour'].new_sector_lifetime,
@@ -219,7 +220,7 @@ def s_sectors_renew(params,
     power_qa_renew: QA_PiB = 0.0
     reward_schedule_renew = defaultdict(FIL)
 
-    for aggregate_sector in current_sectors_list:
+    for _, aggregate_sector in enumerate(current_sectors_list):
         # Retrieve renew values
         sector_power_rb_renew = aggregate_sector.power_rb * renew_share
         sector_power_qa_renew = aggregate_sector.power_qa * renew_share
@@ -232,17 +233,17 @@ def s_sectors_renew(params,
         # Assign values to the new renewed sectors
         power_rb_renew += sector_power_rb_renew
         power_qa_renew += sector_power_qa_renew
-        # Storage & Consensus Pledge are going to be recomputed
-        # after the for-loop
-        for k, v in sector_schedule_renew.items():
-            reward_schedule_renew[k] += v
 
         # Subtract values from the non-renewed sectors
         aggregate_sector.power_rb -= sector_power_rb_renew
         aggregate_sector.power_qa -= sector_power_qa_renew
         aggregate_sector.storage_pledge -= sector_storage_pledge_renew
         aggregate_sector.consensus_pledge -= sector_consensus_pledge_renew
+
+        # Storage & Consensus Pledge are going to be recomputed
+        # after the for-loop
         for k, v in sector_schedule_renew.items():
+            reward_schedule_renew[k] += v
             aggregate_sector.reward_schedule[k] -= v
 
     # Compute Pledges

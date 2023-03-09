@@ -31,35 +31,15 @@ class NetworkPowerPlotlyChart(PlotlyChart):
         chart = px.line(
             df,
             x="years_passed",
-            y="power_rb",
-            color="scenario",
+            y=["power_rb", "baseline"],
             title="RB Network Power vs. Time",
             labels={
                 "years_passed": "Year",
                 "network_power": "Raw Bytes Network Power (RB PiB)",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(0, 20_000),
+            range_y=(10_000, 40_000),
             #log_y=True,
-        )
-        return cls(chart)
-
-
-class MiningUtilityPlotlyChart(PlotlyChart):
-    @classmethod
-    def build(cls, df, num_steps):
-        chart = px.line(
-            df,
-            x="years_passed",
-            y="mining_utility",
-            color="scenario",
-            title="Mining Utility vs. Time",
-            labels={
-                "years_passed": "Year",
-                "mining_utility": "Mining Utility (% of baseline scenario)",
-            },
-            range_x=cls.compose_x_domain(num_steps),
-            range_y=(0.4, 2.5),
         )
         return cls(chart)
 
@@ -78,7 +58,7 @@ class EffectiveNetworkTimePlotlyChart(PlotlyChart):
                 "effective_network_time": "Effective Network Time (Years)",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(2.5, 3.5),
+            range_y=(2.5, 4.0),
         )
         return cls(chart)
 
@@ -97,7 +77,7 @@ class SimpleRewardPlotlyChart(PlotlyChart):
                 "simple_reward": "Simple Reward (FIL / month)",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(0, 100_000),
+            range_y=(60_000, 100_000),
         )
         return cls(chart)
 
@@ -116,7 +96,7 @@ class BaselineRewardPlotlyChart(PlotlyChart):
                 "baseline_reward": "Baseline Reward (FIL / month)",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(0, 200_000),
+            range_y=(50_000, 150_000),
         )
         return cls(chart)
 
@@ -135,7 +115,76 @@ class MarginalRewardPlotlyChart(PlotlyChart):
                 "marginal_reward": "Marginal Reward (FIL / (month * RB PiB))",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(0, 1e3),
+            range_y=(8, 12),
             # log_y=True
+        )
+        return cls(chart)
+
+
+class TokenDistributionPlotlyChart(PlotlyChart):
+    @classmethod
+    def build(cls, df, num_steps):
+        chart = px.line(
+            df,
+            x="years_passed",
+            y=["fil_circulating", "fil_locked_reward", "fil_collateral", "fil_vested"],
+            title="Token Distribution",
+            labels={
+                "years_passed": "Year"
+            },
+            range_x=cls.compose_x_domain(num_steps),
+            range_y=(0, 350_000_000),
+            #log_y=True,
+        )
+        return cls(chart)
+    
+
+class CriticalCostPlotlyChart(PlotlyChart):
+    @classmethod
+    def build(cls, df, num_steps):
+        chart = px.line(
+            df,
+            x="years_passed",
+            y="critical_cost",
+            title="Critical Cost",
+            labels={
+                "years_passed": "Year"
+            },
+            range_x=cls.compose_x_domain(num_steps),
+            range_y=(10_000_000, 40_000_000),
+            #log_y=True,
+        )
+        return cls(chart)
+    
+
+class CirculatingSurplusPlotlyChart(PlotlyChart):
+    @classmethod
+    def build(cls, df, num_steps):
+        chart = px.line(
+            df,
+            x="years_passed",
+            y="circulating_surplus",
+            title="Circulating Surplus",
+            labels={
+                "years_passed": "Year"
+            },
+            range_x=cls.compose_x_domain(num_steps),
+            range_y=(0, 20),
+        )
+        return cls(chart)
+    
+class OnboardingCollateralPlotlyChart(PlotlyChart):
+    @classmethod
+    def build(cls, df, num_steps):
+        chart = px.line(
+            df,
+            x="years_passed",
+            y="consensus_pledge_per_new_qa_power",
+            title="Initial Pledge per QA-PiB",
+            labels={
+                "years_passed": "Year"
+            },
+            range_x=cls.compose_x_domain(num_steps),
+            range_y=(0, 5_000),
         )
         return cls(chart)

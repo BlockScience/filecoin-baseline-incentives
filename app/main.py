@@ -1,15 +1,7 @@
-from collections import OrderedDict
 import os
 import streamlit as st
 
-from chart import (
-    NetworkPowerPlotlyChart,
-    MiningUtilityPlotlyChart,
-    EffectiveNetworkTimePlotlyChart,
-    SimpleRewardPlotlyChart,
-    BaselineRewardPlotlyChart,
-    MarginalRewardPlotlyChart,
-)
+from chart import *
 from description import description
 from glossary import glossary
 from model import run_cadcad_model
@@ -17,7 +9,6 @@ from utils import load_constants
 
 
 C = CONSTANTS = load_constants()
-
 
 # Define layout
 
@@ -102,13 +93,19 @@ df = run_cadcad_model(new_sector_rb_onboarding_rate, new_sector_quality_factor, 
 
 # Plot results
 
+
 with plot_container:
     (num_steps,) = set(df["scenario"].value_counts())
     network_power_chart = NetworkPowerPlotlyChart.build(df, num_steps)
+    onboarding_collateral_chart = OnboardingCollateralPlotlyChart.build(df, num_steps)
+    token_dist_chart = TokenDistributionPlotlyChart.build(df, num_steps)
+    critical_cost_chart = CriticalCostPlotlyChart.build(df, num_steps)
+    circulating_surplus_chart = CirculatingSurplusPlotlyChart.build(df, num_steps)
     effective_network_time_chart = EffectiveNetworkTimePlotlyChart.build(df, num_steps)
     simple_reward_chart = SimpleRewardPlotlyChart.build(df, num_steps)
     baseline_reward_chart = BaselineRewardPlotlyChart.build(df, num_steps)
     marginal_reward_chart = MarginalRewardPlotlyChart.build(df, num_steps)
+    
 
 # Download data
 

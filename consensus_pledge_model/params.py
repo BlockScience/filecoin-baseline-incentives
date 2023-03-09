@@ -1,7 +1,7 @@
 from consensus_pledge_model.types import BaselineMinting, Reward, SimpleMinting
 
 from consensus_pledge_model.types import ConsensusPledgeDemoState, ConsensusPledgeParams, ConsensusPledgeSweepParams
-from consensus_pledge_model.types import QA_PiB, PiB_per_Day, PiB, Days, FIL, FIL_per_QA_PiB
+from consensus_pledge_model.types import QA_PiB, PiB, Days, FIL, FIL_per_QA_PiB
 from consensus_pledge_model.types import TokenDistribution, BehaviouralParams, AggregateSector
 
 # TODO: Upgrade to the Consensus Pledge Model
@@ -13,7 +13,7 @@ YEAR = 365.25
 # SIMULATION_TIME_IN_YEARS = 6
 TIMESTEP_IN_DAYS = 1
 # TIMESTEPS = int(ceil(SIMULATION_TIME_IN_YEARS * YEAR) / DAYS_PER_TIMESTEP)
-TIMESTEPS = 180
+TIMESTEPS = 750
 
 # BLOCKS_SINCE_LAUNCH = 2_563_129  # Block height used as an reference point
 # DAYS_AFTER_LAUNCH = (BLOCKS_SINCE_LAUNCH * 30) / \
@@ -114,19 +114,19 @@ INITIAL_ONBOARDING_STORAGE_PLEDGE: FIL_per_QA_PiB = 0.0  # Source: hack
 
 INITIAL_BEHAVIOURAL_PARAMS = {
     180: BehaviouralParams('Initial Phase',
-                           new_sector_rb_onboarding_rate=1,
+                           new_sector_rb_onboarding_rate=1.0,
                            new_sector_quality_factor=2.0,
                            new_sector_lifetime=180,
                            renewal_probability=0.02,
                            renewal_lifetime=180),
     270: BehaviouralParams('Phase 2',
-                           new_sector_rb_onboarding_rate=1,
+                           new_sector_rb_onboarding_rate=1.0,
                            new_sector_quality_factor=2.0,
                            new_sector_lifetime=360,
                            renewal_probability=0.02,
                            renewal_lifetime=360),
     360: BehaviouralParams('Phase 3',
-                           new_sector_rb_onboarding_rate=50,
+                           new_sector_rb_onboarding_rate=50.0,
                            new_sector_quality_factor=2.0,
                            new_sector_lifetime=180,
                            renewal_probability=0.02,
