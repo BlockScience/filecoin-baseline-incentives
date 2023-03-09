@@ -137,8 +137,8 @@ class MarginalRewardPlotlyChart(PlotlyChart):
                 "marginal_reward": "Marginal Reward (FIL / (month * RB PiB))",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(0, 100),
-            # log_y=True
+            range_y=(0.1, 1000),
+            log_y=True
         )
         
         return cls(chart)
@@ -223,7 +223,8 @@ class CirculatingSurplusPlotlyChart(PlotlyChart):
                 'circulating_surplus': "Excess Circulating Supply vs Critical Cost"
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(5, 30),
+            range_y=(5, 5000),
+            log_y=True
         )
         chart.add_vline(vline, line_dash="dot")
         return cls(chart)
