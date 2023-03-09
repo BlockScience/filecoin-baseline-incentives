@@ -192,7 +192,6 @@ def s_sectors_onboard(params,
         storage_pledge = state['storage_pledge_per_new_qa_power'] * power_qa_new
         consensus_pledge = state['consensus_pledge_per_new_qa_power'] * power_qa_new
         reward_schedule = {}
-        # TODO: check if copying is too shallow or deep (low priority)
         new_sectors = AggregateSector(power_rb=power_rb_new,
                                     power_qa=power_qa_new,
                                     remaining_days=state['behaviour'].new_sector_lifetime,
@@ -213,59 +212,62 @@ def s_sectors_renew(params,
                     signal: Signal) -> VariableUpdate:
 
     renew_share = (1 + state['behaviour'].renewal_probability) ** state['delta_days'] - 1
-    # TODO: check if copying is too shallow or deep (low priority)
     current_sectors_list = state['aggregate_sectors'].copy() 
 
-    power_rb_renew: PiB = 0.0
-    power_qa_renew: QA_PiB = 0.0
-    reward_schedule_renew = defaultdict(FIL)
+    if renew_share > 0:
+        power_rb_renew: PiB = 0.0
+        power_qa_renew: QA_PiB = 0.0
+        reward_schedule_renew = defaultdict(FIL)
 
-    for _, aggregate_sector in enumerate(current_sectors_list):
-        # Retrieve renew values
-        sector_power_rb_renew = aggregate_sector.power_rb * renew_share
-        sector_power_qa_renew = aggregate_sector.power_qa * renew_share
-        sector_storage_pledge_renew = aggregate_sector.storage_pledge * renew_share
-        sector_consensus_pledge_renew = aggregate_sector.consensus_pledge * renew_share
-        sector_schedule_renew = {k: v * renew_share
-                                 for k, v
-                                 in aggregate_sector.reward_schedule.items()}
+        for _, aggregate_sector in enumerate(current_sectors_list):
+            # Retrieve renew values
+            sector_power_rb_renew = aggregate_sector.power_rb * renew_share
+            sector_power_qa_renew = aggregate_sector.power_qa * renew_share
+            sector_storage_pledge_renew = aggregate_sector.storage_pledge * renew_share
+            sector_consensus_pledge_renew = aggregate_sector.consensus_pledge * renew_share
+            sector_schedule_renew = {k: v * renew_share
+                                    for k, v
+                                    in aggregate_sector.reward_schedule.items()}
 
-        # Assign values to the new renewed sectors
-        power_rb_renew += sector_power_rb_renew
-        power_qa_renew += sector_power_qa_renew
+            # Assign values to the new renewed sectors
+            power_rb_renew += sector_power_rb_renew
+            power_qa_renew += sector_power_qa_renew
 
-        # Subtract values from the non-renewed sectors
-        aggregate_sector.power_rb -= sector_power_rb_renew
-        aggregate_sector.power_qa -= sector_power_qa_renew
-        aggregate_sector.storage_pledge -= sector_storage_pledge_renew
-        aggregate_sector.consensus_pledge -= sector_consensus_pledge_renew
+            # Subtract values from the non-renewed sectors
+            aggregate_sector.power_rb -= sector_power_rb_renew
+            aggregate_sector.power_qa -= sector_power_qa_renew
+            aggregate_sector.storage_pledge -= sector_storage_pledge_renew
+            aggregate_sector.consensus_pledge -= sector_consensus_pledge_renew
 
-        # Storage & Consensus Pledge are going to be recomputed
-        # after the for-loop
-        for k, v in sector_schedule_renew.items():
-            reward_schedule_renew[k] += v
-            aggregate_sector.reward_schedule[k] -= v
+            # Storage & Consensus Pledge are going to be recomputed
+            # after the for-loop
+            for k, v in sector_schedule_renew.items():
+                reward_schedule_renew[k] += v
+                aggregate_sector.reward_schedule[k] -= v
 
-    # Compute Pledges
-    storage_pledge_renew = 0.0
-    consensus_pledge_renew = 0.0
+        # Compute Pledges
+        storage_pledge_renew = 0.0
+        consensus_pledge_renew = 0.0
 
-    storage_pledge_renew = state['storage_pledge_per_new_qa_power']
-    storage_pledge_renew *= power_qa_renew
+        storage_pledge_renew = state['storage_pledge_per_new_qa_power']
+        storage_pledge_renew *= power_qa_renew
 
-    consensus_pledge_renew = state['consensus_pledge_per_new_qa_power']
-    consensus_pledge_renew *= power_qa_renew
+        consensus_pledge_renew = state['consensus_pledge_per_new_qa_power']
+        consensus_pledge_renew *= power_qa_renew
 
-    reward_schedule_renew = dict(reward_schedule_renew)
+        reward_schedule_renew = dict(reward_schedule_renew)
 
-    # Create new sector representing the Renewed Sectors
-    new_sectors = AggregateSector(power_rb=power_rb_renew,
-                                  power_qa=power_qa_renew,
-                                  remaining_days=state['behaviour'].renewal_lifetime,
-                                  storage_pledge=storage_pledge_renew,
-                                  consensus_pledge=consensus_pledge_renew,
-                                  reward_schedule=reward_schedule_renew)
-    current_sectors_list.append(new_sectors)
+        # Create new sector representing the Renewed Sectors
+        new_sectors = AggregateSector(power_rb=power_rb_renew,
+                                    power_qa=power_qa_renew,
+                                    remaining_days=state['behaviour'].renewal_lifetime,
+                                    storage_pledge=storage_pledge_renew,
+                                    consensus_pledge=consensus_pledge_renew,
+                                    reward_schedule=reward_schedule_renew)
+        current_sectors_list.append(new_sectors)
+    else:
+        pass
+
     return ('aggregate_sectors', current_sectors_list)
 
 
