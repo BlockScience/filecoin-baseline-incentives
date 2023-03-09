@@ -185,7 +185,7 @@ def s_sectors_onboard(params,
     
     current_sectors_list = state['aggregate_sectors'].copy()
     # Sector Properties
-    power_rb_new = state['behaviour'].new_sector_rb_onboarding_rate
+    power_rb_new = state['behaviour'].new_sector_rb_onboarding_rate * state['delta_days']
     power_qa_new = power_rb_new * state['behaviour'].new_sector_quality_factor
 
     if power_rb_new > 0.0:
@@ -212,7 +212,7 @@ def s_sectors_renew(params,
                     state: ConsensusPledgeDemoState,
                     signal: Signal) -> VariableUpdate:
 
-    renew_share = state['behaviour'].renewal_probability
+    renew_share = (1 + state['behaviour'].renewal_probability) ** state['delta_days'] - 1
     # TODO: check if copying is too shallow or deep (low priority)
     current_sectors_list = state['aggregate_sectors'].copy() 
 

@@ -13,7 +13,7 @@ YEAR = 365.25
 # SIMULATION_TIME_IN_YEARS = 6
 TIMESTEP_IN_DAYS = 7
 # TIMESTEPS = int(ceil(SIMULATION_TIME_IN_YEARS * YEAR) / DAYS_PER_TIMESTEP)
-TIMESTEPS = 750
+TIMESTEPS = int(800 / TIMESTEP_IN_DAYS)
 #TIMESTEPS = 35
 
 # BLOCKS_SINCE_LAUNCH = 2_563_129  # Block height used as an reference point
@@ -126,7 +126,7 @@ INITIAL_BEHAVIOURAL_PARAMS = {
                            new_sector_lifetime=360,
                            renewal_probability=0.02,
                            renewal_lifetime=360),
-    360: BehaviouralParams('Phase 3',
+    9999: BehaviouralParams('Phase 3',
                            new_sector_rb_onboarding_rate=50.0,
                            new_sector_quality_factor=2.0,
                            new_sector_lifetime=180,

@@ -83,6 +83,10 @@ new_sector_lifetime_1 = st.sidebar.slider(
     "New Sector Lifetime", 180, 360, defaults["new_sector_lifetime_1"], 1, key="new_sector_lifetime_1"
 )
 
+renewal_probability_1 = st.sidebar.slider(
+    "Daily Renewal Probability (%)", 0.0, 10.0, defaults["renewal_probability_1"], 0.1, key="renewal_probability_1"
+)
+
 st.sidebar.markdown(
 """## Phase two"""
 )
@@ -99,6 +103,10 @@ new_sector_lifetime_2 = st.sidebar.slider(
     "New Sector Lifetime", 180, 360, defaults["new_sector_lifetime_2"], 1, key="new_sector_lifetime_2"
 )
 
+renewal_probability_2 = st.sidebar.slider(
+    "Daily Renewal Probability (%)", 0.0, 10.0, defaults["renewal_probability_2"], 0.1, key="renewal_probability_2"
+)
+
 # st.sidebar.markdown("## Compare Against")
 
 # SCENARIO2CHECKBOX = OrderedDict(
@@ -111,8 +119,9 @@ new_sector_lifetime_2 = st.sidebar.slider(
 
 # Run model
 
-df = run_cadcad_model(duration_1, new_sector_rb_onboarding_rate_1, new_sector_quality_factor_1, new_sector_lifetime_1,
-                      new_sector_rb_onboarding_rate_2, new_sector_quality_factor_2, new_sector_lifetime_2)
+df = run_cadcad_model(duration_1, new_sector_rb_onboarding_rate_1, new_sector_quality_factor_1, new_sector_lifetime_1, renewal_probability_1 / 100,
+                      new_sector_rb_onboarding_rate_2, new_sector_quality_factor_2, new_sector_lifetime_2,
+                       renewal_probability_2 / 100)
 # df = df[df["scenario"].isin(["user"] + [scenario for scenario, checked in SCENARIO2CHECKBOX.items() if checked])]
 
 # Plot results
@@ -121,12 +130,15 @@ df = run_cadcad_model(duration_1, new_sector_rb_onboarding_rate_1, new_sector_qu
 user_df = df.query("scenario == 'user'")
 with plot_container:
     num_steps = df.timestep.nunique()
-    network_power_chart = NetworkPowerPlotlyChart.build(user_df, num_steps)
+    vline = duration_1 / 365.25
+    network_power_chart = NetworkPowerPlotlyChart.build(user_df, num_steps, vline)
     qa_power_chart = QAPowerPlotlyChart.build(user_df, num_steps)
-    onboarding_collateral_chart = OnboardingCollateralPlotlyChart.build(user_df, num_steps)
-    token_dist_chart = TokenDistributionPlotlyChart.build(df, num_steps)
-    critical_cost_chart = CriticalCostPlotlyChart.build(df, num_steps)
-    circulating_surplus_chart = CirculatingSurplusPlotlyChart.build(df, num_steps)
+    onboarding_collateral_chart = OnboardingCollateralPlotlyChart.build(user_df, num_steps, vline)
+    circulating_supply_chart = CirculatingSupplyPlotlyChart.build(df, num_steps, vline)
+    token_dist_chart = TokenDistributionPlotlyChart.build(df, num_steps, vline)
+    locked_token_dist_chart = TokenLockedDistributionPlotlyChart.build(df, num_steps, vline)
+    critical_cost_chart = CriticalCostPlotlyChart.build(df, num_steps, vline)
+    circulating_surplus_chart = CirculatingSurplusPlotlyChart.build(df, num_steps, vline)
     effective_network_time_chart = EffectiveNetworkTimePlotlyChart.build(user_df, num_steps)
     simple_reward_chart = SimpleRewardPlotlyChart.build(user_df, num_steps)
     baseline_reward_chart = BaselineRewardPlotlyChart.build(user_df, num_steps)

@@ -20,9 +20,11 @@ def run_cadcad_model(duration_1,
                      new_sector_rb_onboarding_rate_1,
                      new_sector_quality_factor_1,
                      new_sector_lifetime_1,
+                     renewal_probability_1,
                      new_sector_rb_onboarding_rate_2,
                      new_sector_quality_factor_2,
-                     new_sector_lifetime_2):
+                     new_sector_lifetime_2,
+                     renewal_probability_2):
     
     ## Scenario 1 - User
 
@@ -30,15 +32,15 @@ def run_cadcad_model(duration_1,
                                               new_sector_rb_onboarding_rate_1,
                                               new_sector_quality_factor_1,
                                               new_sector_lifetime_1,
-                                              0.02,
+                                              renewal_probability_1,
                                               new_sector_lifetime_1)
     second_year = BehaviouralParams('second_year',
                                               new_sector_rb_onboarding_rate_2,
                                               new_sector_quality_factor_2,
                                               new_sector_lifetime_2,
-                                              0.02,
+                                              renewal_probability_2,
                                               new_sector_lifetime_2)
-    params = MULTI_RUN_PARAMS.copy()
+    params = deepcopy(MULTI_RUN_PARAMS)
     params["behavioural_params"] = [{duration_1: first_year,
                                     10000: second_year}]
 
@@ -81,6 +83,8 @@ def post_process_results(df):
         .assign(years_passed=lambda x: x.days_passed / C["days_per_year"])
         .assign(critical_cost=lambda df: (df.power_qa * 0.33) * (df.consensus_pledge_per_new_qa_power + df.storage_pledge_per_new_qa_power))
         .assign(circulating_surplus=lambda df: df.fil_circulating / df.critical_cost - 1)
+        .assign(circulating_supply=lambda df: df.fil_circulating / df.fil_available)
+        .assign(locked_supply=lambda df: df.fil_locked / df.fil_available)
         .drop(columns=DROP_COLS)
     )
     return df

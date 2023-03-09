@@ -9,18 +9,18 @@ import plotly.express as px
 import matplotlib.pyplot as plt
 import numpy as np
 # %%
+from cadCAD_tools.preparation import sweep_cartesian_product
 from consensus_pledge_model.params import INITIAL_STATE
-from consensus_pledge_model.params import SINGLE_RUN_PARAMS
+from consensus_pledge_model.params import MULTI_RUN_PARAMS
 from consensus_pledge_model.structure import CONSENSUS_PLEDGE_DEMO_BLOCKS
 from cadCAD_tools import easy_run
 
-N_timesteps = 360
+N_timesteps = int(700 / 7)
 N_samples = 1
 # %%
-sweep_params = {k: [v] for k, v in SINGLE_RUN_PARAMS.items()}
 
 sim_args = (INITIAL_STATE,
-            sweep_params, 
+            sweep_cartesian_product(MULTI_RUN_PARAMS), 
             CONSENSUS_PLEDGE_DEMO_BLOCKS, 
             N_timesteps,
             N_samples)
@@ -48,9 +48,9 @@ sim_df
 # %%
 sim_df.reward.map(lambda x: x.baseline_reward)
 # %%
-x = sim_df.days_passed
-y = sim_df.baseline
-plt.plot(x, y, '.', markersize=1)
+# x = sim_df.days_passed
+# y = sim_df.baseline
+# plt.plot(x, y, '.', markersize=1)
 
 x = sim_df.days_passed
 y = sim_df.power_rb

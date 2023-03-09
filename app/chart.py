@@ -11,7 +11,8 @@ C = CONSTANTS = load_constants()
 
 class PlotlyChart(ABC):
     def __init__(self, chart, use_container_width=True):
-        self.chart = st.plotly_chart(chart, use_container_width=use_container_width)
+        self.chart = st.plotly_chart(
+            chart, use_container_width=use_container_width)
 
     @abstractclassmethod
     def build(cls):
@@ -21,13 +22,14 @@ class PlotlyChart(ABC):
     def compose_x_domain(num_steps):
         return (
             C["days_after_launch"] / C["days_per_year"],
-            (C["days_after_launch"] + num_steps * C["days_per_step"]) / C["days_per_year"],
+            (C["days_after_launch"] + num_steps *
+             C["days_per_step"]) / C["days_per_year"],
         )
 
 
 class NetworkPowerPlotlyChart(PlotlyChart):
     @classmethod
-    def build(cls, df, num_steps):
+    def build(cls, df, num_steps, vline):
         chart = px.line(
             df,
             x="years_passed",
@@ -35,13 +37,15 @@ class NetworkPowerPlotlyChart(PlotlyChart):
             title="RB Network Power vs. Time",
             labels={
                 "years_passed": "Year",
-                "network_power": "Raw Bytes Network Power (RB PiB)",
+                "value": "Raw Bytes Network Power (RB PiB)",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(10_000, 50_000),
-            #log_y=True,
+            range_y=(0, 50_000),
+            # log_y=True,
         )
+        chart.add_vline(vline, line_dash="dot")
         return cls(chart)
+
 
 class QAPowerPlotlyChart(PlotlyChart):
     @classmethod
@@ -53,13 +57,14 @@ class QAPowerPlotlyChart(PlotlyChart):
             title="QA Power vs. Time",
             labels={
                 "years_passed": "Year",
-                "network_power": "QA Network Power (QA PiB)",
+                "power_qa": "QA Network Power (QA PiB)",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(10_000, 150_000),
-            #log_y=True,
+            range_y=(0, 150_000),
+            # log_y=True,
         )
         return cls(chart)
+
 
 class EffectiveNetworkTimePlotlyChart(PlotlyChart):
     @classmethod
@@ -94,7 +99,7 @@ class SimpleRewardPlotlyChart(PlotlyChart):
                 "simple_reward": "Simple Reward (FIL / month)",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(60_000, 100_000),
+            range_y=(60_000, 100_0000),
         )
         return cls(chart)
 
@@ -113,7 +118,7 @@ class BaselineRewardPlotlyChart(PlotlyChart):
                 "baseline_reward": "Baseline Reward (FIL / month)",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(50_000, 150_000),
+            range_y=(50_000, 150_0000),
         )
         return cls(chart)
 
@@ -132,34 +137,60 @@ class MarginalRewardPlotlyChart(PlotlyChart):
                 "marginal_reward": "Marginal Reward (FIL / (month * RB PiB))",
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(0, 12),
+            range_y=(0, 100),
             # log_y=True
         )
+        
         return cls(chart)
 
 
 class TokenDistributionPlotlyChart(PlotlyChart):
     @classmethod
-    def build(cls, df, num_steps):
+    def build(cls, df, num_steps, vline):
         chart = px.line(
             df,
             x="years_passed",
-            y=["fil_circulating", "fil_locked_reward", "fil_collateral", "fil_vested", 'fil_locked'],
-            title="Token Distribution",
+            y=["fil_circulating",
+             #  "fil_vested",
+               'fil_locked'],
+            title="Token Distribution - Circulating vs Locked",
             line_dash='scenario',
             labels={
-                "years_passed": "Year"
+                "years_passed": "Year",
+                "value": "FIL"
             },
             range_x=cls.compose_x_domain(num_steps),
             range_y=(0, 500_000_000),
-            #log_y=True,
+            # log_y=True,
         )
+        chart.add_vline(vline, line_dash="dot")
         return cls(chart)
-    
+
+
+class TokenLockedDistributionPlotlyChart(PlotlyChart):
+    @classmethod
+    def build(cls, df, num_steps, vline):
+        chart = px.line(
+            df,
+            x="years_passed",
+            y=["fil_collateral", "fil_locked_reward"],
+            title="Locked Token Distribution - Collateral vs Locked Rewards",
+            line_dash='scenario',
+            labels={
+                "years_passed": "Year",
+                "value": "FIL"
+            },
+            range_x=cls.compose_x_domain(num_steps),
+            range_y=(0, 150_000_000),
+            # log_y=True,
+        )
+        chart.add_vline(vline, line_dash="dot")
+        return cls(chart)
+
 
 class CriticalCostPlotlyChart(PlotlyChart):
     @classmethod
-    def build(cls, df, num_steps):
+    def build(cls, df, num_steps, vline):
         chart = px.line(
             df,
             x="years_passed",
@@ -167,18 +198,20 @@ class CriticalCostPlotlyChart(PlotlyChart):
             title="Critical Cost",
             line_dash='scenario',
             labels={
-                "years_passed": "Year"
+                "years_passed": "Year",
+                "critical_cost": "FIL"
             },
             range_x=cls.compose_x_domain(num_steps),
             range_y=(0, 40_000_000),
-            #log_y=True,
+            # log_y=True,
         )
+        chart.add_vline(vline, line_dash="dot")
         return cls(chart)
-    
+
 
 class CirculatingSurplusPlotlyChart(PlotlyChart):
     @classmethod
-    def build(cls, df, num_steps):
+    def build(cls, df, num_steps, vline):
         chart = px.line(
             df,
             x="years_passed",
@@ -186,25 +219,50 @@ class CirculatingSurplusPlotlyChart(PlotlyChart):
             title="Circulating Surplus",
             line_dash='scenario',
             labels={
-                "years_passed": "Year"
+                "years_passed": "Year",
+                'circulating_surplus': "Excess Circulating Supply vs Critical Cost"
             },
             range_x=cls.compose_x_domain(num_steps),
             range_y=(5, 30),
         )
+        chart.add_vline(vline, line_dash="dot")
         return cls(chart)
     
+class CirculatingSupplyPlotlyChart(PlotlyChart):
+    @classmethod
+    def build(cls, df, num_steps, vline):
+        chart = px.line(
+            df,
+            x="years_passed",
+            y=["circulating_supply", 'locked_supply'],
+            title="Circulating and Locked Supply",
+            line_dash='scenario',
+            labels={
+                "years_passed": "Year",
+                "value": "\% of Available FIL"
+            },
+            range_x=cls.compose_x_domain(num_steps),
+            range_y=(0, 1),
+        )
+        chart.update_yaxes(tickformat=".0%")
+        chart.add_vline(vline, line_dash="dot")
+        return cls(chart)
+
+
 class OnboardingCollateralPlotlyChart(PlotlyChart):
     @classmethod
-    def build(cls, df, num_steps):
+    def build(cls, df, num_steps, vline):
         chart = px.line(
             df,
             x="years_passed",
             y="consensus_pledge_per_new_qa_power",
             title="Initial Pledge per QA-PiB",
             labels={
-                "years_passed": "Year"
+                "years_passed": "Year",
+                "value": "FIL per QA-PiB"
             },
             range_x=cls.compose_x_domain(num_steps),
-            range_y=(0, 6_000),
+            range_y=(0, 8_000),
         )
+        chart.add_vline(vline, line_dash="dot")
         return cls(chart)
