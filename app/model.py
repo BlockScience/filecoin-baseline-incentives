@@ -46,7 +46,7 @@ def run_cadcad_model(duration_1,
 
     RUN_ARGS = (deepcopy(INITIAL_STATE), sweep_cartesian_product(params), CONSENSUS_PLEDGE_DEMO_BLOCKS, TIMESTEPS, SAMPLES)
     
-    df = easy_run(*RUN_ARGS)
+    df = easy_run(*RUN_ARGS, exec_mode='local')
 
     # Post-process results
     df = post_process_results(df)
