@@ -1,4 +1,4 @@
-cadCAD
+cadCAD-legacy-devel
 cadCAD-tools
 millify
 numpy
