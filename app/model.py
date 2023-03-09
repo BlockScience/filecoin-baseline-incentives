@@ -6,12 +6,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import pandas as pd
 from cadCAD_tools.execution import easy_run
 from consensus_pledge_model.types import ConsensusPledgeSweepParams, BehaviouralParams
-from consensus_pledge_model.params import INITIAL_STATE, MULTI_RUN_PARAMS, TIMESTEPS, SAMPLES
+from consensus_pledge_model.params import INITIAL_STATE, SINGLE_RUN_PARAMS, TIMESTEPS, SAMPLES
 from consensus_pledge_model.structure import CONSENSUS_PLEDGE_DEMO_BLOCKS
 from utils import load_constants
 from copy import deepcopy
 from cadCAD_tools.preparation import sweep_cartesian_product
-
+from joblib import Parallel, delayed
 C = CONSTANTS = load_constants()
 
 
@@ -26,36 +26,40 @@ def run_cadcad_model(duration_1,
                      new_sector_lifetime_2,
                      renewal_probability_2):
     
-    ## Scenario 1 - User
+    def run_sim(tls):
+        first_year = BehaviouralParams('first_year',
+                                                new_sector_rb_onboarding_rate_1,
+                                                new_sector_quality_factor_1,
+                                                new_sector_lifetime_1,
+                                                renewal_probability_1,
+                                                new_sector_lifetime_1)
+        second_year = BehaviouralParams('second_year',
+                                                new_sector_rb_onboarding_rate_2,
+                                                new_sector_quality_factor_2,
+                                                new_sector_lifetime_2,
+                                                renewal_probability_2,
+                                                new_sector_lifetime_2)
+        params = ConsensusPledgeSweepParams(**{k: [v] for k, v in SINGLE_RUN_PARAMS.items()})
+        params['target_locked_supply'] = [tls]
+        params["behavioural_params"] = [{duration_1: first_year,
+                                        10000: second_year}]
 
-    first_year = BehaviouralParams('first_year',
-                                              new_sector_rb_onboarding_rate_1,
-                                              new_sector_quality_factor_1,
-                                              new_sector_lifetime_1,
-                                              renewal_probability_1,
-                                              new_sector_lifetime_1)
-    second_year = BehaviouralParams('second_year',
-                                              new_sector_rb_onboarding_rate_2,
-                                              new_sector_quality_factor_2,
-                                              new_sector_lifetime_2,
-                                              renewal_probability_2,
-                                              new_sector_lifetime_2)
-    params = deepcopy(MULTI_RUN_PARAMS)
-    params["behavioural_params"] = [{duration_1: first_year,
-                                    10000: second_year}]
+        RUN_ARGS = (deepcopy(INITIAL_STATE), sweep_cartesian_product(params), CONSENSUS_PLEDGE_DEMO_BLOCKS, TIMESTEPS, SAMPLES)
+        
+        return easy_run(*RUN_ARGS)
 
-    RUN_ARGS = (deepcopy(INITIAL_STATE), sweep_cartesian_product(params), CONSENSUS_PLEDGE_DEMO_BLOCKS, TIMESTEPS, SAMPLES)
-    
-    df = easy_run(*RUN_ARGS, exec_mode='local')
+    dfs = Parallel(n_jobs=2)(delayed(run_sim)(i) for i in [0.3, 0.0])
+    df = pd.concat(dfs).assign(scenario="").sort_values(['target_locked_supply', 'days_passed'], ascending=False)
+    df.loc[df.target_locked_supply == 0.0, 'scenario'] = 'user_deactivated'
+    df.loc[df.target_locked_supply == 0.3, 'scenario'] = 'user'
 
     # Post-process results
     df = post_process_results(df)
-    df['scenario'] = ''
-    df.loc[df.target_locked_supply == 0.3, 'scenario'] = 'user'
-    df.loc[df.target_locked_supply == 0.0, 'scenario'] = 'user-deactivated'
     
     # Return relevant scenarios
     return df.query('timestep > 1')
+
+
 
 def post_process_results(df):
 

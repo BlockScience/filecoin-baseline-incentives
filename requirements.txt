@@ -1,5 +1,5 @@
 cadCAD-legacy-devel
-cadCAD-tools
+cadCAD-tools==0.0.1.7
 millify
 numpy
 pandas
@@ -8,3 +8,4 @@ streamlit
 plotly
 matplotlib
 numpy
+joblib
