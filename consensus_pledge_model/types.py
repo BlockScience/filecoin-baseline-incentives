@@ -100,40 +100,77 @@ class BaselineMinting(SimpleMinting):
 
     def baseline_function(self,
                           years_passed: Year) -> FIL:
+        """Function to find baseline value
+
+        Args:
+            years_passed (Year): The years passed
+
+        Returns:
+            FIL: The baseline value in FIL
+        """
+        # Calculations following: https://spec.filecoin.io/systems/filecoin_token/block_reward_minting/#section-systems.filecoin_token.block_reward_minting.baseline-minting
+
         return (self.initial_baseline
                 * (1 + self.annual_baseline_growth)
                 ** (years_passed + self.time_offset))
 
     def issuance(self, effective_years_passed: Year) -> FIL:
+        """Function to find the issuance at the current point in time
+
+        Args:
+            effective_years_passed (Year): The effective years passed
+
+        Returns:
+            FIL: The amount of FIL issuance
+        """
+        # Calculations following: https://spec.filecoin.io/systems/filecoin_token/block_reward_minting/#section-systems.filecoin_token.block_reward_minting.baseline-minting
+
         issuance_fraction = (1 - exp(-1 * self.decay * effective_years_passed))
         return self.total_issuance * issuance_fraction
-
-    # def effective_time_from_share(self,
-    #                               issuance_so_far: FIL) -> Year:
-    #     return ((-1 / self.gamma)
-    #             * log(1 - issuance_so_far / self.issuance_baseline))
 
 
 @dataclass
 class AggregateSector():
+
+    # Raw byte power associated with aggregate sector
     power_rb: PiB
+    # Raw byte power (quality adjusted) associated with aggregate sector
     power_qa: QA_PiB
+    # Remaining days on the sector before expiration
     remaining_days: Days
+
+    # The pledge amounts associated with creation of the sector
     storage_pledge: FIL
     consensus_pledge: FIL
-    # Key indicates Simulation Day on which Value is going to the Circ. Supply
+
+    # Key indicates simulation day on which value is going to the circulating supply
     reward_schedule: dict[Days, FIL]
 
     @property
     def collateral(self) -> FIL:
+        """Find total collateral associated with sector
+
+        Returns:
+            FIL: Amount of collateral
+        """
         return self.storage_pledge + self.consensus_pledge
 
     @property
     def locked_rewards(self) -> FIL:
+        """The total amount of locked rewards for the sector
+
+        Returns:
+            FIL: Locked reward amount
+        """
         return sum(self.reward_schedule.values())
 
     @property
     def locked(self) -> FIL:
+        """Find total locked FIL associated with the sector
+
+        Returns:
+            FIL: All locked FIL (collateral + reward)
+        """
         return self.collateral + self.locked_rewards
 
 
