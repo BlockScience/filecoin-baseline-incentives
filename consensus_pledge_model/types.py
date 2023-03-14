@@ -12,12 +12,14 @@ PiB = Annotated[float, "PiB"]  # Pebibyte of data
 QA_PiB = Annotated[float, "PiB (QA)"]  # Pebibyte of data, quality adjusted
 PiB_per_Day = Annotated[float, "PiB per Day"]  # Pebibyte of data per day
 FIL_per_QA_PiB = Annotated[float, "PiB (QA) per Day"]  # Pebibyte/day, QA
+yearly_growth_rate = Annotated[float, "%/year"]  # YoY Growth
 
 
 @dataclass
 class Reward():
     # Simple reward component
     simple_reward: FIL = nan
+
     # Baselline reward component
     baseline_reward: FIL = nan
 
@@ -57,20 +59,41 @@ class SimpleMinting():
 
 @dataclass
 class BaselineMinting(SimpleMinting):
-    # Parameters
+    # Starting time for minting in years since launch
     time_offset: Year = 0.0
+
+    # Total issuance over lifetime
     total_issuance: FIL = 0.77e9
+
+    # Decay factor for issuance
     decay: float = log(2) / 6.0
+
+    # Baseline parameters, baseline and growth assumptions
     initial_baseline: FIL = 2888
-    annual_baseline_growth: Annotated[float, "%/year"] = 1.0
-    # gamma: float = 0.0 # TODO
+    annual_baseline_growth: yearly_growth_rate = 1.0
 
     @property
     def log_baseline_growth(self) -> PerYear:
+        """Find the log of the baselinegrowth
+
+        Returns:
+            PerYear: Value per year
+        """
         return log(1 + self.annual_baseline_growth)
 
     def effective_network_time(self,
                                cumm_capped_power: FILYear) -> Year:
+        """Find effective network time metric which is a type
+        of area under the curve metric
+
+        Args:
+            cumm_capped_power (FILYear): The cumulative capped raw-byte power,
+                or summation of the capped raw-byte power over each epoch
+
+        Returns:
+            Year: Effective number of years
+        """
+        # Calculations following: https://spec.filecoin.io/systems/filecoin_token/block_reward_minting/#section-systems.filecoin_token.block_reward_minting.baseline-minting
         g = self.log_baseline_growth
         inner_term = (g * cumm_capped_power / self.initial_baseline)
         return log(1 + inner_term) / g
