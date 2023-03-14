@@ -2,41 +2,59 @@ from typing import Annotated, TypedDict, Union
 from math import exp, log, nan
 from dataclasses import dataclass
 
-# TODO: Upgrade to the Consensus Pledge Model
 
-# Units
-Days = Annotated[float, 'days']
-FIL = Annotated[float, "FIL"]
-FILYear = Annotated[float, "FIL * Year"] # TODO: check if this is right
-PerYear = Annotated[float, "1/year"]
-Year = Annotated[float, "year"]
-PiB = Annotated[float, "PiB (QA)"]
-QA_PiB = Annotated[float, "PiB (QA)"]
-PiB_per_Day = Annotated[float, "PiB per Day"]
-FIL_per_QA_PiB = Annotated[float, "PiB per Day"]
+Days = Annotated[float, 'days']  # Number of days
+FIL = Annotated[float, "FIL"]  # Filecoin currency
+FILYear = Annotated[float, "FIL * Year"]  # Number of filecoin times year
+PerYear = Annotated[float, "1/year"]  # Yearly rate
+Year = Annotated[float, "year"]  # Number of years
+PiB = Annotated[float, "PiB"]  # Pebibyte of data
+QA_PiB = Annotated[float, "PiB (QA)"]  # Pebibyte of data, quality adjusted
+PiB_per_Day = Annotated[float, "PiB per Day"]  # Pebibyte of data per day
+FIL_per_QA_PiB = Annotated[float, "PiB (QA) per Day"]  # Pebibyte/day, QA
 
 
 @dataclass
 class Reward():
+    # Simple reward component
     simple_reward: FIL = nan
+    # Baselline reward component
     baseline_reward: FIL = nan
 
     @property
     def block_reward(self):
+        # Block reward which is comprised of simply + baseline reward
         return self.simple_reward + self.baseline_reward
 
 
 @dataclass
 class SimpleMinting():
+    # Starting time for minting in years since launch
     time_offset: Year = 0.0
+
+    # Total issuance over lifetime
     total_issuance: FIL = 0.33e9
+
+    # Decay factor for issuance
     decay = log(2) / 6.0
 
     def issuance(self, years_passed: Year) -> FIL:
-        issuance_fraction = (1 - exp(-1 * self.decay * (years_passed + self.time_offset)))
+        """Find the amount of issuance over a number of years
+
+        Args:
+            years_passed (Year): Number of years passed since time_offset
+
+        Returns:
+            FIL: An amount of filecoin
+        """
+        # Find fraction issued over this time
+        issuance_fraction = (
+            1 - exp(-1 * self.decay * (years_passed + self.time_offset)))
+
+        # Return total times this factor for what is released
         return self.total_issuance * issuance_fraction
 
-    
+
 @dataclass
 class BaselineMinting(SimpleMinting):
     # Parameters
@@ -82,7 +100,7 @@ class AggregateSector():
     consensus_pledge: FIL
     # Key indicates Simulation Day on which Value is going to the Circ. Supply
     reward_schedule: dict[Days, FIL]
-    
+
     @property
     def collateral(self) -> FIL:
         return self.storage_pledge + self.consensus_pledge
@@ -104,7 +122,7 @@ class TokenDistribution():
     locked_rewards: float
     burnt: float
 
-    def update_distribution(self, 
+    def update_distribution(self,
                             new_vested: float,
                             minted: float,
                             aggregate_sectors: list[AggregateSector],
@@ -112,10 +130,10 @@ class TokenDistribution():
         self.minted = minted
         self.vested += new_vested
         self.collateral = sum(el.collateral for el in aggregate_sectors)
-        self.locked_rewards = sum(el.locked_rewards for el in aggregate_sectors)
+        self.locked_rewards = sum(
+            el.locked_rewards for el in aggregate_sectors)
         self.burnt += marginal_burn
         return self
-
 
     @property
     def locked(self) -> FIL:
@@ -139,6 +157,7 @@ class BehaviouralParams():
     renewal_probability: float
     renewal_lifetime: Days
 
+
 @dataclass
 class AggregateSectorList():
     aggregate_sectors: list[AggregateSector]
@@ -154,6 +173,7 @@ class Metrics():
     collateral: FIL
     consensus_pledge: FIL
     storage_pledge: FIL
+
 
 class ConsensusPledgeDemoState(TypedDict):
     days_passed: Days
@@ -174,35 +194,35 @@ class ConsensusPledgeDemoState(TypedDict):
 class ConsensusPledgeParams(TypedDict):
     label: str
     timestep_in_days: Days
-    vesting_schedule: dict[Days, FIL] # Days = Days since Simulation Start
+    vesting_schedule: dict[Days, FIL]  # Days = Days since Simulation Start
     # Collateral Params
     target_locked_supply: float
     storage_pledge_factor: Days
     # Minting Params
-    simple_mechanism: object # TODO: re-evaluate it
-    baseline_mechanism: object # TODO: re-evaluate it
+    simple_mechanism: object  # TODO: re-evaluate it
+    baseline_mechanism: object  # TODO: re-evaluate it
     baseline_activated: bool
     # Reward Schedule Params
     linear_duration: Days
     immediate_release_fraction: float
-    # Behavioural Params   
+    # Behavioural Params
     behavioural_params: dict[Days, BehaviouralParams]
-
 
 
 class ConsensusPledgeSweepParams(TypedDict):
     label: list[str]
     timestep_in_days: list[Days]
-    vesting_schedule: list[dict[Days, FIL]] # Days = Days since Simulation Start
+    # Days = Days since Simulation Start
+    vesting_schedule: list[dict[Days, FIL]]
     # Collateral Params
     target_locked_supply: list[float]
     storage_pledge_factor: list[Days]
     # Minting Params
-    simple_mechanism: list[object] # TODO: re-evaluate it
-    baseline_mechanism: list[object] # TODO: re-evaluate it
+    simple_mechanism: list[object]  # TODO: re-evaluate it
+    baseline_mechanism: list[object]  # TODO: re-evaluate it
     baseline_activated: list[bool]
     # Reward Schedule Params
     linear_duration: list[Days]
     immediate_release_fraction: list[float]
-    # Behavioural Params   
+    # Behavioural Params
     behavioural_params: list[dict[Days, BehaviouralParams]]
