@@ -176,60 +176,106 @@ class AggregateSector():
 
 @dataclass
 class TokenDistribution():
-    minted: float
-    vested: float
-    collateral: float
-    locked_rewards: float
-    burnt: float
+    # Total tokens minted
+    minted: FIL
+    # Total tokens vested
+    vested: FIL
+    # Total amount of collateral locked
+    collateral: FIL
+    # Total of locked rewards miners can accrue
+    locked_rewards: FIL
+    # Total amount of FIL burned since start
+    burnt: FIL
 
     def update_distribution(self,
-                            new_vested: float,
-                            minted: float,
+                            new_vested: FIL,
+                            minted: FIL,
                             aggregate_sectors: list[AggregateSector],
-                            marginal_burn: float = 0.0):
+                            marginal_burn: FIL = 0.0):
+        """Update the distribution of tokens
+
+        Args:
+            new_vested (FIL): Newly vested FIL amount
+            minted (FIL): Amount of FIL minted to date
+            aggregate_sectors (list[AggregateSector]): Current aggregate sectors
+            marginal_burn (FIL, optional): Amount of FIL newly burnt. Defaults to 0.0.
+
+        """
+        # Set values
         self.minted = minted
         self.vested += new_vested
+        self.burnt += marginal_burn
+
+        # Find collateral and locked reward from aggregate sectors
         self.collateral = sum(el.collateral for el in aggregate_sectors)
         self.locked_rewards = sum(
             el.locked_rewards for el in aggregate_sectors)
-        self.burnt += marginal_burn
-        return self
 
     @property
     def locked(self) -> FIL:
+        """Find total locked amount
+
+        Returns:
+            FIL: Amount of locked FIL
+        """
         return self.locked_rewards + self.collateral
 
     @property
     def available(self) -> FIL:
+        """Find amount of FIL that is available
+
+        Returns:
+            FIL: Available FIL
+        """
         return self.minted + self.vested - self.burnt
 
     @property
     def circulating(self) -> FIL:
+        """Find circulating supply (non-locked and available)
+
+        Returns:
+            FIL: Circulating FIL
+        """
         return self.available - self.locked
 
 
 @dataclass
 class BehaviouralParams():
+    # Label of behavior
     label: str
+    # Onboarding rate for new sectors in raw byte power
     new_sector_rb_onboarding_rate: PiB_per_Day
+    # Factor for the quality adjustment
     new_sector_quality_factor: float
+    # Lifetime of the new sector
     new_sector_lifetime: Days
+    # Probability that sector renews at expiration
     renewal_probability: float
+    # Lifetime to use if sector is renewed
     renewal_lifetime: Days
 
 
 @dataclass
 class AggregateSectorList():
+    # All the aggregate sectors
     aggregate_sectors: list[AggregateSector]
 
     @property
     def power_qa(self) -> QA_PiB:
+        """Find quality adjusted raw byte power in total
+
+        Returns:
+            QA_PiB: Total quality adjusted raw byte power
+        """
         return sum(agg_sector.power_qa for agg_sector in self.aggregate_sectors)
 
 
 @dataclass
 class Metrics():
+    # Amount of locked reward
     locked_rewards: FIL
+
+    # Amount of collateral/pledges in the system
     collateral: FIL
     consensus_pledge: FIL
     storage_pledge: FIL
