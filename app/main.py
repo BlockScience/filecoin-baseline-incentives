@@ -122,12 +122,11 @@ renewal_probability_2 = st.sidebar.slider(
 df = run_cadcad_model(duration_1, new_sector_rb_onboarding_rate_1, new_sector_quality_factor_1, new_sector_lifetime_1, renewal_probability_1 / 100,
                       new_sector_rb_onboarding_rate_2, new_sector_quality_factor_2, new_sector_lifetime_2,
                        renewal_probability_2 / 100)
-# df = df[df["scenario"].isin(["user"] + [scenario for scenario, checked in SCENARIO2CHECKBOX.items() if checked])]
 
 # Plot results
 
 
-user_df = df.query("scenario == 'user'")
+user_df = df.query("scenario == 'consensus_pledge_on'")
 with plot_container:
     num_steps = df.timestep.nunique()
     vline = duration_1 / 365.25

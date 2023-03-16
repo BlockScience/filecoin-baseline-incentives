@@ -50,8 +50,8 @@ def run_cadcad_model(duration_1,
 
     dfs = Parallel(n_jobs=2)(delayed(run_sim)(i) for i in [0.3, 0.0])
     df = pd.concat(dfs).assign(scenario="").sort_values(['target_locked_supply', 'days_passed'], ascending=False)
-    df.loc[df.target_locked_supply == 0.0, 'scenario'] = 'user_deactivated'
-    df.loc[df.target_locked_supply == 0.3, 'scenario'] = 'user'
+    df.loc[df.target_locked_supply == 0.0, 'scenario'] = 'consensus_pledge_off'
+    df.loc[df.target_locked_supply == 0.3, 'scenario'] = 'consensus_pledge_on'
 
     # Post-process results
     df = post_process_results(df)

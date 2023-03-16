@@ -10,7 +10,7 @@ def description():
 
 In order to visualize this behavior, we simulate the baseline reward under different scenarios then compare them directly. Specifically, the "Mining Utility" metric captures the percentage advantage a miner has as compared to a scenario in which the Network Power is always equal to the Baseline.
 
-This app displays four scenarios: two for the user (`user` and `user-baseline-deactivated`) and two fixed (`optimistic` and `baseline`).
+This app displays four scenarios: two for the user (`consensus_pledge_on` and `consensus_pledge_off`).
 
 The left sidebar has several options for controlling how the `user` scenarios for the Filecoin Network Power grow with time.
 
