@@ -133,7 +133,7 @@ with plot_container:
     vline = duration_1 / 365.25
     network_power_chart = NetworkPowerPlotlyChart.build(user_df, num_steps, vline)
     qa_power_chart = QAPowerPlotlyChart.build(user_df, num_steps)
-    onboarding_collateral_chart = OnboardingCollateralPlotlyChart.build(user_df, num_steps, vline)
+    onboarding_collateral_chart = OnboardingCollateralPlotlyChart.build(df, num_steps, vline)
     circulating_supply_chart = CirculatingSupplyPlotlyChart.build(df, num_steps, vline)
     token_dist_chart = TokenDistributionPlotlyChart.build(df, num_steps, vline)
     locked_token_dist_chart = TokenLockedDistributionPlotlyChart.build(df, num_steps, vline)

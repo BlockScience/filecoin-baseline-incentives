@@ -41,6 +41,8 @@ In the `baseline` scenario, the Network Power is always equal to the Baseline Fu
 [3]: Filecoin Network Crosses Baseline Sustainability Target for First Time
  (Danilo Lessa Bernardineli, Gabriel Lefundes, Jamsheed Shorish, ZX Zhang, Michael Zargham): https://filecoin.io/blog/posts/filecoin-network-crosses-baseline-sustainability-target-for-first-time/
 
+[4]: Filecoin Consensus Performance Analysis (Marcel Wursten): https://crypto.unibe.ch/archive/theses/2022.msc.marcel.wuersten.pdf
+
 ## Contributors
 
 This calculator has been developed as part of the ongoing collaboration between BlockScience and Filecoin. We acknowledge the work of the following contributors for making it come to life:

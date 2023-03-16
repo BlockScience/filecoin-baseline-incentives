@@ -73,6 +73,7 @@ def post_process_results(df):
                  "behaviour"]
 
     df = (df
+        .assign(initial_pledge_per_new_qa_power=lambda df: df.storage_pledge_per_new_qa_power + df.consensus_pledge_per_new_qa_power)
         .assign(simple_reward=lambda df: df.reward.map(lambda x: x.simple_reward))
         .assign(baseline_reward=lambda df: df.reward.map(lambda x: x.baseline_reward))
         .assign(fil_locked=lambda df: df.token_distribution.map(lambda x: x.locked))
@@ -85,7 +86,7 @@ def post_process_results(df):
         .assign(block_reward=lambda x: x.simple_reward + x.baseline_reward)
         .assign(marginal_reward=lambda x: x.block_reward / x.power_qa)
         .assign(years_passed=lambda x: x.days_passed / C["days_per_year"])
-        .assign(critical_cost=lambda df: (df.power_qa * 0.33) * (df.consensus_pledge_per_new_qa_power + df.storage_pledge_per_new_qa_power))
+        .assign(critical_cost=lambda df: (df.power_qa * 0.33) * df.initial_pledge_per_new_qa_power)
         .assign(circulating_surplus=lambda df: df.fil_circulating / df.critical_cost - 1)
         .assign(circulating_supply=lambda df: df.fil_circulating / df.fil_available)
         .assign(locked_supply=lambda df: df.fil_locked / df.fil_available)

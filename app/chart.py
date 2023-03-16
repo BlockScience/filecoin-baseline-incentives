@@ -253,10 +253,15 @@ class CirculatingSupplyPlotlyChart(PlotlyChart):
 class OnboardingCollateralPlotlyChart(PlotlyChart):
     @classmethod
     def build(cls, df, num_steps, vline):
+
+        fig_df = df.melt(id_vars=['years_passed', 'scenario'],
+                          value_vars=['initial_pledge_per_new_qa_power'])
+
         chart = px.line(
-            df,
+            fig_df,
             x="years_passed",
-            y="consensus_pledge_per_new_qa_power",
+            y="value",
+            color='scenario',
             title="Initial Pledge per QA-PiB",
             labels={
                 "years_passed": "Year",
