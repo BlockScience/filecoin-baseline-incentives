@@ -145,8 +145,9 @@ with plot_container:
     locked_token_dist_chart = TokenLockedDistributionPlotlyChart.build(df, num_steps, vline)
     critical_cost_chart = CriticalCostPlotlyChart.build(df, num_steps, vline)
     circulating_surplus_chart = CirculatingSurplusPlotlyChart.build(df, num_steps, vline)
-    effective_network_time_chart = EffectiveNetworkTimePlotlyChart.build(user_df, num_steps)
-    reward_chart = RewardPlotlyChart.build(user_df, num_steps)
+    effective_network_time_chart = EffectiveNetworkTimePlotlyChart.build(user_df, num_steps, vline)
+    reward_chart = RewardPlotlyChart.build(user_df, num_steps, vline)
+    reward_per_power_chart = RewardPerPowerPlotlyChart.build(user_df, num_steps, vline)
     
 
 # Download data

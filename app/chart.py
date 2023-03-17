@@ -68,7 +68,7 @@ class QAPowerPlotlyChart(PlotlyChart):
 
 class EffectiveNetworkTimePlotlyChart(PlotlyChart):
     @classmethod
-    def build(cls, df, num_steps):
+    def build(cls, df, num_steps, vline):
         chart = px.line(
             df,
             x="years_passed",
@@ -82,26 +82,54 @@ class EffectiveNetworkTimePlotlyChart(PlotlyChart):
             # range_x=cls.compose_x_domain(num_steps),
             #range_y=(2.5, 4.5),
         )
+        chart.add_vline(vline, line_dash="dot")
         return cls(chart)
 
 
 class RewardPlotlyChart(PlotlyChart):
     @classmethod
-    def build(cls, df, num_steps):
-        fig_df = df.melt(id_vars=['years_passed'], value_vars=['simple_reward', 'baseline_reward'])
+    def build(cls, df, num_steps, vline):
+        fig_df = df.melt(id_vars=['years_passed'], value_vars=['daily_simple_reward', 'daily_baseline_reward'])
         chart = px.line(
             fig_df,
             x="years_passed",
             y="value",
-            facet_col='variable',
-            title="Simple Reward vs. Time",
+            color='variable',
+            title="Reward vs. Time",
             labels={
                 "years_passed": "Year",
-                "value": "FIL per Week",
+                "value": "Daily FIL",
             },
             # range_x=cls.compose_x_domain(num_steps),
             #range_y=(60_000, 100_0000),
         )
+        chart.add_vline(vline, line_dash="dot")
+        chart.update_layout(legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.5,
+            xanchor="center",
+            x=0.5))
+        return cls(chart)
+    
+class RewardPerPowerPlotlyChart(PlotlyChart):
+    @classmethod
+    def build(cls, df, num_steps, vline):
+        fig_df = df.melt(id_vars=['years_passed'], value_vars=['daily_reward_per_rbp', 'daily_reward_per_qap'])
+        chart = px.line(
+            fig_df,
+            x="years_passed",
+            y="value",
+            color='variable',
+            title="Reward per PiB vs. Time",
+            labels={
+                "years_passed": "Year",
+                "value": "Daily FIL per PiB",
+            },
+            # range_x=cls.compose_x_domain(num_steps),
+            #range_y=(60_000, 100_0000),
+        )
+        chart.add_vline(vline, line_dash="dot")
         chart.update_layout(legend=dict(
             orientation="h",
             yanchor="bottom",
