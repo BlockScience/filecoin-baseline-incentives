@@ -7,7 +7,6 @@ from glossary import glossary
 from model import run_cadcad_model
 from utils import load_constants
 
-
 C = CONSTANTS = load_constants()
 
 # Define layout
@@ -137,19 +136,27 @@ user_df = df.query("scenario == 'consensus_pledge_on'")
 with plot_container:
     num_steps = df.timestep.nunique()
     vline = duration_1 / 365.25
+    st.markdown("## Network Power")
     network_power_chart = NetworkPowerPlotlyChart.build(user_df, num_steps, vline)
     qa_power_chart = QAPowerPlotlyChart.build(user_df, num_steps)
-    onboarding_collateral_chart = OnboardingCollateralPlotlyChart.build(df, num_steps, vline)
+
+    st.markdown("## Token Distribution & Supply")
     circulating_supply_chart = CirculatingSupplyPlotlyChart.build(df, num_steps, vline)
     token_dist_chart = TokenDistributionPlotlyChart.build(df, num_steps, vline)
     locked_token_dist_chart = TokenLockedDistributionPlotlyChart.build(df, num_steps, vline)
+
+    st.markdown("## Security")
     critical_cost_chart = CriticalCostPlotlyChart.build(df, num_steps, vline)
     circulating_surplus_chart = CirculatingSurplusPlotlyChart.build(df, num_steps, vline)
-    effective_network_time_chart = EffectiveNetworkTimePlotlyChart.build(user_df, num_steps, vline)
+
+    st.markdown("## Sector Onboarding")
+    onboarding_collateral_chart = OnboardingCollateralPlotlyChart.build(df, num_steps, vline)
+    rb_onboarding_collateral_chart = RBOnboardingCollateralPlotlyChart.build(df, num_steps, vline)
+    
+    st.markdown("## Sector Reward")
     reward_chart = RewardPlotlyChart.build(user_df, num_steps, vline)
     reward_per_power_chart = RewardPerPowerPlotlyChart.build(user_df, num_steps, vline)
     
-
 # Download data
 
 

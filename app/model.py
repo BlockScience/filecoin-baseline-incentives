@@ -78,6 +78,8 @@ def post_process_results(df):
 
     df = (df
         .assign(initial_pledge_per_new_qa_power=lambda df: df.storage_pledge_per_new_qa_power + df.consensus_pledge_per_new_qa_power)
+        .assign(storage_pledge_per_new_rb_power=lambda df: df.storage_pledge_per_new_qa_power * df.power_qa / df.power_rb)
+        .assign(consensus_pledge_per_new_rb_power=lambda df: df.consensus_pledge_per_new_qa_power * df.power_qa / df.power_rb)
         .assign(initial_pledge_per_new_rb_power=lambda df: df.initial_pledge_per_new_qa_power * df.power_qa / df.power_rb)
         .assign(daily_simple_reward=lambda df: df.reward.map(lambda x: x.simple_reward)  / TIMESTEP_IN_DAYS)
         .assign(daily_baseline_reward=lambda df: df.reward.map(lambda x: x.baseline_reward) / TIMESTEP_IN_DAYS)

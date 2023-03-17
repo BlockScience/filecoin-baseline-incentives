@@ -14,4 +14,4 @@ speed_to_latency:                  # seconds per simulation replay step
   slow: .5
   medium: .1
   fast: .02
-years: 4.0
+years: 3.0
