@@ -275,7 +275,7 @@ def s_consensus_pledge_per_new_qa_power(params: ConsensusPledgeParams,
                                         _3,
                                         state: ConsensusPledgeDemoState,
                                         _5) -> VariableUpdate:
-    """_summary_
+    """Function which updates consensus_pledge_per_new_qa_power
 
     Args:
         params (ConsensusPledgeParams): System parameters
@@ -288,8 +288,11 @@ def s_consensus_pledge_per_new_qa_power(params: ConsensusPledgeParams,
         VariableUpdate: Variable update for the consensus_pledge_per_new_qa_power
     """
 
+    # Find total locked supply
     value = params['target_locked_supply']
     value *= state['token_distribution'].circulating
+
+    # Find locked supply per quality adjusted power
     value /= max(state['baseline'], state['power_qa'])
     return ('consensus_pledge_per_new_qa_power', value)
 
@@ -297,68 +300,65 @@ def s_consensus_pledge_per_new_qa_power(params: ConsensusPledgeParams,
 def s_storage_pledge_per_new_qa_power(params: ConsensusPledgeParams,
                                       _2,
                                       history: dict[list, dict[list, ConsensusPledgeDemoState]],
-                                      state: ConsensusPledgeDemoState, _5):
-    """_summary_
+                                      state: ConsensusPledgeDemoState, _5) -> VariableUpdate:
+    """SP per Sector = Estimated 20 days of daily BR for the Sector
+    SP this round = OnboardingNetworkQAP * 20 * DailyBR / ExistingNetworkQAP
+    What should be returned: 20 * DailyBR / CurrentNetworkQAP
 
     Args:
-        params (_type_): _description_
+        params (ConsensusPledgeParams): System parameters
         _2
         history (dict[list, dict[list, ConsensusPledgeDemoState]]): History of the states of the system
         state (ConsensusPledgeDemoState): The current state of the system
-        _5 (_type_): _description_
+        _5
 
     Returns:
-        _type_: _description_
+        VariableUpdate: Variable update for the storage_pledge_per_new_qa_power
     """
 
-    """
-    SP per Sector = Estimated 20 days of daily BR for the Sector
-    SP this round = OnboardingNetworkQAP * 20 * DailyBR / ExistingNetworkQAP
-    What should be returned: 20 * DailyBR / CurrentNetworkQAP
-    """
-
+    # Find estimate of daily rewards
     current_reward = state["reward"].block_reward
     dt = state['delta_days']
     daily_reward_estimate = current_reward / dt
 
+    # Find 20D daily reward divided by power_qa
     value = daily_reward_estimate
     value *= 20.0
     value /= state["power_qa"]
 
-    #total_reward = state["reward"].block_reward
-    #total_qa = state["power_qa"]
-    #multiplier_days = 20
-    #value = multiplier_days * total_reward / total_qa
     return ('storage_pledge_per_new_qa_power', value)
 
 
-def s_sectors_onboard(params,
+def s_sectors_onboard(params: ConsensusPledgeParams,
                       _2,
                       _3,
                       state: ConsensusPledgeDemoState,
                       signal: Signal) -> VariableUpdate:
-    """_summary_
+    """Onboard sectors
 
     Args:
-        params (_type_): _description_
+        params (ConsensusPledgeParams): System parameters
         _2
         _3
         state (ConsensusPledgeDemoState): The current state of the system
         signal (Signal): The signal created from policies in this substep
 
     Returns:
-        VariableUpdate: _description_
+        VariableUpdate: VariableUpdate for aggregate_sectors
     """
 
     current_sectors_list = state['aggregate_sectors'].copy()
+
     # Sector Properties
     power_rb_new = state['behaviour'].new_sector_rb_onboarding_rate * \
         state['delta_days']
     power_qa_new = power_rb_new * state['behaviour'].new_sector_quality_factor
 
     if power_rb_new > 0.0:
+        # Find what the pledges should be
         storage_pledge = state['storage_pledge_per_new_qa_power'] * power_qa_new
         consensus_pledge = state['consensus_pledge_per_new_qa_power'] * power_qa_new
+        # Create new aggregate sector
         reward_schedule = {}
         new_sectors = AggregateSector(power_rb=power_rb_new,
                                       power_qa=power_qa_new,
@@ -381,7 +381,7 @@ def s_sectors_renew(params,
     """_summary_
 
     Args:
-        params (_type_): _description_
+        params (ConsensusPledgeParams): System parameters
         _2
         _3
         state (ConsensusPledgeDemoState): The current state of the system
