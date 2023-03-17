@@ -8,7 +8,8 @@ FIL = Annotated[float, "FIL"]
 FILYear = Annotated[float, "FIL * Year"]
 PerYear = Annotated[float, "1/year"]
 Year = Annotated[float, "year"]
-QA_PiB = Annotated[float, "PiB (QA)"]
+RB_PiB = Annotated[float, "PiB (RB)"]
+
 
 @dataclass
 class GrowthScenario():
@@ -114,8 +115,8 @@ class BaselineModelSweepParams (TypedDict):
 class BaselineModelState (TypedDict):
     days_passed: Days
     delta_days: Days
-    network_power: QA_PiB
-    baseline: QA_PiB
+    network_power: RB_PiB
+    baseline: RB_PiB
     cumm_capped_power: FILYear
     effective_network_time: Year
     reward: Reward
