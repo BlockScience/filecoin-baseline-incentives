@@ -18,7 +18,7 @@ from utils import load_constants
 C = CONSTANTS = load_constants()
 
 
-@st.cache
+@st.cache_data
 def run_cadcad_model(
     fall_after_beginning,
     growth_fall,
