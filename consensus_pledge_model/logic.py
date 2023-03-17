@@ -107,7 +107,7 @@ def s_power_qa(params: ConsensusPledgeParams,
                _3,
                state: ConsensusPledgeDemoState,
                signal: Signal) -> VariableUpdate:
-    """_summary_
+    """State update for the current quality adjusted power
 
     Args:
         params (ConsensusPledgeParams): System parameters
@@ -117,7 +117,7 @@ def s_power_qa(params: ConsensusPledgeParams,
         signal (Signal): The signal created from policies in this substep
 
     Returns:
-        VariableUpdate: _description_
+        VariableUpdate: The update to the power_qa variable
     """
     value = sum(s.power_qa for s in state['aggregate_sectors'])
     return ('power_qa', value)
@@ -128,7 +128,7 @@ def s_power_rb(params: ConsensusPledgeParams,
                _3,
                state: ConsensusPledgeDemoState,
                signal: Signal) -> VariableUpdate:
-    """_summary_
+    """State update for the current power
 
     Args:
         params (ConsensusPledgeParams): System parameters
@@ -138,7 +138,7 @@ def s_power_rb(params: ConsensusPledgeParams,
         signal (Signal): The signal created from policies in this substep
 
     Returns:
-        VariableUpdate: _description_
+        VariableUpdate: The update to the power_rb variable
     """
     value = sum(s.power_rb for s in state['aggregate_sectors'])
     return ('power_rb', value)
@@ -149,7 +149,7 @@ def s_baseline(params: ConsensusPledgeParams,
                _3,
                state: ConsensusPledgeDemoState,
                signal: Signal) -> VariableUpdate:
-    """_summary_
+    """Function to update the current baseline
 
     Args:
         params (ConsensusPledgeParams): System parameters
@@ -159,11 +159,14 @@ def s_baseline(params: ConsensusPledgeParams,
         signal (Signal): The signal created from policies in this substep
 
     Returns:
-        VariableUpdate: _description_
+        VariableUpdate: Update for the current baseline
     """
+    # Get the number of baseline years
     days_passed = state['days_passed']
     DAYS_TO_YEARS = 1 / 365.25
     baseline_years = days_passed * DAYS_TO_YEARS
+
+    # Find the baseline value at the current number of baseline years
     value = params['baseline_mechanism'].baseline_function(
         baseline_years)
     return ('baseline', value)
@@ -174,7 +177,7 @@ def s_cumm_capped_power(params: ConsensusPledgeParams,
                         _3,
                         state: ConsensusPledgeDemoState,
                         signal: Signal) -> VariableUpdate:
-    """_summary_
+    """Function for finding the cummulative capped power
 
     Args:
         params (ConsensusPledgeParams): System parameters
@@ -184,18 +187,19 @@ def s_cumm_capped_power(params: ConsensusPledgeParams,
         signal (Signal): The signal created from policies in this substep
 
     Returns:
-        VariableUpdate: _description_
+        VariableUpdate: The cumm_capped_power variable update
     """
-    # TODO: refactor for making it cleaner
     DAYS_TO_YEARS = 1 / YEAR
     dt = params['timestep_in_days'] * DAYS_TO_YEARS
     current_power = state['power_qa']
 
+    # If the baseline_activated then capped_power is bounded to be the baseline
     if params['baseline_activated'] is True:
         capped_power = min(current_power, state['baseline'])
     else:
         capped_power = state['baseline']
 
+    # Add the capped_power over the time delta to the cummulative
     cumm_capped_power_differential = capped_power * dt
     new_cumm_capped_power = state['cumm_capped_power'] + \
         cumm_capped_power_differential
