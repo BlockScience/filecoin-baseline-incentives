@@ -1,4 +1,5 @@
 from consensus_pledge_model.logic import *
+from typing import Callable
 
 
 def generic_policy(_1, _2, _3, _4) -> dict:
@@ -16,7 +17,7 @@ def generic_policy(_1, _2, _3, _4) -> dict:
     return {}
 
 
-def generate_generic_suf(variable: str) -> function:
+def generate_generic_suf(variable: str) -> Callable:
     """Creates generic function for state update from string
 
     Args:

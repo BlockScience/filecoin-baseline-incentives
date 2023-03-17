@@ -211,7 +211,7 @@ def s_effective_network_time(params: ConsensusPledgeParams,
                              history: list[list[ConsensusPledgeDemoState]],
                              state: ConsensusPledgeDemoState,
                              signal: Signal) -> VariableUpdate:
-    """_summary_
+    """The update function for effective network time
 
     Args:
         params (ConsensusPledgeParams): System parameters
@@ -221,10 +221,12 @@ def s_effective_network_time(params: ConsensusPledgeParams,
         signal (Signal): The signal created from policies in this substep
 
     Returns:
-        VariableUpdate: _description_
+        VariableUpdate: Variable update for effective_network_time
     """
+    # Calculate through the baseline mechanism parameter
     value = params['baseline_mechanism'].effective_network_time(
         state['cumm_capped_power'])
+
     return ('effective_network_time', value)
 
 
@@ -233,7 +235,7 @@ def s_reward(params: ConsensusPledgeParams,
              history: list[list[ConsensusPledgeDemoState]],
              state: ConsensusPledgeDemoState,
              signal: Signal) -> VariableUpdate:
-    """_summary_
+    """Function which updates the reward
 
     Args:
         params (ConsensusPledgeParams): System parameters
@@ -243,7 +245,7 @@ def s_reward(params: ConsensusPledgeParams,
         signal (Signal): The signal created from policies in this substep
 
     Returns:
-        VariableUpdate: _description_
+        VariableUpdate: Variable update for the reward
     """
     # Simple Minting
     simple_mechanism = params['simple_mechanism']
@@ -635,7 +637,7 @@ def s_token_distribution(params: ConsensusPledgeParams,
                          _3,
                          state: ConsensusPledgeDemoState,
                          signal: Signal) -> VariableUpdate:
-    """_summary_
+    """Find the new token distribution
 
     Args:
         params (ConsensusPledgeParams): System parameters
@@ -645,7 +647,7 @@ def s_token_distribution(params: ConsensusPledgeParams,
         signal (Signal): The signal created from policies in this substep
 
     Returns:
-        VariableUpdate: _description_
+        VariableUpdate: Update the token_distribution variable
     """
     distribution = copy(state["token_distribution"])
     rewards = state["reward"].block_reward
@@ -653,7 +655,7 @@ def s_token_distribution(params: ConsensusPledgeParams,
     burn = signal.get('fil_to_burn', 0.0)
     today_vested = signal.get("fil_to_vest", 0.0)
 
-    distribution = distribution.update_distribution(
+    distribution.update_distribution(
         new_vested=today_vested,
         minted=signal.get('fil_minted', None),
         aggregate_sectors=aggregate_sectors,
