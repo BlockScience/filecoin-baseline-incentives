@@ -378,7 +378,7 @@ def s_sectors_renew(params,
                     _3,
                     state: ConsensusPledgeDemoState,
                     signal: Signal) -> VariableUpdate:
-    """_summary_
+    """Function to take care of sector renewals
 
     Args:
         params (ConsensusPledgeParams): System parameters
@@ -388,9 +388,10 @@ def s_sectors_renew(params,
         signal (Signal): The signal created from policies in this substep
 
     Returns:
-        VariableUpdate: _description_
+        VariableUpdate: VariableUpdate for aggregate_sectors
     """
 
+    # Find share of renewals
     renew_share = (
         1 + state['behaviour'].renewal_probability) ** state['delta_days'] - 1
     current_sectors_list = state['aggregate_sectors'].copy()
@@ -457,24 +458,17 @@ def s_sectors_expire(_1,
                      _3,
                      state: ConsensusPledgeDemoState,
                      signal: Signal) -> VariableUpdate:
-    """_summary_
+    """Function which updates for sectors expiring. The assumption is that that locked rewards are going to be released.
 
     Args:
-        _1 (_type_): _description_
+        _1
         _2
         _3
         state (ConsensusPledgeDemoState): The current state of the system
         signal (Signal): The signal created from policies in this substep
 
     Returns:
-        VariableUpdate: _description_
-    """
-
-    """
-    Evolve the sector lifetime & expire if they're below zero.
-    Freed tokens are handled implictly when re-computing the `token_distribution
-    # TODO: what happens with the locked rewards when an sector is expired?
-    # FIXME: assume that locked rewards are going to be released.
+        VariableUpdate: VariableUpdate for aggregate_sectors
     """
 
     current_sectors_list = state['aggregate_sectors'].copy()
