@@ -495,21 +495,8 @@ def s_sectors_rewards(params: ConsensusPledgeParams,
                       _3,
                       state: ConsensusPledgeDemoState,
                       signal: Signal) -> VariableUpdate:
-    """_summary_
+    """Function for computing the sector rewards
 
-    Args:
-        params (ConsensusPledgeParams): System parameters
-        _2
-        _3
-        state (ConsensusPledgeDemoState): The current state of the system
-        signal (Signal): The signal created from policies in this substep
-
-    Returns:
-        VariableUpdate: _description_
-    """
-
-    # Homework for @jackhack00: Implement this SUF
-    """
     Parts for what this SUF represents for each AggregateSector Schedule:
     Part 1 - Unlock Current Rewards. eg. {0: 5, 1: 10, 2: 20} -> {1: 10, 2: 20}
     NOTE: Unlocking only adds them back to circulating. Can remove item at index 0, since
@@ -532,9 +519,18 @@ def s_sectors_rewards(params: ConsensusPledgeParams,
     then
     reward_schedule_final = {0: 20 + 5, 1: 30 + 5, 2: 40 + 5, 3: 50}
 
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+        signal (Signal): The signal created from policies in this substep
+
+    Returns:
+        VariableUpdate: VariableUpdate for aggregate_sectors
     """
 
-    # retrieve total rewards
+    # Retrieve total rewards
     total_reward = state["reward"].block_reward
     linear_duration = params["linear_duration"]
     current_sector_list = state["aggregate_sectors"].copy()
@@ -576,7 +572,7 @@ def p_vest_fil(params: ConsensusPledgeParams,
                _2,
                _3,
                state: ConsensusPledgeDemoState) -> VariableUpdate:
-    """_summary_
+    """Function for computation of fil to vest
 
     Args:
         params (ConsensusPledgeParams): System parameters
@@ -585,7 +581,7 @@ def p_vest_fil(params: ConsensusPledgeParams,
         state (ConsensusPledgeDemoState): The current state of the system
 
     Returns:
-        VariableUpdate: _description_
+        VariableUpdate: VariableUpdate for fil_to_vest
     """
     now = state['days_passed']
     value = params['vesting_schedule'].get(now, 0.0)
@@ -596,16 +592,16 @@ def p_burn_fil(_1,
                _2,
                _3,
                state: ConsensusPledgeDemoState) -> VariableUpdate:
-    """_summary_
+    """Function for finding fil to burn
 
     Args:
-        _1 (_type_): _description_
+        _1
         _2
         _3
-        state (ConsensusPledgeDemoState): _description_
+        state (ConsensusPledgeDemoState): The current state of the system
 
     Returns:
-        VariableUpdate: _description_
+        VariableUpdate: VariableUpdate for fil_to_burn
     """
     return {'fil_to_burn': 0.0}
 
@@ -614,7 +610,7 @@ def p_minted_fil(params: ConsensusPledgeParams,
                  _2,
                  _3,
                  state: ConsensusPledgeDemoState) -> VariableUpdate:
-    """_summary_
+    """Function for finding fil to mint
 
     Args:
         params (ConsensusPledgeParams): System parameters
@@ -623,7 +619,7 @@ def p_minted_fil(params: ConsensusPledgeParams,
         state (ConsensusPledgeDemoState): The current state of the system
 
     Returns:
-        VariableUpdate: _description_
+        VariableUpdate: VariableUpdate for fil_minted
     """
 
     value = params['simple_mechanism'].issuance(
