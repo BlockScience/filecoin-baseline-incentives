@@ -146,7 +146,6 @@ class TokenDistributionPlotlyChart(PlotlyChart):
             df,
             x="years_passed",
             y=["fil_circulating",
-               #  "fil_vested",
                'fil_locked'],
             title="Token Distribution - Circulating vs Locked",
             line_dash='scenario',
@@ -260,7 +259,7 @@ class CirculatingSupplyPlotlyChart(PlotlyChart):
             line_dash='scenario',
             labels={
                 "years_passed": "Year",
-                "value": "% of Circulating FIL"
+                "value": "% of Available FIL"
             },
             # range_x=cls.compose_x_domain(num_steps),
             #range_y=(0, 1),
@@ -284,18 +283,52 @@ class OnboardingCollateralPlotlyChart(PlotlyChart):
                          value_vars=['initial_pledge_per_new_qa_power',
                                      'storage_pledge_per_new_qa_power',
                                      'consensus_pledge_per_new_qa_power',
-                                     'initial_pledge_per_new_rb_power'])
+                                    ])
 
         chart = px.line(
             fig_df,
             x="years_passed",
             y="value",
-            facet_col='variable',
-            color='scenario',
+            color='variable',
+            line_dash='scenario',
             title="Initial Pledge per QA-PiB",
             labels={
                 "years_passed": "Year",
                 "value": "FIL per QA-PiB"
+            },
+            # range_x=cls.compose_x_domain(num_steps),
+            #range_y=(0, 8_000),
+        )
+        chart.add_vline(vline, line_dash="dot")
+        chart.update_layout(legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.5,
+            xanchor="center",
+            x=0.5))
+        return cls(chart)
+
+
+class RBOnboardingCollateralPlotlyChart(PlotlyChart):
+    @classmethod
+    def build(cls, df, num_steps, vline):
+
+        fig_df = df.melt(id_vars=['years_passed', 'scenario'],
+                         value_vars=['initial_pledge_per_new_rb_power',
+                                     'storage_pledge_per_new_rb_power',
+                                     'consensus_pledge_per_new_rb_power'
+                                    ])
+
+        chart = px.line(
+            fig_df,
+            x="years_passed",
+            y="value",
+            color='variable',
+            line_dash='scenario',
+            title="Initial Pledge per RB-PiB",
+            labels={
+                "years_passed": "Year",
+                "value": "FIL per RB-PiB"
             },
             # range_x=cls.compose_x_domain(num_steps),
             #range_y=(0, 8_000),

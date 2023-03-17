@@ -5,14 +5,15 @@ import streamlit as st
 def description():
     st.write(
         """
-
-## Simulations
+## Description
+        
+### Simulations
 
 This app allows you to interactively understand the Consensus Pledge mechanism by showcasing the evolution of various network metrics and comparing them to a world where Filecoin does not require a Consensus Pledge collateral.
 
 You have full control over various parameters to test how the network evolves under different conditions. Additionally, you can set them differently for two phases and test the effects of a changing environment.  
 
-## Scenarios
+### Scenarios
 
 #### User
 
@@ -26,7 +27,7 @@ III) The Quality Factor of this newly onboarded RB Power. The Quality Factor wil
 IV) The Sector Lifetime, measured in days. You can go from the minimum 6 month Sector Lifetime up to a full year of Sector Lifetime, incremented in days. 
 V) The daily probability that a sector will be renewed. Each day of the simulation, sectors are reaching the end of their lifetime. This parameter lets you vary the likelihood of them being renewed. 
 
-## References
+### References
 
 [1]: Filecoin Consensus Pledge GitHub Repository: https://github.com/BlockScience/filecoin-consensus-pledge-demo
 
@@ -37,7 +38,7 @@ V) The daily probability that a sector will be renewed. Each day of the simulati
 
 [4]: Filecoin Consensus Performance Analysis (Marcel Wursten): https://crypto.unibe.ch/archive/theses/2022.msc.marcel.wuersten.pdf
 
-## Contributors
+### Contributors
 
 This calculator has been developed as part of the ongoing collaboration between BlockScience and Filecoin. We acknowledge the work of the following contributors for making it come to life:
 
