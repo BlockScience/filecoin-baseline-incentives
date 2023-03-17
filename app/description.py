@@ -5,8 +5,9 @@ import streamlit as st
 def description():
     st.write(
         """
-
-## Simulations
+## Description
+        
+### Simulations
 
 In order to visualize this behavior, we simulate the baseline reward under different scenarios then compare them directly. Specifically, the "Mining Utility" metric captures the percentage advantage a miner has as compared to a scenario in which the Network Power is always equal to the Baseline.
 
@@ -14,7 +15,7 @@ This app displays four scenarios: two for the user (`consensus_pledge_on` and `c
 
 The left sidebar has several options for controlling how the `user` scenarios for the Filecoin Network Power grow with time.
 
-## Scenarios
+### Scenarios
 
 #### User
 
@@ -32,7 +33,7 @@ In the `optimistic` scenario, the Network Power grows 5% faster than the Baselin
 
 In the `baseline` scenario, the Network Power is always equal to the Baseline Function.
 
-## References
+### References
 
 [1]: Filecoin Baseline Incentives GitHub Repository: https://github.com/BlockScience/filecoin-baseline-incentives
 
@@ -43,7 +44,7 @@ In the `baseline` scenario, the Network Power is always equal to the Baseline Fu
 
 [4]: Filecoin Consensus Performance Analysis (Marcel Wursten): https://crypto.unibe.ch/archive/theses/2022.msc.marcel.wuersten.pdf
 
-## Contributors
+### Contributors
 
 This calculator has been developed as part of the ongoing collaboration between BlockScience and Filecoin. We acknowledge the work of the following contributors for making it come to life:
 
