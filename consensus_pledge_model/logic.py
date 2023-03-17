@@ -270,24 +270,31 @@ def s_reward(params: ConsensusPledgeParams,
     return ('reward', reward)
 
 
-def s_consensus_pledge_per_new_qa_power(params,
+def s_consensus_pledge_per_new_qa_power(params: ConsensusPledgeParams,
                                         _2,
                                         _3,
-                                        state,
-                                        _5):
+                                        state: ConsensusPledgeDemoState,
+                                        _5) -> VariableUpdate:
+    """_summary_
+
+    Args:
+        params (ConsensusPledgeParams): System parameters
+        _2
+        _3
+        state (ConsensusPledgeDemoState): The current state of the system
+        _5
+
+    Returns:
+        VariableUpdate: Variable update for the consensus_pledge_per_new_qa_power
     """
-    CP per Sector = TLS * CircSupply * SectorQAP / max(baseline, QA_Net_Power)
-    Sum[SectorQAP] = OnboardingNetworkQAP
-    CP this round = OnboardingNetworkQAP * 
-    What should be returned: TLS * CircSupply / max(baseline, CurrentNetworkQAP)
-    """
+
     value = params['target_locked_supply']
     value *= state['token_distribution'].circulating
     value /= max(state['baseline'], state['power_qa'])
     return ('consensus_pledge_per_new_qa_power', value)
 
 
-def s_storage_pledge_per_new_qa_power(params,
+def s_storage_pledge_per_new_qa_power(params: ConsensusPledgeParams,
                                       _2,
                                       history: dict[list, dict[list, ConsensusPledgeDemoState]],
                                       state: ConsensusPledgeDemoState, _5):
