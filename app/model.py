@@ -14,9 +14,9 @@ from cadCAD_tools.preparation import sweep_cartesian_product
 from joblib import Parallel, delayed
 from math import inf
 C = CONSTANTS = load_constants()
+import streamlit as st
 
-
-
+@st.cache_resource
 def run_cadcad_model(duration_1,
                      new_sector_rb_onboarding_rate_1,
                      new_sector_quality_factor_1,
