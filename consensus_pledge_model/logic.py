@@ -84,7 +84,7 @@ def s_cumm_capped_power(params: ConsensusPledgeParams,
     # TODO: refactor for making it cleaner
     DAYS_TO_YEARS = 1 / YEAR
     dt = params['timestep_in_days'] * DAYS_TO_YEARS
-    current_power = state['power_qa']
+    current_power = state['power_rb']
 
     if params['baseline_activated'] is True:
         capped_power = min(current_power, state['baseline'])
