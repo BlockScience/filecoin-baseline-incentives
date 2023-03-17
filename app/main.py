@@ -64,19 +64,26 @@ The trajectory is described as being:
 """
 )
 
+years = st.sidebar.slider(
+    "Simulation Duration in Years", 0.0, 10.0, defaults["years"], 0.25, key="years"
+)
+days = years * 366
+
 st.sidebar.markdown(
 """## Phase one"""
 )
-duration_1 = st.sidebar.slider(
-    "Duration in Days", 0, 560, defaults["duration_1"], 7, key="duration_1"
+
+duration_1_years = st.sidebar.slider(
+    "Duration in Days", 0.0, years, defaults["duration_1"], 0.1, key="duration_1"
 )
+duration_1 = duration_1_years * 365.5
 
 new_sector_rb_onboarding_rate_1 = st.sidebar.slider(
-    "RB Onboarding Rate (PiB)", 0.0, 100.0, defaults["new_sector_rb_onboarding_rate_1"], 0.1, key="new_sector_rb_onboarding_rate_1"
+    "RB Onboarding Rate (PiB)", 0.0, 500.0, defaults["new_sector_rb_onboarding_rate_1"], 0.1, key="new_sector_rb_onboarding_rate_1"
 )
 
 new_sector_quality_factor_1 = st.sidebar.slider(
-    "RB Onboarding QF", 1.0, 10.0, defaults["new_sector_quality_factor_1"], 0.1, key="new_sector_quality_factor_1"
+    "RB Onboarding QF", 1.0, 20.0, defaults["new_sector_quality_factor_1"], 0.1, key="new_sector_quality_factor_1"
 )
 
 new_sector_lifetime_1 = st.sidebar.slider(
@@ -92,11 +99,11 @@ st.sidebar.markdown(
 )
 
 new_sector_rb_onboarding_rate_2 = st.sidebar.slider(
-    "RB Onboarding Rate (PiB)", 0.0, 100.0, defaults["new_sector_rb_onboarding_rate_2"], 0.1, key="new_sector_rb_onboarding_rate_2"
+    "RB Onboarding Rate (PiB)", 0.0, 500.0, defaults["new_sector_rb_onboarding_rate_2"], 0.1, key="new_sector_rb_onboarding_rate_2"
 )
 
 new_sector_quality_factor_2 = st.sidebar.slider(
-    "RB Onboarding QF", 1.0, 10.0, defaults["new_sector_quality_factor_2"], 0.1, key="new_sector_quality_factor_2"
+    "RB Onboarding QF", 1.0, 20.0, defaults["new_sector_quality_factor_2"], 0.1, key="new_sector_quality_factor_2"
 )
 
 new_sector_lifetime_2 = st.sidebar.slider(
@@ -121,7 +128,7 @@ renewal_probability_2 = st.sidebar.slider(
 
 df = run_cadcad_model(duration_1, new_sector_rb_onboarding_rate_1, new_sector_quality_factor_1, new_sector_lifetime_1, renewal_probability_1 / 100,
                       new_sector_rb_onboarding_rate_2, new_sector_quality_factor_2, new_sector_lifetime_2,
-                       renewal_probability_2 / 100)
+                       renewal_probability_2 / 100, days)
 
 # Plot results
 
@@ -139,15 +146,13 @@ with plot_container:
     critical_cost_chart = CriticalCostPlotlyChart.build(df, num_steps, vline)
     circulating_surplus_chart = CirculatingSurplusPlotlyChart.build(df, num_steps, vline)
     effective_network_time_chart = EffectiveNetworkTimePlotlyChart.build(user_df, num_steps)
-    simple_reward_chart = SimpleRewardPlotlyChart.build(user_df, num_steps)
-    baseline_reward_chart = BaselineRewardPlotlyChart.build(user_df, num_steps)
-    marginal_reward_chart = MarginalRewardPlotlyChart.build(user_df, num_steps)
+    reward_chart = RewardPlotlyChart.build(user_df, num_steps)
     
 
 # Download data
 
 
-@st.cache
+@st.cache_data
 def convert_df(df):
     return df.to_csv().encode("utf-8")
 

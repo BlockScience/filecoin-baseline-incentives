@@ -6,12 +6,13 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import pandas as pd
 from cadCAD_tools.execution import easy_run
 from consensus_pledge_model.types import ConsensusPledgeSweepParams, BehaviouralParams
-from consensus_pledge_model.params import INITIAL_STATE, SINGLE_RUN_PARAMS, TIMESTEPS, SAMPLES
+from consensus_pledge_model.params import INITIAL_STATE, SINGLE_RUN_PARAMS, TIMESTEP_IN_DAYS
 from consensus_pledge_model.structure import CONSENSUS_PLEDGE_DEMO_BLOCKS
 from utils import load_constants
 from copy import deepcopy
 from cadCAD_tools.preparation import sweep_cartesian_product
 from joblib import Parallel, delayed
+from math import inf
 C = CONSTANTS = load_constants()
 
 
@@ -24,7 +25,8 @@ def run_cadcad_model(duration_1,
                      new_sector_rb_onboarding_rate_2,
                      new_sector_quality_factor_2,
                      new_sector_lifetime_2,
-                     renewal_probability_2):
+                     renewal_probability_2,
+                     days):
     
     def run_sim(tls):
         first_year = BehaviouralParams('first_year',
@@ -42,9 +44,11 @@ def run_cadcad_model(duration_1,
         params = ConsensusPledgeSweepParams(**{k: [v] for k, v in SINGLE_RUN_PARAMS.items()})
         params['target_locked_supply'] = [tls]
         params["behavioural_params"] = [{duration_1: first_year,
-                                        10000: second_year}]
+                                        inf: second_year}]
 
-        RUN_ARGS = (deepcopy(INITIAL_STATE), sweep_cartesian_product(params), CONSENSUS_PLEDGE_DEMO_BLOCKS, TIMESTEPS, SAMPLES)
+
+        timesteps = int(days / TIMESTEP_IN_DAYS)
+        RUN_ARGS = (deepcopy(INITIAL_STATE), sweep_cartesian_product(params), CONSENSUS_PLEDGE_DEMO_BLOCKS, timesteps, 1)
         
         return easy_run(*RUN_ARGS)
 
@@ -74,6 +78,7 @@ def post_process_results(df):
 
     df = (df
         .assign(initial_pledge_per_new_qa_power=lambda df: df.storage_pledge_per_new_qa_power + df.consensus_pledge_per_new_qa_power)
+        .assign(initial_pledge_per_new_rb_power=lambda df: df.initial_pledge_per_new_qa_power * df.power_qa / df.power_rb)
         .assign(simple_reward=lambda df: df.reward.map(lambda x: x.simple_reward))
         .assign(baseline_reward=lambda df: df.reward.map(lambda x: x.baseline_reward))
         .assign(fil_locked=lambda df: df.token_distribution.map(lambda x: x.locked))
