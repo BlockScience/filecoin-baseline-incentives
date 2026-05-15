@@ -1,0 +1,8 @@
+cadCAD
+cadCAD-tools
+millify
+numpy
+pandas
+ruamel.yaml
+streamlit
+plotly
